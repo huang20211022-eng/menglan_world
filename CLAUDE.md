@@ -812,3 +812,480 @@ Custom Vite plugin that runs at build time:
 - **`useScrollCamera.js`**: Simple scroll camera, superseded by useInfiniteCamera
 - **`useMouseParallax.js`** and **`useParallax.js`**: Used for 2D DOM elements, separate from useInfiniteCamera's parallax
 - **`App.css`** and **`index.css`**: Vite template artifacts (logo-spin keyframes, root color-scheme)
+
+---
+
+# Design Rationale: Why the Author Made These Decisions
+
+> This section analyzes the **why** behind every major design decision. It is the architectural reasoning layer on top of the "what" documented above.
+
+---
+
+## Why SPA + R3F Canvas + DOM Overlay Architecture?
+
+The render tree in `App.jsx` reveals the core architectural decision:
+
+```jsx
+<Canvas>...</Canvas>           // Full-screen WebGL 3D scene
+{isLoaded && (
+  <NavigationUI />             // DOM overlay: map, audio, achievements
+  <GlobalOverlay />            // DOM overlay: content card with GSAP typing effect
+  <PaperTransition />          // DOM overlay: tear-paper animation for teleport
+)}
+<Preloader />                  // DOM overlay: loading screen
+```
+
+This split solves four concrete problems that a pure-3D or pure-DOM approach cannot:
+
+**1. R3F cannot efficiently render complex UI.** While drei offers `Html` and `Text`, building the Map panel (quadrant-based hover zones with GSAP-animated clip-path paint reveals, movable pin markers, audio sliders, and achievement panels) entirely in 3D would be extraordinarily painful. Each `<Html>` portal creates an iframe-like bridge between WebGL and DOM pipelines with its own render overhead. The author chose the right tool for the right job: WebGL for spatial rendering and camera work, DOM for text layout, form controls, accessibility, and CSS animations.
+
+**2. The Preloader and PaperTransition need precise DOM overlay control.** The paper-tear effect uses SVG `clipPath: polygon(...)` with 50+ vertex jagged edges and CSS `::before` pseudo-elements with paper texture backgrounds. This is a purely DOM-native effect. Implementing it inside Canvas would require building the entire animation in GLSL shaders — technically possible but dramatically more complex for the same visual result.
+
+**3. DOM-based navigation surfaces retain browser-native accessibility.** `NavigationUI` uses standard `onMouseEnter`, `onClick`, `aria-*`, `inert` attributes, and keyboard focus management. Porting these into R3F would lose all built-in accessibility and require reimplementing focus trapping.
+
+**4. Separation of rendering pipelines prevents DOM reflows from causing WebGL context loss.** The Canvas runs on the GPU via WebGL. The DOM overlay operates on the browser's compositor. By keeping them separate in the React tree but visually layered via CSS `z-index`, DOM reflows never force a GPU context rebuild.
+
+**The SPA + Virtual Routing pattern** avoids `react-router-dom` overhead. `useDocumentMeta.js` uses the History API directly (`pushState`/`replaceState`), giving deep-linkable URLs (`/gallery`, `/about`) without page reloads, while `SceneContext` reads the initial URL via `getInitialRoomFromUrl()` and auto-teleports after scene load. A full router with `<BrowserRouter>` would add ~12KB gzipped for a single-page experience with only 6 virtual routes.
+
+---
+
+## Why Split Context into 4 Separate Providers?
+
+The four Context providers form a nesting hierarchy with clear dependencies:
+
+```
+<PerformanceProvider>         // outermost -- configures Canvas, no dependencies
+  <AchievementsProvider>      // depends on AudioProvider (needs chime on unlock)
+    <AppContent>
+      <AudioProvider>         // pure browser API, no context dependencies
+        <SceneProvider>       // innermost -- wraps Canvas, no context dependencies
+```
+
+They cannot be merged because:
+
+**1. They have fundamentally different consumers.** `SceneContext` consumers (`TeleportRoom`, `DoorSection`, `Experience`) are inside the Canvas (they use `useThree()`). `AchievementsContext` is consumed entirely in DOM-land (`NavigationUI`, `AchievementPopup`). Merging them would force DOM consumers to live inside the Canvas's React subtree — which they physically cannot since they render HTML elements.
+
+**2. `PerformanceContext` is read at the `<Canvas>` configuration level.** It must be outside the Canvas to configure `dpr`, `shadows`, and `antialias` props before the WebGL context is created.
+
+**3. They change at different frequencies.** `SceneContext` re-renders on every door-enter, room-exit, and teleport-phase change (dozens per session). `PerformanceContext` re-renders zero times after mount (unless FPS degrades). `AudioContext` re-renders only on mute-toggle or volume-drag. If merged, every room entry would unnecessarily re-render audio sliders and the achievement panel.
+
+**4. `AudioContext` wraps a pure browser API** (`new Audio()`, `localStorage`). The lower-level `audioManager.js` utility is deliberately separate because it manages a persistent background music track as a module-level singleton — this is not React state and should survive re-renders. The Context layer wraps this with React-observable state for UI components, while the singleton handles the non-React concern of "one global music track."
+
+---
+
+## Why React Three Fiber Instead of Vanilla Three.js?
+
+R3F was chosen because this project is fundamentally a **complex state machine** (4 interactive rooms + infinite corridor + teleport system) that maps perfectly to React's declarative model.
+
+**1. Declarative scene graph driven by React state.** `Experience.jsx` conditionally renders based on `hasEntered`:
+```jsx
+{!hasEntered && (<EntranceDoors ... />)}
+{!hasEntered && (<SignSystem ... />)}
+```
+When entrance doors open, the entire entrance section unmounts and the corridor takes over — without any manual `scene.add()` / `scene.remove()`. React's reconciliation handles 3D object lifecycle.
+
+**2. React Suspense for asset loading.** The entire `Experience` is wrapped in `<Suspense fallback={null}>`. `useTexture()` (a drei hook) suspends until textures load. In vanilla Three.js, you'd manually track each texture's load state and write custom logic to block rendering.
+
+**3. Component composition enables separation of concerns.** `DoorSection` renders `<RoomInterior>` as a child, which lazily loads room components. The wall-with-hole geometry is computed in `useMemo`. The tilt animation runs in `useFrame`. Audio lives in a `<PositionalAudio>` component. In vanilla Three.js, all these concerns would collapse into imperative code.
+
+**4. Custom shaders as JSX tags.** Shaders register via `extend()` and are used as `<revealMaterial uProgress={0.0} />`. Exposing `uProgress` as a GSAP-animatable getter/setter is purely a React + R3F advantage — in vanilla Three.js, you'd manually update uniforms each frame.
+
+**5. Drei ecosystem.** `Text`, `PositionalAudio`, `Float`, `useTexture`, `PerformanceMonitor`, `Preload` all reduce boilerplate significantly.
+
+**Why not alternatives:**
+- **A-Frame**: HTML-based, cannot integrate with React state management
+- **Babylon.js**: Excellent engine but its React bindings are far less mature than R3F
+- **PlayCanvas**: Editor-based, incompatible with custom shader pipeline
+
+---
+
+## Why GSAP for ALL Animations Instead of CSS?
+
+**CSS fundamentally cannot animate what this project needs to animate:**
+
+| Animation Target | GSAP | CSS |
+|-----------------|------|-----|
+| Three.js camera position/rotation | ✅ `gsap.to(camera.position, ...)` | ❌ No CSS property for camera |
+| 3D object transforms (door.rotation.y) | ✅ `gsap.to(doorRef.rotation, { y: PI*0.6 })` | ❌ CSS transforms apply to DOM, not Three.js |
+| Custom GLSL shader uniforms (uProgress) | ✅ `gsap.to(materialRef, { uProgress: 1.0 })` | ❌ CSS cannot touch GPU shader uniforms |
+| Multi-stage timelines with precise offsets | ✅ `gsap.timeline()` with position parameter | ❌ CSS animation-delay is static and not cancelable |
+| Delayed cleanup after animation | ✅ `gsap.delayedCall(0.55, () => ...)` | ❌ Requires fragile setTimeout/clearTimeout chains |
+
+The project uses 17 files with 124+ GSAP calls. CSS animations are used only for trivial decorative UI elements (achievement popup enter/exit, ring spinner rotation).
+
+**Why not React Spring / Framer Motion?** Both have R3F adapters, but lack:
+- `delayedCall` for timed cleanup
+- The ability to tween arbitrary JS objects (shader material `uProgress`)
+- `gsap.killTweensOf()` — critical for canceling in-flight camera animations when transitioning between DoorSection and InfiniteCamera ownership
+- Timeline API with precise positional offsets (`'<'`, `'-=0.5'`)
+
+**Why not Three.js AnimationMixer?** Designed for pre-authored glTF/FBX keyframe clips, not real-time interactive, GSAP-driven sequences.
+
+**The 250ms delay pattern:** After the camera fly-through animation completes, `enterRoom(doorId)` is called with a 250ms delay. This is a **de-synchronization buffer**: `enterRoom()` triggers React Context updates causing cascading re-renders (`InfiniteCorridorManager` props change, `DoorSection` exit logic fires, UI elements mount/unmount). If these re-renders happen during GSAP's active animation loop, React's reconciliation can block the main thread and cause visible frame stutter. The 250ms lets the GSAP loop finish gracefully before React tree updates.
+
+---
+
+## Why Camera Designed This Way?
+
+**Why a single custom hook instead of drei's built-in controls?**
+
+The corridor camera has exactly **one degree of freedom**: Z-axis movement. No drei control matches this constraint:
+- OrbitControls: orbit/zoom/pan (too many DoF)
+- FlyControls: free 3D movement (wrong interaction model)
+- MapControls: 2D pan in screen space (wrong dimension)
+
+More importantly, `useInfiniteCamera` does things no off-the-shelf control does:
+- Proximity-based auto-glance at doors with distance-based strength curves and asymmetric lerp (slow to engage 0.03, fast to release 0.08)
+- Unified input fusion: desktop wheel + touch drag + mouse parallax + keyboard arrows + gyroscope, all converging in one deterministic per-frame update order
+- GSAP animation hand-off via camera override system
+
+**Why the camera override system?**
+
+When `DoorSection` finishes its exit animation and releases control, `setCameraOverride(false)` performs ~60 lines of synchronization:
+1. Reads the camera's current position (wherever the exit animation left it)
+2. Recalculates which corridor segment the camera is in
+3. Derives the current glance value from the physical camera rotation
+4. Initializes all internal refs to match ground truth
+5. Begins smooth interpolation toward ideal values
+
+Without this, the inactive controller's state would be stale, causing a visible camera snap when it takes over.
+
+**Why 30-frame blend-in when re-enabling scroll?**
+
+The camera's rotation after exiting a room diverges from what `lookAt` would compute. The blend saves the physical rotation at re-enable time, computes the target from `lookAt`, then lerps over 30 frames (~0.5s at 60fps). Without this, the camera would snap instantly to the corridor-facing orientation.
+
+**Why rotation proxy objects?** Directly tweening `camera.rotation.y` would tween Euler angles, which suffer from gimbal lock and wrap-around ambiguity. A plain `{y: value}` proxy interpolates linearly, with `onUpdate` setting `camera.rotation.y = proxy.y`. The proxy also handles parent group rotation compensation (subtracting parent Y from world-target Y).
+
+**Why TeleportRoom as a separate component?** TeleportRoom performs instantaneous camera snapping — fundamentally different from useInfiniteCamera's continuous per-frame interpolation. Keeping it separate means useInfiniteCamera has no knowledge of teleportation (clean separation of concerns), and the teleport logic doesn't add a conditional branch to every `useFrame` call.
+
+---
+
+## Why Rooms Divided This Way?
+
+**Why the mini-corridor (RoomInterior) before each room?**
+
+The 2-meter-deep corridor segment behind every door serves four purposes:
+1. **Spatial transition**: Camera flies through door → enters controlled vestibule → then opens into room content. Without this, the camera would immediately face the room's content, which is disorienting after a 60-degree angled fly-through.
+2. **Visual consistency**: Reuses main corridor textures (walls, floor, baseboards), creating a unified "behind every door" aesthetic.
+3. **Positional anchoring**: Every room starts at exactly 2 units deep. The camera's `enterDistance` carries it through this vestibule into the room.
+4. **Performance boundary**: The mini-corridor geometry is always rendered, providing visual continuity while room content lazy-loads.
+
+**Why the Room Component Contract?**
+
+The four props (`showRoom`, `onReady`, `isExiting`, `isWarmup`) form a minimal but complete interface:
+- `showRoom`: When false, no interaction setup, minimal visual. Prevents wasted work.
+- `onReady`: Signals GPU resources are compiled. Without this, the door would open before textures upload — showing blank geometry.
+- `isExiting`: DoorSection is animating camera out. **Must stop all camera manipulation immediately** to prevent two systems fighting.
+- `isWarmup`: Mounted in RoomWarmup 500 units below. Skip audio, skip tutorials, skip interaction listeners.
+
+**Why onReady (frame counting) instead of useEffect or Suspense?**
+
+`useEffect` fires after React commits. Suspense resolves after async imports. Neither guarantees GPU work completion:
+1. Shader compilation is asynchronous — `gl.compile()` queues GPU work that completes during rendering, not during React's commit phase
+2. Texture uploads are queued — the GPU may process them in subsequent frames
+3. The first few rendered frames may be incomplete (missing textures, uncompiled shaders)
+
+Frame counting (5-25 frames) ensures several complete render cycles have executed before signaling readiness. AboutRoom waits 25 frames (most complex geometry: InfiniteSkyManager with SkyChunks and milestones); Gallery and Studio wait 5 frames (simpler: mostly textured planes).
+
+**Why different enterDistance for About (25) vs others (8)?**
+
+The distance includes the 2m vestibule + room entry. About needs 23m into the sky to place the user in the active flying zone with room to accelerate. An 8-unit entry would leave the user barely past the mini-corridor. The standard 8 units (2m + 6m) places cameras at a comfortable starting distance for gallery balcony, studio tower ring, or contact dock.
+
+**Why does each room have its own paint transition direction?**
+
+| Room | Door Side | Paint Direction | Rationale |
+|------|-----------|----------------|-----------|
+| Gallery | Left | `(-1, 0, 0)` — left to right | Door is on the left; room opens toward the right |
+| Studio | Left | `(0, -1, 0)` — top to bottom | Tower has vertical emphasis; feels like a curtain rising |
+| Contact | Right | `(1, 0, 0)` — right to left | Mirror of Gallery; door is on the right |
+| About | N/A | No paint transition | Open-sky room with no "wall" to peel away |
+
+The paint reveal feels like it originates from the door — as if the user's entry literally paints the room into existence.
+
+---
+
+## Why Shaders Organized This Way?
+
+**Why extend MeshBasicMaterial instead of ShaderMaterial?**
+
+The key insight (from `RevealMaterial.jsx`): "Only modifies the DISCARD logic (alpha), NOT the color/lighting." By extending `MeshBasicMaterial`, the code:
+- Preserves the entire Three.js internal material pipeline (color management, texture sampling, fog, dithering)
+- Injects only at targeted hook points via `onBeforeCompile`
+- Avoids reimplementing 50+ lines of standard GLSL — only ~30 lines of custom code per material
+- Seamlessly integrates: `map`, `transparent`, `alphaTest`, `color`, `depthWrite` work as standard JSX attributes
+
+A raw `ShaderMaterial` would break when Three.js updates its internal shader structure. Patch-based injection is forward-compatible.
+
+**Why onBeforeCompile instead of raw GLSL?**
+
+The injection strategy at three specific points was deliberate:
+- `#include <common>`: Append noise utility functions (no existing GLSL overlap)
+- `#include <alphatest_fragment>`: After standard alpha test, apply custom UV-based discard
+- `#include <dithering_fragment>`: After all color computation, apply world-space paint discard + edge glow
+
+This ensures shadow maps, fog, color space conversion, and dithering all work automatically around the custom patches.
+
+**Why 3 separate reveal classes instead of one configurable class?**
+
+Each addresses a fundamentally different rendering strategy:
+
+| Class | Strategy | Injection Point | Paint Support |
+|-------|----------|----------------|---------------|
+| RevealMaterial | DISCARD (two-mesh stack) | alphatest + dithering | Yes (optional, produces different shader) |
+| RevealBasicMaterial | DISCARD (two-mesh stack) | alphatest only | No (simpler, fewer GPU cycles) |
+| PaintRevealMaterial | BLEND (single mesh) | map_fragment only | Is itself the blend |
+
+**RevealMaterial (discard) vs PaintRevealMaterial (blend):**
+- Discard pattern: Two overlapping meshes — painted mesh behind, sketch mesh in front progressively discarded. Used on doors, handles. Works because meshes are perfectly co-planar and `alphaTest: 0.1` prevents Z-fighting.
+- Blend pattern: Single mesh with two textures — `diffuseColor` is replaced with painted texture color above the brush-stroke threshold. Used where stacking two meshes would cause Z-fighting.
+
+**Why value noise instead of Perlin/Simplex?**
+- ~10× faster per pixel (no gradient vector lookup)
+- ~10 lines of GLSL vs ~60 lines for 2D Simplex
+- Aesthetically appropriate: value noise's blockiness reads as brush-stroke roughness; Perlin's smoothly varying gradients would look unnaturally "flowy"
+- Historical patent concern: Simplex noise was under US patent until early 2025
+
+**Why the "wet paint glow" edge effect?**
+
+The blue-tinted RGB boost at the paint boundary (`glow * 0.4R, 0.5G, 0.7B`) serves multiple purposes:
+- Makes the paint feel "alive" rather than a static binary mask
+- Guides the eye to the transitioning edge (reinforcing the sketch-being-painted narrative)
+- Covers alpha edge harshness with a 2-unit gradient band
+- Turns off at completion (`uPaintProgress < 0.999`) — purely a transition artifact
+- Evokes "magic spark" rather than mechanical wipe — aligned with portfolio brand
+
+**Why customProgramCacheKey returns different strings?**
+
+Three.js caches compiled `WebGLProgram` objects by material type + enabled features. RevealMaterial can compile into TWO structurally different programs (with or without paint uniforms). If the first instance compiles without paint, a second instance WITH paint would receive a program missing three uniforms — causing WebGL errors. Different cache keys force separate program compilation.
+
+**Why usePaintMaterial is a hook rather than another material class?**
+
+The hook serves as an **orchestration layer**: it owns the GSAP tween driving the paint sweep (React lifecycle concern), tracks room origin via `getWorldPosition()` (requires React refs), broadcasts shared `uniformsData` to all meshes in a room (one sweep, many materials), and is basis-class-agnostic (works with any material, not just RevealMaterial).
+
+---
+
+## Why Resources Loaded This Way?
+
+**Why module-level preloading (import time) vs component-level?**
+
+```javascript
+// App.jsx — module scope, executes during script evaluation
+if (isLowEnd) {
+  filteredCore.forEach(path => useTexture.preload(path));
+} else {
+  filteredAll.forEach(path => useTexture.preload(path));
+  filteredLoader.forEach(path => useLoader.preload(TextureLoader, path));
+}
+```
+
+This executes during **script evaluation** — the earliest possible moment after JS bundle parse. By the time React creates its first DOM node (~100ms later), many textures are already mid-flight or delivered. The precedence is: JS parse → texture HTTP requests fire → React creates root → Canvas renders → textures already cached. Without this, the waterfall adds the entire React bootstrapping latency to loading time.
+
+**Why split PRELOAD_ALL (useTexture) vs PRELOAD_LOADER (useLoader/TextureLoader)?**
+
+These use DIFFERENT internal caches. `useTexture.preload()` puts into Drei's global cache. `useLoader.preload(TextureLoader, path)` puts into Three.js's DefaultLoadingManager. Preloading with the wrong method means the component would miss the cache and make a duplicate network request. The split ensures cache alignment: ABOUT and STUDIO rooms use `useLoader(TextureLoader)` (for explicit encoding control), so they are preloaded via `useLoader.preload`.
+
+**Why filter textures by device?**
+
+Touch devices cannot trigger hover-based paint reveals (no `onPointerEnter` equivalent for touch). Loading `_painted` textures on mobile wastes ~40MB of bandwidth and risks GPU memory exhaustion (especially critical for mobile GPUs with limited VRAM). The filter is a binary `(hover: hover)` media query check at module evaluation time.
+
+**Why Cloudflare proxy for Sanity images?**
+
+The `/sanity-cdn/*` proxy provides:
+- Edge caching with 1-year TTL (Sanity image URLs are immutable)
+- Bandwidth cost reduction (most requests never reach Sanity's origin)
+- Same-origin requests (no CORS preflight, single HTTP/2 connection pool)
+- Hides Sanity project ID from browser devtools
+- Consistent caching policy under the portfolio's own control
+
+**Why pub/sub instead of React Query or SWR?**
+
+The data is static CMS content — once loaded, it never needs revalidation or mutation. React Query's primary value (stale-while-revalidate) would go unused. The module-level `cache` object + `fetchPromise` singleton provides the same deduplication guarantee in 5 lines. `isSanityDataLoaded()` is called synchronously by RoomWarmup's `useFrame` — React Query's cache requires a provider wrapper that would add complexity to this hot path.
+
+**Why the two-phase loading pipeline?**
+
+```
+Phase 1: Module-level texture preload (JS evaluation time)
+  → HTTP waterfall starts before React mounts
+
+Phase 2: RoomWarmup shader compilation (3 frames after React renders)
+  → All 4 rooms mounted 500 units below, gl.compileAsync() forces GPU compilation
+
+Phase 3: Preloader exit
+  → User sees paper-tear animation while 80+ WebGL programs compile
+```
+
+Each phase's output is a prerequisite for the next: textures must load before shaders compile (shaders sample textures), shaders must compile before user interaction (on-the-fly compilation causes 50-200ms frame drops), and the Preloader's animation masks all of it.
+
+---
+
+## Why No Redux?
+
+The project relies on React's built-in `useContext` + `useState` + `useCallback` for state management. No Redux, Zustand, Jotai, MobX, or XState.
+
+**Why Context is sufficient:**
+
+1. **The state graph is shallow and tree-shaped.** The 4 providers form a clean nesting with no circular dependencies. Communication goes through Context boundaries that wrap both Canvas-land and DOM-land.
+
+2. **~20 consumers per Context.** The project has roughly 40 R3F components and 10 DOM components. Redux shines with 100+ connected components across deeply nested routes.
+
+3. **GSAP handles the truly complex state (animations).** `targetZ`, `currentZ`, `parallax`, `glanceOffset` are all in `useRef` — updated at 60fps without React renders. React Context only stores **decisions** (which room? teleporting?), not **continuous values** (camera position, scroll position).
+
+4. **The teleport state machine uses temporal orchestration, not reducers.** The sequence is: `teleportTo()` → PaperTransition closes → `startTeleportTransition()` → TeleportRoom positions camera → `completeTeleport()` → DoorSection auto-clicks → `signalRoomReady()`. Each function transitions one specific flag, triggered by GSAP `onComplete` callbacks. This linear A→B→C→D sequence with one branch (isFastTeleport) is more readable than opaque action types dispatched to a reducer.
+
+**Threshold where Redux would become necessary:**
+- 10+ rooms with independent sub-navigation, each with data fetching, caching, and mutation
+- Multiple widgets across different tree branches reacting to the same state change
+- Need for middleware: logging every transition, persisting/restoring full state, optimistic rollback
+- Multiple developers needing a shared DevTools debugging surface
+
+---
+
+## Why Portal (Teleport) Designed This Way?
+
+The teleport system is a **distributed state machine** coordinated by SceneContext, executed by three independent components:
+
+**Why three components instead of one monolithic TeleportManager?**
+
+Each component handles a fundamentally different rendering domain:
+- **PaperTransition** (DOM): Animates the paper-tear overlay — CSS clip-path polygons with GSAP
+- **TeleportRoom** (R3F): Instantly repositions the camera — `camera.position.set(0, 0.2, doorZ + 8)`
+- **DoorSection** (R3F): Plays the door-click animation (camera alignment + door open + fly-through)
+
+If merged into one component, it would need to simultaneously manage DOM animations and WebGL camera transforms, cross-cutting two rendering pipelines. The separation means each component only needs knowledge of its own domain.
+
+**Why SceneContext-based coordination instead of events?**
+
+The `teleportPhase` state (`'closing'` → `'teleporting'` → `'opening'` → `null`) acts as a **clock signal** that each component watches independently:
+- PaperTransition watches `teleportPhase` and animates accordingly
+- TeleportRoom watches `teleportPhase === 'teleporting'` and repositions camera
+- DoorSection watches `pendingDoorClick` and triggers entry
+
+This is more robust than custom events because: the phase is a single source of truth, React's rendering guarantees all components see the same phase in the same frame, and there's no need for manual event listener cleanup.
+
+**Why fast vs slow teleport?**
+
+From the map panel, the user clicks a room → paper closes → camera teleports → door opens → paper opens. The paper closure masks the instantaneous repositioning. All intermediate animations run at 0.01s (the paper is closed — the user cannot see them). DoorSection checks `isFastTeleport` and shortens: alignment duration, door open duration, and fly duration. When exiting via ESC, the full 1.0-1.5s animations play because the user is watching.
+
+---
+
+## Why PerformanceContext Designed This Way?
+
+**Why tier-based instead of continuous scaling?**
+
+GPU capabilities are discrete: shadows ON/OFF, antialias ON/OFF, `powerPreference: "high-performance"/"default"/"low-power"`. There is no meaningful continuous mapping for these. Three tiers are: testable (developers manually verify HIGH/MEDIUM/LOW), tunable (artists adjust `particleCount: 1.0/0.6/0.3` per tier), and predictable (users get one of three known configurations, not an interpolated edge case).
+
+**Why one-time detection + one-way runtime downgrade?**
+
+```javascript
+// Pass 1: One-time detection on mount
+if (isMobile) detectedTier = MEDIUM;
+if (navigator.hardwareConcurrency <= 4) detectedTier = isMobile ? LOW : MEDIUM;
+if (navigator.deviceMemory <= 4) detectedTier = LOW;
+
+// Pass 2: Runtime downgrade via drei PerformanceMonitor
+<PerformanceMonitor onDecline={() => downgradeTier()} flipflops={3} />
+```
+
+The one-way downgrade (never upgrades) is correct because: if GPU proves it cannot handle HIGH, it will likely fail again under similar load; thermal throttling means performance monotonically decreases; re-enabling shadows would be more visually jarring than the initial downgrade.
+
+**Why specific tier thresholds?**
+- 4 CPU cores: separates budget mobile (2-4 cores) from mid-range laptops (6-8 cores) and high-end (12+ cores)
+- 4GB RAM: below this, OOM is a real risk when loading full-resolution textures
+- Mobile UA: overrides to MEDIUM even on flagship phones (thermal throttling + lower GPU fill rate vs desktop GPUs)
+- `flipflops={3}`: prevents spurious downgrades from single-frame GC pauses
+
+**Why different DPR ranges?**
+- HIGH [1, 2]: Retina at native sharpness (up to 8.3M pixels at 1920×1080)
+- MEDIUM [1, 1.5]: Upper bound at 4.7MP — mobile users typically cannot distinguish 1.5× vs 2×
+- LOW [0.8, 1]: Minimum 0.8× prevents extreme pixelation (below 0.8×, text becomes illegible)
+
+**Why shadows disabled on MEDIUM but antialias stays?**
+- Shadows: Extra render pass (shadowmap generation + shadow sampler), large texture allocation (1024×1024+ per light), shader complexity. Primary mobile bottleneck.
+- Antialias: Hardware-accelerated MSAA on modern GPUs. In the hand-drawn sketch aesthetic, aliased edges on text/geometry are highly visible and break immersion.
+- Judgment: Antialias visual fidelity (for this art style) outweighs shadow immersion.
+
+---
+
+## Why Some State in Context vs useRef vs Module-Level?
+
+The codebase follows a clear three-tier classification:
+
+| State Category | Mechanism | Change Frequency | Consumers |
+|---------------|-----------|------------------|-----------|
+| App state (affects React UI) | Context (`useState` + Provider) | Low (user interaction) | Multiple components for conditional rendering |
+| Animation state (per-frame) | `useRef` (mutable) | High (60fps `useFrame`) | Internal to hook; exposed via getter functions |
+| Global singletons | Module-level `let`/`const` | Varies (lifetime = page load) | Any importing module |
+
+**The golden rule: "If it doesn't render React, don't use React state."**
+
+Per-frame values (`targetZ`, `parallax`, `glanceOffset`, `currentSegment`) must be in `useRef`. If they were `useState`, each `useFrame` call at 60fps would trigger a full React re-render (reconciliation → virtual DOM diff → commit), consuming the entire frame budget.
+
+The same principle explains why `Preloader.jsx` bypasses React entirely for the percentage display:
+```js
+textLeftRef.current.innerText = percentageText; // Direct DOM mutation, zero React overhead
+```
+
+**Context for decisions, refs for motion.** `currentRoom` (Context) changes when the user clicks a door — at most once every few seconds. `currentSegment` (ref) changes every time the camera crosses an 80-unit boundary — potentially multiple times per second. React re-renders on room change (desired: UI updates) but not on segment change (undesired: 60fps overhead).
+
+**The "shadow ref" pattern** (`AchievementsContext`): `completedRef` mirrors `completed` state for synchronous checks during high-frequency events (wheel scroll triggers `unlockAchievement` 100+ times/second). Without the ref, `setState`'s async batching means `completed.includes(id)` returns false 100 times before the first state flush — causing 100 duplicate PostHog events.
+
+**Module-level for true singletons.** `useSanityData.js`'s `cache` object lives outside React's tree. If it were in Context, unmounting/remounting the provider would lose the cache. `audioManager.js`'s `bgMusicAudio` is a persistent `<Audio>` element that must survive all component lifecycle events.
+
+---
+
+## Why Hooks Organized This Way?
+
+**`hooks/` vs `context/` vs `utils/`**: The boundary is whether the module creates shared state or just encapsulates behavior:
+- `context/`: Creates new shared state for the tree + exports `useX()` consumer hooks
+- `hooks/`: Encapsulates reusable behavior that consumes existing state
+- `utils/`: Pure modules with zero React imports
+
+**Why `usePaintMaterial` lives in `rooms/Gallery/` not `hooks/`?**
+
+It is co-located with what changes together. If you modify the Gallery room's paint effect, you change `usePaintMaterial.js`, `PaperMaterial.jsx`, and `GalleryRoom.jsx` — all in the same directory. The `hooks/` directory is for truly shared hooks: `useInfiniteCamera` is used by `Experience.jsx` (not any specific room). The principle: **colocate until reuse forces extraction.**
+
+**Why `useParallax` and `useMouseParallax` are separate?**
+
+They serve different rendering domains: `useParallax` returns React state `{x, y}` for DOM elements (CSS translate), using its own `requestAnimationFrame` loop with slow lerp (0.1). `useMouseParallax` directly mutates `camera.position.x/y` via `useFrame` (R3F render loop) with fast lerp (0.05). Different animation loops, different consumers, different smoothing — merging would create an abstraction that serves neither well.
+
+**Why `useScrollCamera` still exists?** It is the original 65-line simple corridor scroll, superseded by the 500-line `useInfiniteCamera`. Retained as: reference implementation documenting the original design, potential fallback, and git history preservation. Dead but harmless.
+
+---
+
+## Why Shader Files in `components/canvas/shaders/`?
+
+The three shader files are React JSX components that use Three.js shader material APIs — not standalone GLSL files. Their only consumers are inside `components/canvas/`. Placing them at a top-level `shaders/` would incorrectly imply they are raw `.glsl` or `.vert/.frag` files usable outside the React tree. The current location says: "these are shader-material React components used by the Canvas rendering pipeline."
+
+## Why Directory Boundaries: canvas/ vs dom/ vs ui/?
+
+The distinction mirrors how game engines separate "world-space HUD" from "screen-space UI":
+
+- **canvas/**: Must render inside `<Canvas>`. Uses `useFrame`, `useThree`, `useLoader`. Returns Three.js elements. Has access to WebGL context.
+- **dom/**: Heavy DOM overlays tightly coupled to 3D scene state. `Preloader` monitors `THREE.DefaultLoadingManager`. `PaperTransition` subscribes to `SceneContext.teleportPhase`. Transient, full-screen, tightly coupled to WebGL lifecycle. You would never reuse these outside this app.
+- **ui/**: Reusable interface widgets. `NavigationUI` could conceptually be extracted to a design system. `AchievementPopup` is a self-contained toast. Named like a UI kit, not scene elements.
+
+---
+
+## Author's Design Philosophy: Key Principles
+
+Synthesizing all architectural decisions reveals a consistent design philosophy:
+
+**1. "Heavier on the 3D, lighter on the architecture."** Complexity is invested where the user sees it (custom shaders, GSAP-coordinated state machines, device-tier rendering, paper-tear transitions, achievement gamification). Plumbing is kept minimal (React Context over Redux, colocated hooks, History API over react-router, module-scope singletons).
+
+**2. "Choose the right tool for each rendering domain."** The Canvas/DOM split, GSAP/CSS split, R3F/vanilla-Three.js choice, and component directory structure all follow the same principle: match the tool to the substrate. WebGL for spatial rendering, DOM for text/forms/accessibility, GSAP for 3D+shader animation, CSS for trivial decorative transitions.
+
+**3. "State shape follows change frequency."** The Context/ref/module-level three-tier classification is not arbitrary — it is a performance-driven decision where the key variable is "how often does this change?" Decisions (rooms, teleport phases) change slowly and go in Context. Motion (camera, scroll, parallax) changes every frame and goes in refs. Singletons (audio, cache) exist once and go at module level.
+
+**4. "Colocate until reuse forces extraction."** `usePaintMaterial` lives in `rooms/Gallery/` because only one room uses it. Shaders live in `components/canvas/shaders/` because only Canvas components use them. This minimizes import distance for the primary consumer while keeping the extraction path clear: if a second room needs paint-reveal, move the hook to `hooks/` and parameterize.
+
+**5. "Preload everything before the user sees anything."** The two-phase loading pipeline (module-level texture preload → RoomWarmup shader compile → Preloader exit) is an aggressive pre-computation strategy. The philosophy is: spend time before the first interaction to ensure every subsequent interaction is instant. Room entry shader compilation, the primary source of frame drops in WebGL apps, is eliminated by compiling during the loading screen.
+
+**6. "Make state machines visible, not abstract."** The teleport state machine uses explicit phase flags and GSAP `onComplete` callbacks in sequence, not a reducer with opaque action types. Each phase transition is a named function (`startTeleportTransition`, `completeTeleport`, `signalRoomReady`). The linear A→B→C→D flow with one branch is more readable than the equivalent `dispatch({type: '...'})` pattern.
+
+**7. "De-synchronize React from GSAP."** The 250ms delay after camera fly-through, the `cameraOverride` system, and the `skipFrameAfterEnable` mechanism all solve the same problem: React reconciliation and GSAP animation loops should not overlap. When they do, React's synchronous rendering blocks the animation thread, causing visible stutter. The solution is always temporal separation: let GSAP finish, then let React update.
+
+**8. "Optimize for the first frame, not the average frame."** RoomWarmup exists to eliminate first-entry shader compilation stutter. Module-level texture preloading starts before React mounts. The `compileAsync` call forces all shaders to compile upfront. The philosophy is: users remember the first impression, not the average experience. A single 200ms dropped frame during door entry would undermine the entire polished feel.
+
+**9. "Embrace the constraints of the medium."** The hand-drawn sketch aesthetic is not just an artistic choice — it is a performance-optimal one. `meshBasicMaterial` (no lighting, no shadows on MEDIUM tier) means every mesh is a single texture lookup. Black ink on paper texture means no complex PBR materials, no normal maps, no environment maps. The aesthetic constraint IS the performance strategy.
+
+**10. "Leave breadcrumbs for future developers."** Legacy components (`Door.jsx`, `Corridor.jsx`, `useScrollCamera.js`) are retained rather than deleted. Comments explain WHY decisions were made ("KEY INSIGHT: Only modifies the DISCARD logic"). The `customProgramCacheKey` pattern is applied consistently. The codebase reads as a deliberately architected system, not an organically grown one.
