@@ -1289,3 +1289,491 @@ Synthesizing all architectural decisions reveals a consistent design philosophy:
 **9. "Embrace the constraints of the medium."** The hand-drawn sketch aesthetic is not just an artistic choice — it is a performance-optimal one. `meshBasicMaterial` (no lighting, no shadows on MEDIUM tier) means every mesh is a single texture lookup. Black ink on paper texture means no complex PBR materials, no normal maps, no environment maps. The aesthetic constraint IS the performance strategy.
 
 **10. "Leave breadcrumbs for future developers."** Legacy components (`Door.jsx`, `Corridor.jsx`, `useScrollCamera.js`) are retained rather than deleted. Comments explain WHY decisions were made ("KEY INSIGHT: Only modifies the DISCARD logic"). The `customProgramCacheKey` pattern is applied consistently. The codebase reads as a deliberately architected system, not an organically grown one.
+
+---
+
+# Techniques & Patterns: Hidden Tricks, Optimizations, and Maintenance Notes
+
+> This section catalogs every discoverable technique, optimization, pattern, and pitfall. It is the "how" and "watch out" layer on top of the "what" and "why."
+
+---
+
+## Performance Optimizations
+
+### Memory / GC Avoidance in Hot Paths
+
+**Module-level pre-allocated Vector3/Euler/Quaternion constants:**
+
+| File | Constants | Usage |
+|------|-----------|-------|
+| `CorridorDecorations.jsx:21-26` | `tempPos`, `tempRot`, `tempScale`, `tempCamDir`, `tempEuler`, `tempQuat` | `useFrame` camera calculations |
+| `GalleryRoom.jsx:17-18` | `_tempScale` | Button hover `scale.lerp()` at 60fps |
+| `SocialBarrel.jsx:9-10` | `_tempScale` | Barrel hover `scale.lerp()` at 60fps |
+| `InfiniteSkyManager.jsx:13` | `_tempVec3` | `getWorldPosition()` in pointer handlers |
+
+These are never reassigned — they use `.copy()`, `.set()`, or `.lerp()` to mutate in place, avoiding per-frame allocation that would trigger GC pauses.
+
+**Refs for per-frame state (not React state):**
+- `StudioRoom.jsx:83` — `dragDistance` ref: "Changed to ref to prevent 100x/sec re-renders on drag"
+- `StudioRoom.jsx:167` — `particleTowerRotation`/`particleFallOffset` refs: "REFS not state!"
+- `useInfiniteCamera.js:38-43` — `targetZ`, `currentZ`, `parallax`, `glanceOffset` all refs
+- `InfiniteSkyManager.jsx:1339-1341` — `revealFactorRef`, `spreadFactorRef`, `timeRef`: "Use refs instead of state to avoid 60 re-renders/sec inside useFrame"
+
+**`THREE.MathUtils.lerp` for scalar interpolation (not Vector3.lerpVectors):**
+Avoids creating intermediate `THREE.Vector3` objects. Used extensively in `useInfiniteCamera.js`, `StudioRoom.jsx`, `InfiniteSkyManager.jsx`, `GalleryRoom.jsx`, and `SocialBarrel.jsx`.
+
+**Known GC violation (watch for):** `SkyChunk.jsx:170-171` creates `new THREE.Euler()` and `new THREE.Quaternion()` per cloud per frame (~200-300 allocations/frame) for cloud rotation. This is a known optimization opportunity.
+
+### Direct DOM/Ref Manipulation Bypassing React
+
+| File | What | Technique |
+|------|------|-----------|
+| `Preloader.jsx:279-280` | Percentage text | `textLeftRef.current.innerText = percentageText` — "Direct DOM manipulation - BYPASS React Render!" |
+| `Preloader.jsx:281-282` | SVG stroke dashoffset | `pathLeftRef.current.style.strokeDashoffset = offset` |
+| `StudioRoom.jsx:536-540` | Monitor Y positions | `monitorRefs.current[index].position.y = ...` in useFrame — bypasses React for 48+ monitors |
+
+### Shader Compilation Tricks
+
+**RoomWarmup pre-compilation:**
+- Mounts all 4 rooms at Y=-500 (far outside camera frustum)
+- Renders 3 frames (1 on LOW tier) to trigger all `onBeforeCompile` callbacks
+- Calls `gl.compileAsync(scene, camera)` (2026 WebGL API) for async GPU compilation
+- Falls back to sync `gl.compile()` on older browsers
+- LOW tier devices skip entirely to prevent WebGL context loss
+- Rooms are staggered horizontally (X=-20, X=20, Z=-50, Z=-50) to prevent z-fighting
+
+**Force frustum culling off during warmup:**
+`AboutRoom.jsx:98-111` — traverses all meshes for first 25 frames (`FRAMES_TO_WAIT = 25`), sets `frustumCulled = false` to force shader compilation regardless of visibility. Restores `frustumCulled = true` afterward.
+
+**DoorSection compile-frames trick:**
+`DoorSection.jsx:314-325` — `compileFramesRef` keeps painted layers `visible={true}` for 2 frames even when not hovered, forcing WebGL to compile `revealMaterial` shader programs while the user cannot see them.
+
+### Texture Loading & Caching Tricks
+
+**`texture.clone()` for independent repeat/offset:**
+Used in `CorridorWalls.jsx`, `GalleryRoom.jsx`, `DoorSection.jsx`. Each mesh gets its own clone with independent `repeat.set()` and `offset.set()` without affecting other meshes sharing the same source texture.
+
+**`filterTexturesByDevice()`:**
+`texturePreloadList.js:307-339` — removes all `*_painted.webp` variants on touch devices (where hover-based paint reveal is impossible). Saves ~40MB of VRAM on mobile.
+
+**1×1 transparent GIF replacement on touch devices:**
+```js
+const dummyTex = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+```
+Used in `DoorSection.jsx:214-221`, `StudioRoom.jsx:632-671`. Replaces all painted textures with a ~150-byte data URI on touch devices.
+
+**Browser image preload vs Three.js texture preload:**
+`App.jsx:46-50` — `new Image().src = path` primes browser HTTP cache for `<img>` tags. `useTexture.preload()` primes Drei's GPU texture cache. `useLoader.preload(TextureLoader, ...)` primes Three.js's DefaultLoadingManager. Three different caches, three different preload strategies.
+
+### Visibility & Frustum Culling
+
+**`SegmentVisibilityWrapper`:**
+`InfiniteCorridorManager.jsx:10-41` — toggles `group.visible` based on camera Z. Hides segments >5 units behind camera or >30 units ahead. "Massively reduces Draw Calls."
+
+**Hard Z-clipping:**
+- `CorridorWalls.jsx:104-108` — `zClip` parameter skips wall geometry rendering entirely in clipped regions
+- `SkyChunk.jsx:18,22` — `CORRIDOR_CLIP_Z = -8.0` sets cloud opacity to 0 and skips animation for clouds behind the corridor
+- `InfiniteSkyManager.jsx:150` — `MILESTONE_CORRIDOR_CLIP_Z = -8.0` toggles `group.visible` for all milestones
+
+**Manual world-Z calculation (not `getWorldPosition()`):**
+`InfiniteSkyManager.jsx:291-292` — uses `scrollProgress * CHUNK_LENGTH + chunkLocalZ` instead of `getWorldPosition()`. Comment: "NIE uzywamy getWorldPosition() bo useFrame dzieci odpala sie PRZED rodzicem!" (We don't use getWorldPosition because children's useFrame fires BEFORE parent's).
+
+### RAF Throttling & Batching
+
+**Preloader progress RAF wrapping:**
+`Preloader.jsx:116-121` — `cancelAnimationFrame(t)` + `requestAnimationFrame(() => setRealProgress(...))` throttles progress updates to at most once per frame, regardless of how many `onProgress` callbacks fire.
+
+**PerformanceMonitor flipflops:**
+`App.jsx:180-184` — `flipflops={3}` requires 3 consecutive FPS decline/recovery cycles before triggering `downgradeTier()`, preventing spurious downgrades from single-frame GC pauses.
+
+### Code Splitting
+
+**React.lazy() for Experience:**
+`App.jsx:26` — entire 3D scene (Three.js, all rooms, shaders, geometry) is lazily loaded. Initial bundle omits the heaviest dependencies.
+
+**shouldRenderRoom lazy mounting:**
+`DoorSection.jsx:504-507` — room components only mount AFTER camera aligns with door. This prevents loading all 4 rooms simultaneously.
+
+**RoomWarmup self-destruct:**
+Warmup component unmounts itself (`setIsDone(true)` → returns `null`) after shader compilation, freeing memory.
+
+### Global Performance Strategy
+
+**MeshBasicMaterial over MeshStandardMaterial:** 218 uses of `meshBasicMaterial` vs 2 uses of `meshStandardMaterial`. Zero lighting calculations — every pixel is a single texture lookup. This is the single biggest performance win.
+
+**DPR limiting:** MEDIUM tier caps at [1, 1.5] dpr ("balance quality and GPU fillrate on mobile"). LOW tier caps at [0.8, 1].
+
+**Merged useFrame:** StudioRoom uses ONE `useFrame` for all 48+ monitors (not 48 separate useFrame hooks). FloatingCodeParticles uses ONE `useFrame` for all 60 particles.
+
+---
+
+## Shader Techniques
+
+### Noise Functions (Two Variants)
+
+**Variant A — `revealRand` + `revealNoise`** (used in RevealMaterial, RevealBasicMaterial, PaintRevealMaterial, PaperMaterial):
+```glsl
+float revealRand(vec2 n) {
+    return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+}
+float revealNoise(vec2 p) {
+    vec2 ip = floor(p); vec2 u = fract(p);
+    u = u*u*(3.0-2.0*u);  // Cubic Hermite smoothstep approximation
+    float res = mix(mix(revealRand(ip), revealRand(ip+vec2(1.0,0.0)), u.x),
+                    mix(revealRand(ip+vec2(0.0,1.0)), revealRand(ip+vec2(1.0,1.0)), u.x), u.y);
+    return res*res;  // Squared output: darker image, increased contrast
+}
+```
+
+**Variant B — `paintHash` + `paintNoise`** (used only in `usePaintMaterial.js`):
+- Different hash seed (78.233 vs 4.1414) — produces different noise patterns
+- Does NOT square the output — produces softer, more uniform noise
+- Unrolled four-corner interpolation (equivalent math, different expression)
+
+**Why value noise over Perlin/Simplex:**
+- ~10× faster per pixel (no gradient vector lookup)
+- ~10 lines GLSL vs ~60 lines for 2D Simplex
+- Value noise's blockiness reads as brush-stroke roughness (aesthetically appropriate)
+- Perlin's smooth gradients would look unnaturally "flowy" for torn paper edges
+
+### The Wet Paint Glow Effect
+
+Identical formula in 3 files (`RevealMaterial.jsx:149-152`, `PaperMaterial.jsx:152-157`, `usePaintMaterial.js:122-124`):
+```glsl
+if (uPaintProgress < 0.999 && pBoundary < 2.0) {
+    float pGlow = smoothstep(2.0, 0.0, pBoundary);
+    gl_FragColor.rgb += vec3(pGlow * 0.4, pGlow * 0.5, pGlow * 0.7);
+}
+```
+- Only active when paint progress < 99.9% (vanishes when fully painted)
+- Only within 2.0 units of the discard boundary
+- `smoothstep(2.0, 0.0, boundary)` — reverse blend as boundary approaches 0
+- RGB offset (0.4R, 0.5G, 0.7B) = cool blue-white tint, reading as "wet digital paint"
+- Added to `gl_FragColor.rgb` not multiplied — pushes pixels above the 0.878 paper base
+
+### Paint Transition Configuration Per Room
+
+| Room | `dirX` | `dirY` | `dirZ` | `noiseAxes` | Concept |
+|------|--------|--------|--------|-------------|---------|
+| Gallery | -1.0 | 0.0 | 0.1 | yz | Sweep from left (door side) |
+| Studio | 0.0 | -1.0 | 0.0 | xz | Sweep from top (curtain rising) |
+| Contact | 1.0 | 0.0 | -0.1 | yz | Sweep from right (mirror of Gallery) |
+
+### customProgramCacheKey Technique
+
+Each custom material returns a unique string to prevent Three.js from reusing incompatible compiled shader programs:
+- `RevealMaterial`: `'RevealMaterial_v3'` vs `'RevealMaterial_v3_paint'` (conditional: paint uniforms change shader structure)
+- `RevealBasicMaterial`: `'RevealBasicMaterial_v1'` (fixed)
+- `PaintRevealMaterial`: `'PaintRevealMaterial_v1'` (fixed)
+- Inline materials: `'railing-paint'`, `'paintOnBeforeCompile_studio_painted'`, `'paintOnBeforeCompile_studio_sketch'`
+
+Without unique cache keys, Three.js would reuse a standard `MeshBasicMaterial` program for a custom-shader material, causing missing uniforms and WebGL errors.
+
+### onBeforeCompile — Two Injection Methods
+
+**Method A (Class extension):** RevealMaterial, RevealBasicMaterial, PaintRevealMaterial extend `THREE.MeshBasicMaterial` and implement `onBeforeCompile(shader)` directly. Uniforms updated via getter/setter pattern. Self-contained.
+
+**Method B (Hook injection):** `usePaintMaterial` and `PaperMaterial` provide an `onBeforeCompile` callback passed as prop. Single callback shared across many meshes. Uniforms stored in a separate `uniformsData` ref object. Reusable but requires orchestration.
+
+### uProgress Getter/Setter Pattern
+
+```js
+get uProgress() { return this._uProgress; }
+set uProgress(v) {
+    this._uProgress = v;
+    if (this._shader) { this._shader.uniforms.uProgress.value = v; }
+}
+```
+GSAP tweens `materialRef.current.uProgress` which triggers the setter which writes directly to GPU uniforms — completely bypassing React. This is the bridge between GSAP's tween engine and WebGL's uniform system.
+
+### Two-Mesh Stack Pattern (Painted Behind, Sketch in Front)
+
+Used in 5+ locations (DoorSection, EntranceDoors, StudioRoom, SocialBarrel, InfiniteSkyManager):
+```
+[Painted layer] Z = -0.001  alphaTest=0.5, depthWrite=false, initially visible=false
+[Sketch layer]  Z = 0.000   RevealMaterial alphaTest=0.1, transparent, uProgress=0
+```
+When `uProgress` increases: sketch pixels are discarded by the GLSL noise pattern, the painted layer behind shows through the holes. Visual effect: sketch is "erased" to reveal color.
+
+### alphaTest Hierarchy
+
+| alphaTest | Purpose | Where Used |
+|-----------|---------|------------|
+| 0.01 | Remove only near-transparent pixels | Brick textures |
+| 0.05 | Very conservative alpha cut | "OPEN PROJECT" button on cards |
+| 0.1 | Standard sketch texture alpha cut | Sketch doors, railings, houses, skyline, birds, arrows |
+| 0.5 | Aggressive alpha cut for painted textures | Painted layers (behind), handles, clouds |
+
+### Dithering Fragment Injection Order
+
+The `#include <dithering_fragment>` is Three.js's last include before `gl_FragColor` write. Injecting after it ensures: all standard Three.js lighting/map/color calculations complete first, dithering is applied for low-precision render targets, then the paint transition runs as the final step, overriding everything.
+
+---
+
+## Geometry Techniques
+
+### TornPaperGeometry
+
+`TornPaperGeometry.js` — Custom `BufferGeometry` for torn paper edges:
+1. Start with `PlaneGeometry(width, height, segmentsX, segmentsY)`
+2. Deterministic PRNG (sine hash with seed=12345) for consistent tear pattern
+3. For each edge vertex: `(seededRandom(i) - 0.5) * tearIntensity`
+4. Left edge multiplier = 2.5× (notebook tear effect)
+5. Micro Z-displacement (up to 0.01) for 3D curl
+6. Global warp: `Math.sin(x * 3) * Math.cos(y * 2) * 0.015` on all vertices
+
+### GalleryRoom CatmullRomCurve3
+
+The clothesline is a `CatmullRomCurve3` with 5 control points forming a gentle sag. Cards use `curve.getPointAt(safeU)` for positioning. The same curve generates a `TubeGeometry` for the visual rope.
+
+### CorridorWalls Sawtooth Generation
+
+`generateWallSegments()` in `CorridorWalls.jsx`:
+1. Straight filler segments at `baseX = ±3.5` (outer wall)
+2. Angled door segments from `baseX` to `innerX = ±1.7` over `DOOR_Z_SPAN = 4` units
+3. Connector segments returning to outer edge
+4. Left wall angle: `atan2(1.8, -4)` ≈ 155°; Right wall: `atan2(-1.8, -4) + PI` ≈ 25°
+5. Z-clip parameter for entrance phase overlap prevention
+
+### DoorSection ShapeGeometry with Hole
+
+`DoorSection.jsx:268` — `new THREE.ShapeGeometry(wallShape)` where `wallShape.holes.push(holePath)` creates a wall plane with a rectangular door cutout in a single geometry, avoiding overlapping meshes and z-fighting.
+
+### PaperAirplane Hand-Built BufferGeometry
+
+`PaperAirplane.jsx` — 12 vertices manually positioned in 3D (nose, wing tips, center crease, tail), 25 triangle indices covering top/bottom/sides, `BufferAttribute` in `Float32Array`, `computeVertexNormals()` for smooth edges, extra `Line` object for top ridge (missed by `Edges` threshold=15).
+
+---
+
+## React Patterns
+
+### Null-Rendering Effect Components
+
+Two components return `null` and exist solely to run effects:
+- **`DocumentMetaBridge`** (`App.jsx:116-131`): Calls `useDocumentMeta()` hook, handles deep-link auto-teleport with 300ms delay. Must be inside `SceneProvider` but outside `Canvas`.
+- **`GlobalAudioEnabler`** (`App.jsx:81-95`): Adds one-shot click/touch/keydown listeners with `{once: true}` to unlock Web Audio API on first user interaction.
+
+### React.memo + forwardRef Combo
+
+`GalleryRoom.jsx:690` — `ProjectCard = memo(forwardRef(...))` is a rare pattern. Cards are rendered 10× in a loop; each receives frequently-changing props (`isSelected`, `paintProgress`, `isTransitioning`). memo prevents 9 unselected cards from re-rendering when 1 card changes state.
+
+### Stale Closure Prevention in useFrame
+
+All values read inside `useFrame` that come from props or state are mirrored in refs:
+```js
+const scrollEnabledRef = useRef(scrollEnabled);
+useLayoutEffect(() => { scrollEnabledRef.current = scrollEnabled; }, [scrollEnabled]);
+```
+`useFrame` is a closure captured at hook creation. Without refs, it would read stale values forever. This pattern appears in `useInfiniteCamera.js`, `StudioRoom.jsx`, and `InfiniteSkyManager.jsx`.
+
+### useEffect Cleanup Patterns
+
+Every GSAP timeline/Observer, every `addEventListener`, every `setTimeout`/`setInterval`, and every `requestAnimationFrame` has corresponding cleanup in useEffect return functions. Specific patterns:
+- `Preloader.jsx:136-140` — saves original `THREE.DefaultLoadingManager` handlers, restores on unmount
+- `useInfiniteCamera.js:282-286` — `scrollObserver.kill()` + event listener removal
+- `App.jsx:106-108` — `scene.background = null` on unmount to clean Three.js references
+
+### useLayoutEffect for Synchronous GSAP Cleanup
+
+`useInfiniteCamera.js:70` — uses `useLayoutEffect` (not `useEffect`) to call `gsap.killTweensOf(camera.position)` BEFORE browser paint. If `useEffect` were used, there would be one frame where both GSAP and the hook fight for camera control — causing visible flicker.
+
+### Conditional Rendering as Memory Management
+
+- `{!hasEntered && <EntranceDoors />}` — entrance components unmount after entry, freeing GPU memory
+- `{isLoaded && (<NavigationUI />)}` — UI hidden until preloader completes
+- `{showRoom && <RoomComponent />}` — rooms lazy-mounted only when camera is aligned
+
+### State Initialization from localStorage
+
+`useState(() => { try { return JSON.parse(localStorage.getItem(...)); } catch { return defaultValue; } })` — lazy initializer pattern ensures localStorage is read once, not on every render.
+
+---
+
+## GSAP Techniques
+
+### killTweensOf for Animation Ownership Transfer
+
+`useInfiniteCamera.js:78-80` — when scroll re-enables (returning from room), `gsap.killTweensOf(camera.position)` and `gsap.killTweensOf(camera.rotation)` terminate any residual `DoorSection`/`EntranceDoors` tweens before the hook takes control. Without this, GSAP and the hook's lerp calculations would fight over the camera.
+
+### delayedCall for Timed Cleanup
+
+Pattern used in 6+ components:
+```js
+handleHideDelayRef.current = gsap.delayedCall(0.55, () => {
+    paintedRef.current.visible = false;
+});
+// On re-hover: handleHideDelayRef.current.kill();
+```
+Painted layers hide 0.55s AFTER the sketch layer's `uProgress` reverses to 0.0 (the reverse animation takes 0.5s `power2.out`). Without the delay, painted textures would disappear abruptly instead of being smoothly covered. Stored in ref for cancellation on rapid re-hover.
+
+### overwrite: true Everywhere
+
+Applied to virtually every GSAP animation. Prevents tween stacking on rapid hover/unhover cycles. Example: if `pointerEnter` starts a 0.8s `uProgress: 1.0` tween and `pointerLeave` fires 0.1s later, the leave tween with `overwrite: true` immediately kills the enter tween and starts the reverse.
+
+### Rotation Proxy Objects
+
+```js
+const rotationProxy = { y: startRotationY };
+gsap.to(rotationProxy, {
+    y: targetRotationY,
+    onUpdate: () => { camera.rotation.y = rotationProxy.y; }
+});
+```
+Why not tween `camera.rotation.y` directly? Three.js uses Euler rotations (gimbal lock risk). Camera parent may have rotation affecting world-space orientation. Target rotation compensates for parent: `worldTargetRotationY - parentRotationY`. Plain number proxy interpolates linearly without Euler ambiguity.
+
+### Timeline Position Parameter Tricks
+
+- `'<'` — start simultaneously with previous tween (used for coordinated door+handle+material animations)
+- `'-=0.5'` — start 0.5s BEFORE previous tween ends (used for overlapping scale/position transitions)
+- Labels (`'tear'`, `'close'`) — named synchronization points for multiple simultaneous tweens
+
+### Fast Teleport Mode (0.01s Durations)
+
+When `isFastTeleport` is true, all durations collapse to 0.01s with `ease: 'none'`. The paper transition overlay is closed during this time, so the user cannot see the instantaneous animations. This makes map-based teleportation feel like instant room switching. DoorSection checks `fastMode` and shortens: alignment (1.0→0.01), handle rotation (0.15→0.01), door swing (0.7→0.01), and camera fly-through (1.5→0.01).
+
+### GSAP Observer over addEventListener
+
+`useInfiniteCamera.js:260-276` — `Observer.create({ target: window, type: "wheel,touch,pointer" })` unifies three event types into one API. Single `scrollObserver.kill()` for cleanup vs three `removeEventListener` calls. Normalizes event shapes across devices. Correctly handles `passive: false` and touch-action on mobile Safari.
+
+### TrackerRef Pattern (Animating Plain Objects)
+
+`Preloader.jsx:162,265` — `trackerRef = { val: 0 }` is a plain JS object. GSAP tweens its `val` property. `onUpdate` reads the value and does direct DOM mutations (`innerText`, `style.strokeDashoffset`). React state is never involved — zero re-renders for 60fps smooth progress animation.
+
+---
+
+## JavaScript & Data Patterns
+
+### Singleton Pattern (Module-Level)
+
+- `audioManager.js:5-7` — `bgMusicAudio`, `isMuted`, `bgMusicStarted` persist across React lifecycle
+- `useSanityData.js:12-22` — `cache` object and `fetchPromise` exist once, shared by all component instances
+
+### Pub/Sub Pattern (useSanityData)
+
+```js
+const listeners = new Set();
+function subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
+function notifyUpdate() { listeners.forEach(l => l()); }
+```
+Three hooks (`useGalleryProjects`, `useStudioContent`, `useAwards`) each subscribe. When data loads, all are notified. Lightweight alternative to Context for module-level data.
+
+### Deduplication via fetchPromise Singleton
+
+```js
+if (fetchPromise) return fetchPromise; // All subsequent calls return the same promise
+fetchPromise = (async () => { /* fetch once */ })();
+```
+Guarantees single network request regardless of how many hooks/components call `loadSanityData()`.
+
+### Browser API Feature Detection (Not UA Sniffing)
+
+```js
+// deviceDetect.js
+window.matchMedia('(hover: none) and (pointer: coarse)').matches  // touch device check
+window.matchMedia('(hover: hover)').matches  // hover-capable check
+```
+`matchMedia` detects actual pointer capability, correctly handling: touch-enabled Windows laptops (hover IS available), pure touch phones/tablets (hover NOT available), and device mode switching in DevTools (listens for changes).
+
+### CustomEvent for Cross-Component Communication
+
+- `audioManager.js:72` — `window.dispatchEvent(new CustomEvent('musicVolumeChanged', { detail: vol }))` bridges non-React module to React UI
+- `NavigationUI.jsx:50` — `window.addEventListener('inspectChange', ...)` hides UI during frame inspection
+
+### 250ms De-Synchronization Delay
+
+`DoorSection.jsx:593` — `setTimeout(() => enterRoom(doorId), 250)` after GSAP fly-through animation completes. This temporal gap lets the GSAP animation loop finish gracefully before React tree updates (from `enterRoom()`) trigger re-renders. Without this delay, React reconciliation during GSAP's final frame causes visible stutter.
+
+---
+
+## WebGL Context Management
+
+### `failIfMajorPerformanceCaveat: true`
+
+`App.jsx:171` — WebGL context creation fails if only a software renderer is available (no GPU). Prevents extremely poor performance on broken GPU configurations. **Warning:** This means users on software-rendered GPUs see nothing — no error message or fallback.
+
+### compileAsync with Sync Fallback
+
+```js
+if (gl.compileAsync) {
+    gl.compileAsync(scene, camera, scene)
+        .then(finishWarmup)
+        .catch((err) => { gl.compile(scene, camera); finishWarmup(); });
+} else {
+    gl.compile(scene, camera); finishWarmup();
+}
+```
+Graceful degradation for older browsers lacking the 2026 WebGL async compilation API.
+
+### Power Preference Per Tier
+
+- HIGH: `powerPreference: "high-performance"` (requests dedicated GPU)
+- MEDIUM: `powerPreference: "default"`
+- LOW: `powerPreference: "low-power"` (requests integrated GPU for battery life)
+
+---
+
+## Maintenance Notes: Pitfalls, Risks, and Known Issues
+
+### Known Bugs & Unfinished Features
+
+1. **Achievement chime silently disabled:** `AchievementsContext.jsx:85-86` — `osc.start()` and `osc.stop()` are commented out. The Web Audio oscillator chain is fully built but never started.
+2. **Missing audio files:** `Preloader.jsx` references `/sounds/pencil.mp3` and `/sounds/tear.mp3` — neither exists in `/public/sounds/`. Both fail silently (caught promise rejection).
+3. **Contact Room message form incomplete:** The entire message-writing flow (PHASE.WRITING, ROLLING, HOLDING, THROWING) is commented out. `handleMailSelect` immediately redirects to `mailto:`.
+4. **LoopDoors.jsx references undeclared `rightDoorRef`:** Only `leftDoorRef` is created. Would throw if component were ever rendered (currently unused legacy code).
+5. **Audio `fade()` is a stub:** `AudioManager.jsx:133-137` — immediately pauses instead of gradually reducing volume.
+
+### Fragile Patterns
+
+1. **Magic numbers without centralized constants:** `SEGMENT_LENGTH=80` must match between `CorridorSegment.jsx` and `useInfiniteCamera.js`. `TeleportRoom.jsx` has hardcoded Z values (`-6, -20, -36, -50`) that must match door positions. Change one, break teleport.
+2. **Inconsistent mobile breakpoints:** `window.innerWidth < 1000` in `ContactRoom.jsx` and `EntranceDoors.jsx`, `window.innerWidth < 768` in `GlobalOverlay.jsx` and `StudioRoom.jsx`. A 900px tablet may get mixed behavior.
+3. **Inconsistent animation patterns:** AboutRoom uses raw `addEventListener` + `useFrame` lerp (no GSAP). GalleryRoom and StudioRoom use GSAP Observer. ContactRoom uses custom lerp. No unified approach.
+4. **Dual event listeners on StudioRoom:** Adds both `pointerup`/`pointermove` AND `touchend`/`touchmove`. On touch devices, both pointer and touch events fire, causing double execution.
+
+### State Management Risks
+
+1. **Teleport can get stuck with no recovery:** If `PaperTransition` refs aren't mounted or `completeTeleport()` fires but `pendingDoorClick` never resolves (segment 0 door not mounted), `isTeleporting` stays `true` forever. `cancelTeleport()` exists but is never called anywhere.
+2. **Camera override not released on failed exit:** If GSAP exit timeline never completes (component unmounts mid-animation, ESC during loading), `cameraOverride` stays true, permanently disabling scroll/parallax.
+3. **pendingDoorClick only works on segment 0:** `DoorSection.jsx:137-141` — teleport only auto-clicks doors on segment 0. If segment 0 is culled by `SegmentVisibilityWrapper`, the pending click is silently lost.
+4. **Duplicate mute state:** `audioManager.js` and `AudioManager.jsx` each maintain independent `isMuted` variables reading the same localStorage key. Changes via module `toggleMute()` won't trigger React re-renders in the UI.
+
+### Memory & Resource Concerns
+
+1. **SkyChunk per-frame allocation:** `SkyChunk.jsx:170-171` creates `new THREE.Euler()` and `new THREE.Quaternion()` per cloud per frame (~200-300 allocations/frame for ~60 clouds × ~4 active chunks).
+2. **GSAP tweens on unmounted components:** DoorSection creates many GSAP tweens. If `SegmentVisibilityWrapper` toggles visibility during animation, the tweens aren't killed (the component is hidden, not unmounted, so cleanup effects don't run).
+3. **No explicit geometry/material disposal:** `DoorSection.jsx:295` creates `ShapeGeometry` in `useMemo` but never calls `.dispose()`. Since components persist (hidden, not unmounted), this is not an active leak per session but geometry memory is never freed.
+
+### Build/Deploy Risks
+
+1. **Sanity outage at build time silently strips all SEO:** `seo-plugin.js` returns raw `index.html` unchanged if Sanity fetch fails — no dynamic title/OG/JSON-LD injected, no build warning.
+2. **Cloudflare Worker dependency:** `getProxyUrl()` rewrites all Sanity CDN URLs to `/sanity-cdn`. If the Cloudflare Worker is not deployed, all Sanity images break.
+3. **`failIfMajorPerformanceCaveat: true` blocks app entirely on software GPUs** with no fallback or error message.
+
+### Code Quality Concerns
+
+1. **Overly large components:** `DoorSection.jsx` (1287 lines), `GalleryRoom.jsx` (1366 lines), `InfiniteSkyManager.jsx` (1300+ lines). These should be split.
+2. **Deep prop drilling:** `setCameraOverride` is passed through 6 component levels: `useInfiniteCamera → Experience → InfiniteCorridorManager → CorridorSegment → DoorSection → CorridorDecorations → InspectableFrame`.
+3. **Dead code:** `useScrollCamera.js`, `useMouseParallax.js`, `useParallax.js`, `Door.jsx`, `LoopDoors.jsx` appear unused.
+4. **Component defined inside component:** `CorridorDecorations.jsx` defines `InspectableFrame` inside the parent component, causing redefinition on every render.
+5. **All three Sanity data types loaded regardless of need:** `loadSanityData()` fetches projects, studio content, AND awards even if only one is needed.
+
+### Accessibility Gaps
+
+1. No keyboard mechanism to "click" a 3D door — teleport via ScreenReaderOverlay is the only keyboard path to rooms.
+2. 3D objects (`<mesh>`) cannot receive `aria-label` in Three.js.
+3. ScreenReaderOverlay does not cover: preloader phase, achievement popups, audio panel content, loading/teleporting states.
+4. ESC to exit rooms is convenient but not discoverable — no UI hints.
+
+### Summary: Highest-Priority Items
+
+| Priority | Issue |
+|----------|-------|
+| Critical | `failIfMajorPerformanceCaveat: true` blocks app on software GPUs with no fallback |
+| Critical | Teleport has no timeout/recovery — can get permanently stuck |
+| High | Missing audio files (pencil.mp3, tear.mp3) cause silent failures |
+| High | Camera override not released on failed exit — disables scroll forever |
+| High | Duplicate mute state can cause UI/sound desync |
+| Medium | Contact Room message form is non-functional |
+| Medium | Achievement chime never plays |
+| Medium | Dual pointer+touch listeners cause double-execution on touch devices |
+| Low | Inconsistent mobile breakpoints across components |
+| Low | Dead code and oversized components should be cleaned up |
