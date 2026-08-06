@@ -554,3 +554,29 @@ RoomWarmup 存在是为了消除首次进入时的 shader 编译卡顿。模块�
 - **成就提示音静默禁用**（`AchievementsContext.jsx:85-86`）——Web Audio oscillator 链已构建但从未触发
 - **Contact Room 消息表单未完成**——整个 WRITING/ROLLING/HOLDING/THROWING 阶段被注释掉，`handleMailSelect` 直接重定向到 `mailto:`
 - **`cancelTeleport()` 从未被调用**——传送状态机缺少超时/恢复机制
+
+---
+
+## 开发工作流
+
+### 开始新任务时
+
+每次开始新的开发任务，仅按以下顺序读取项目信息：
+
+1. **`docs/PROJECT_STATUS.md`** — 了解当前阶段、已完成模块、下一步任务
+2. **`docs/CHANGELOG.md`**（最近 3-5 条即可）— 了解最近修改了什么
+3. **`TODO.md`** — 查看待办列表和优先级
+4. **`MY_PROJECT_SPEC.md`**（如涉及项目定位）— 确认重构目标和架构约束
+
+### 任务完成后
+
+1. 更新 `docs/PROJECT_STATUS.md` 覆盖为新状态
+2. 在 `docs/CHANGELOG.md` 末尾追加本次修改记录
+3. 提交代码并标注对应模块
+
+### 原则
+
+- **除上述 4 个文档外，不主动重新扫描整个项目**
+- **不重复分析已完成的工作**
+- **「一个任务一个 Commit」——不混合无关修改**
+- **`docs/PROJECT_STATUS.md` 覆盖更新，`docs/CHANGELOG.md` 永久追加**

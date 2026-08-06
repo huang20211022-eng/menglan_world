@@ -26,11 +26,11 @@ const ScreenReaderOverlay = () => {
 
             {/* Main accessible navigation */}
             <nav id="sr-main-nav" className="sr-only" aria-label="Portfolio rooms">
-                <h1>Menglan World | Interactive 3D Experience</h1>
+                <h1>Menglan | AI Developer & Creative Engineer</h1>
                 <h2>Portfolio Navigation</h2>
 
                 {!hasEntered && (
-                    <p>Welcome to Menglan World&apos;s interactive 3D portfolio. Click or press Enter on the doors to enter.</p>
+                    <p>Welcome to Menglan&apos;s Portfolio. Click or press Enter on the doors to enter.</p>
                 )}
 
                 {hasEntered && !isInRoom && (
@@ -76,7 +76,7 @@ const ScreenReaderOverlay = () => {
                         {/* Room-specific content descriptions */}
                         {currentRoom === 'about' && (
                             <div aria-label="About room content">
-                                <h3>About Menglan World</h3>
+                                <h3>About Menglan</h3>
                                 <p>This room contains the story, awards, journey milestones, and technology skills displayed as interactive balloons.</p>
                                 
                                 {awards && (

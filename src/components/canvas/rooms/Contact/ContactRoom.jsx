@@ -248,8 +248,7 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
     }, [hasSignaledReady.current, showRoom, camera]);
 
     const handleMailSelect = () => {
-        // TODO: Replace with Menglan World contact email
-        window.location.href = 'mailto:hello@menglan.world';
+        window.location.href = 'mailto:huang20211022@gmail.com';
 
         /* 
         setShowSelection(false);
@@ -404,7 +403,7 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                 rotation={[0, 0.2, 0]}
                 texturePath="/textures/contact/beczka.webp"
                 label="LINKEDIN"
-                onClick={() => window.open('https://www.linkedin.com/in/menglan/', '_blank')}
+                onClick={() => window.open('https://www.linkedin.com/in/%E6%A2%A6%E5%85%B0-%E9%BB%84-804962308/?locale=en-US', '_blank')}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
@@ -414,27 +413,27 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                 rotation={[0, 0.3, 0]}
                 texturePath="/textures/contact/beczka.webp"
                 label="GITHUB"
-                onClick={() => window.open('https://github.com/huang20211022-eng', '_blank')}
+                onClick={() => window.open('https://github.com/huang20211022-eng/', '_blank')}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* FACEBOOK */}
+            {/* YOUTUBE */}
             <SocialBarrel
                 position={isMobile ? [1.2, 0.5, -10] : [3, 0.5, -10]}
                 rotation={[0, -0.2, 0]}
                 texturePath="/textures/contact/beczka.webp"
-                label="FACEBOOK"
-                onClick={() => window.open('https://www.facebook.com/menglan.world/', '_blank')}
+                label="YOUTUBE"
+                onClick={() => window.open('https://www.youtube.com/@%E5%AD%9F%E5%85%B0-s5p', '_blank')}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* INSTAGRAM */}
+            {/* PERSONAL WEBSITE */}
             <SocialBarrel
                 position={isMobile ? [1.5, -0.3, -7] : [5, -0.3, -8]}
                 rotation={[0, -0.3, 0]}
                 texturePath="/textures/contact/beczka.webp"
-                label="INSTAGRAM"
-                onClick={() => window.open('https://www.instagram.com/menglan.world/', '_blank')}
+                label="WEBSITE"
+                onClick={() => window.open('https://menglan-world-2r44iucp9-menglan.vercel.app/', '_blank')}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />

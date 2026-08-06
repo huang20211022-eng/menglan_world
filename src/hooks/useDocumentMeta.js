@@ -12,28 +12,28 @@ import { useScene } from '../context/SceneContext';
 const ROOM_META = {
     null: {
         path: '/',
-        title: 'Menglan World | Interactive 3D Experience',
-        description: 'Menglan World — an immersive 3D WebGL experience. Explore a hand-drawn infinite corridor, interactive rooms, and creative real-time graphics built with Three.js and React.',
+        title: 'Menglan | AI Developer & Creative Engineer',
+        description: 'Explore Menglan\'s interactive 3D portfolio featuring AI projects, software development, automation workflows and creative web experiences.',
     },
     about: {
         path: '/about',
-        title: 'About — Menglan World',
-        description: 'Explore the About room in Menglan World — an immersive 3D space with story milestones, awards, and interactive skill balloons.',
+        title: 'About — Menglan',
+        description: 'Explore the About room in Menglan — an immersive 3D space with story milestones, awards, and interactive skill balloons.',
     },
     gallery: {
         path: '/gallery',
-        title: 'Gallery — Menglan World',
-        description: 'Browse the interactive 3D gallery in Menglan World. Projects are displayed as hand-drawn cards on a clothesline you can flip and explore.',
+        title: 'Gallery — Menglan',
+        description: 'Browse the interactive 3D gallery in Menglan. Projects are displayed as hand-drawn cards on a clothesline you can flip and explore.',
     },
     studio: {
         path: '/studio',
-        title: 'Studio — Menglan World',
-        description: 'Explore the Studio in Menglan World — content displayed on floating monitors in an immersive 3D cylindrical tower.',
+        title: 'Studio — Menglan',
+        description: 'Explore the Studio in Menglan — content displayed on floating monitors in an immersive 3D cylindrical tower.',
     },
     contact: {
         path: '/contact',
-        title: 'Contact — Menglan World',
-        description: 'Connect through Menglan World\'s interactive 3D contact room. Find social links and contact information in an immersive dock environment.',
+        title: 'Contact — Menglan',
+        description: 'Connect through Menglan\'s interactive 3D contact room. Find social links and contact information in an immersive dock environment.',
     },
 };
 

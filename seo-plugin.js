@@ -64,8 +64,8 @@ function buildJsonLd(globalInfo, projects, studio, awards, faqList) {
         '@type': 'WebSite',
         '@id': 'https://menglan.world/#website',
         url: 'https://menglan.world',
-        name: globalInfo?.siteTitle || 'Menglan World | Interactive 3D Experience',
-        description: globalInfo?.siteDescription || 'Immersive 3D WebGL experience by Menglan World',
+        name: globalInfo?.siteTitle || 'Menglan | AI Developer & Creative Engineer',
+        description: globalInfo?.siteDescription || 'Explore Menglan\'s interactive 3D portfolio featuring AI projects, software development, automation workflows and creative web experiences.',
         publisher: { '@id': 'https://menglan.world/#person' }
     };
     graph.push(website);
@@ -250,8 +250,8 @@ function buildJsonLd(globalInfo, projects, studio, awards, faqList) {
 
 // Helper to generate the llms.txt content in clean Markdown
 function buildLlmsTxt(globalInfo, projects, studio, awards, faqList) {
-    const siteTitle = globalInfo?.siteTitle || 'Menglan World | Interactive 3D Experience';
-    const siteDescription = globalInfo?.siteDescription || 'Interactive 3D WebGL Experience';
+    const siteTitle = globalInfo?.siteTitle || 'Menglan | AI Developer & Creative Engineer';
+    const siteDescription = globalInfo?.siteDescription || 'Explore Menglan\'s interactive 3D portfolio featuring AI projects, software development, automation workflows and creative web experiences.';
     const aboutMe = globalInfo?.aboutMe || 'An immersive 3D WebGL experience exploring creativity through interactive rooms and hand-drawn aesthetics.';
 
     let content = `# ${siteTitle}\n`;
@@ -317,7 +317,7 @@ export function generateSeoHtml() {
                 cachedLlmsContent = buildLlmsTxt(globalInfo, projects, studio, awards, faqList);
             } catch (e) {
                 console.error('SEO Plugin Error: Failed to fetch Sanity data for llms.txt', e);
-                cachedLlmsContent = `# Menglan World\n> Interactive 3D Experience\n`;
+                cachedLlmsContent = `# Menglan | AI Developer & Creative Engineer\n> Interactive 3D Portfolio\n`;
             }
         }
         return cachedLlmsContent;
@@ -352,8 +352,8 @@ export function generateSeoHtml() {
                 ]);
 
                 // Fallback values if globalInfo is not yet created in Sanity
-                const siteTitle = globalInfo?.siteTitle || 'Menglan World | Interactive 3D Experience';
-                const siteDescription = globalInfo?.siteDescription || 'An immersive interactive 3D WebGL portfolio experience.';
+                const siteTitle = globalInfo?.siteTitle || 'Menglan | AI Developer & Creative Engineer';
+                const siteDescription = globalInfo?.siteDescription || 'Explore Menglan\'s interactive 3D portfolio featuring AI projects, software development, automation workflows and creative web experiences.';
                 const aboutMe = globalInfo?.aboutMe || 'I am a creative developer specializing in 3D web experiences.';
 
                 // Cache llms.txt content for later bundle emission

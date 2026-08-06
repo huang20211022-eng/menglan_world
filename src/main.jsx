@@ -11,7 +11,7 @@ if (typeof window !== 'undefined') {
     'background: transparent'
   );
   console.log(
-    '%cWelcome to Menglan World! %cExplore the source at github.com/huang20211022-eng/menglan_world 🚀',
+    '%cBuilding AI-powered tools and interactive web experiences. %cgithub.com/huang20211022-eng/menglan_world 🚀',
     'font-weight: bold; color: #6c5ce7; font-size: 14px;',
     'color: #666; font-size: 14px;'
   );

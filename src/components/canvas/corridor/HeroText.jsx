@@ -68,8 +68,8 @@ const HeroText = ({ position = [0, 0.3, 0] }) => {
     // Tagline words for split effect
     const taglineWords = useMemo(() => [
         { text: '<', baseX: -0.85, splitDir: -1.5, delay: 0 },
-        { text: 'creative', baseX: -0.4, splitDir: -0.8, delay: 0 },
-        { text: 'developer', baseX: 0.4, splitDir: 0.8, delay: 0 },
+        { text: 'AI', baseX: -0.3, splitDir: -0.7, delay: 0 },
+        { text: 'Developer', baseX: 0.55, splitDir: 0.8, delay: 0 },
         { text: '/>', baseX: 0.85, splitDir: 1.5, delay: 0 },
     ], []);
 
@@ -169,6 +169,18 @@ const HeroText = ({ position = [0, 0.3, 0] }) => {
                     {word.text}
                 </Text>
             ))}
+
+            {/* Slogan */}
+            <Text
+                position={[0, -0.85, 0]}
+                fontSize={0.12}
+                font={CABIN_SKETCH_URL}
+                color="#777777"
+                anchorX="center"
+                anchorY="middle"
+            >
+                Building AI-powered tools and interactive web experiences.
+            </Text>
 
             {/* Small decorative doodles around title */}
             <SmallStar position={[-1.2, 0.55, 0]} scale={0.07} />

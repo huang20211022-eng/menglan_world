@@ -5,7 +5,7 @@ import posthog from 'posthog-js';
 const AchievementsContext = createContext();
 
 export const ACHIEVEMENTS = {
-    corridor_enter: { id: 'corridor_enter', label: 'Click a door to enter', title: 'Explorer' },
+    corridor_enter: { id: 'corridor_enter', label: 'Enter Portfolio', title: 'Welcome to Menglan\'s Portfolio' },
     corridor_explore: { id: 'corridor_explore', label: 'Scroll to explore the corridor', title: 'Wanderer' },
     about_fly: { id: 'about_fly', label: 'Scroll to fly through my story', title: 'Sky Walker' },
     studio_interact: { id: 'studio_interact', label: 'Drag to rotate and browse', title: 'Director' },
