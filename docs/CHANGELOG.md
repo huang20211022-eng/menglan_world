@@ -127,3 +127,26 @@
 - Sanity CMS 集成
 
 **Commits：** `9845fba` ~ `298c4fd`（ITom 时代）
+
+---
+
+## 2026-08-07 — About Room 技术分析 + 内容规划
+
+**模块：** About Room 完整审计 + 内容设计
+
+**完成内容：**
+- About Room 全部 8 个源文件深度阅读与分析
+- 46 个纹理文件审计（含 backups/ 目录 27 个遗留文件）
+- 识别：可保留技术模块（80% 代码不动）vs 需替换的内容（~20 行文字 + ~15 张纹理 + 硬编码数据）
+- `docs/ABOUT_CONTENT_PLAN.md` 创建：品牌定位 + 4 个 Milestone 内容规划 + 素材优先级矩阵 + V1/V2/V3 开发路线
+- About Room 架构图：AboutRoom → InfiniteSkyManager → SkyChunk + 4 个 Milestone 组件
+- 技术结论：动量滚动、飞行效果、云系统、气球爆裂机制全部可保留
+- `docs/PROJECT_STATUS.md` 更新：About Room 进入内容设计阶段
+- 遗留产物发现：
+  - `FEATURED.webp` — 代码引用但文件不存在
+  - `fix_hover_stutter.cjs`, `mobile_opt.cjs`, `mobile_opt2.cjs` — Tomasz 本地工具脚本
+  - `StoryMilestone.jsx` — 未被实际使用的通用模板组件
+
+**构建：** N/A（未修改源码）
+
+**Commit：** 待提交
