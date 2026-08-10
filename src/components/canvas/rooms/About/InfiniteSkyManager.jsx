@@ -390,7 +390,7 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
                 font="/fonts/CabinSketch-Regular.ttf"
                 fontStyle="italic"
             >
-                "Crafting digital experiences
+                "AI should solve
             </Text>
 
             {/* Motto - Line 2 (spreads left) */}
@@ -404,16 +404,79 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
                 font="/fonts/CabinSketch-Regular.ttf"
                 fontStyle="italic"
             >
-                that push creative boundaries"
+                real problems."
             </Text>
         </group>
     );
 };
 
-/**
- * MOCK DATA FOR AWARDS
- */
-const AWARDS_DATA = {
+// ============================================
+// V1 CONTENT BASELINE: Menglan's Projects
+// Replaces original Tomasz Awwwards awards data.
+// Legacy AWARDS_DATA preserved below for reference.
+// ============================================
+const PROJECTS_DATA = {
+    featured: {
+        id: 'project-featured',
+        layout: 'certificate_grid',
+        title: 'Projects & Impact',
+        items: [
+            { label: 'Menglan World', date: '2026', image: '/textures/about/SOTY.webp', url: 'https://menglan.world' },
+            { label: 'Family Menu AI', date: 'Coming Soon', image: '/textures/about/SOTD.webp', url: '' },
+            { label: 'Desktop AI Companion', date: 'Coming Soon', image: '/textures/about/SOTM.webp', url: '' },
+        ],
+        platformConfig: {
+            label: 'PROJECT',
+            color: '#1a1a1a',
+            icon: '🚀'
+        }
+    },
+    sotd: {
+        id: 'project-current',
+        layout: 'certificate_grid',
+        title: 'Current Project',
+        items: [
+            { label: 'Menglan World', date: '2026', image: '/textures/about/SOTY.webp', url: 'https://menglan.world' },
+        ],
+        platformConfig: {
+            label: 'CURRENT',
+            color: '#1a1a1a',
+            icon: '💻'
+        }
+    },
+    sotm: {
+        id: 'project-upcoming',
+        layout: 'certificate_grid',
+        title: 'Coming Soon',
+        items: [
+            { label: 'Family Menu AI', date: 'Coming Soon', image: '/textures/about/SOTD.webp', url: '' },
+            { label: 'Desktop AI Companion', date: 'Coming Soon', image: '/textures/about/SOTM.webp', url: '' },
+        ],
+        platformConfig: {
+            label: 'SOON',
+            color: '#1a1a1a',
+            icon: '🔮'
+        }
+    },
+    other: {
+        id: 'project-more',
+        layout: 'certificate_grid',
+        title: 'More AI projects are currently under development.',
+        items: [],
+        platformConfig: {
+            label: 'FUTURE',
+            color: '#1a1a1a',
+            icon: '✨'
+        }
+    }
+};
+
+// ============================================
+// LEGACY: Original Tomasz awards data
+// Preserved for reference. Not used in current UI.
+// Remove when About Room V2/V3 is established.
+// ============================================
+const LEGACY_AWARDS_DATA = {
     featured: {
         id: 'award-featured',
         layout: 'certificate_grid',
@@ -471,13 +534,14 @@ const AWARDS_DATA = {
 };
 
 /**
- * AWARDS Milestone - Floating Cards
- * SOTY (center), SOTD, SOTM, Featured (behind)
+ * PROJECTS & IMPACT Milestone - Floating Cards
+ * V1: Replaces original Tomasz Awwwards awards with Menglan's projects.
+ * Main card (center), Current Project (left), Coming Soon (right).
  */
 const AwardsMilestone = ({ z, scrollProgressRef }) => {
     // Pobieranie danych nagród z Sanity (z fallbackiem)
     const sanityAwards = useAwards();
-    const awardsData = sanityAwards || AWARDS_DATA;
+    const awardsData = sanityAwards || PROJECTS_DATA;
 
     const { camera, viewport } = useThree();
     const isTouch = isTouchDevice();
@@ -624,7 +688,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                 anchorY="middle"
                 font="/fonts/RubikScribble-Regular.ttf"
             >
-                AWARDS
+                PROJECTS &amp; IMPACT
             </Text>
 
             {/* === SOTD (behind SOTY, rendered second) === */}
@@ -664,7 +728,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     position={[0, buttonY, 0.05]}
                     onHoverChange={makeCardHoverHandler(sotdCardRevealRef, sotdCardPaintedRef, sotdHideDelayRef)}
                 />
-                {/* AWARD LABEL */}
+                {/* PROJECT LABEL */}
                 <Text
                     position={[0, 0.95, 0.01]}
                     fontSize={0.45}
@@ -673,9 +737,9 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    SOTD
+                    CURRENT
                 </Text>
-                {/* AWARD COUNT */}
+                {/* PROJECT COUNT */}
                 <Text
                     position={[-0.05, 0, 0.01]}
                     fontSize={0.8}
@@ -688,7 +752,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                 </Text>
             </group>
 
-            {/* === SOTM (behind SOTY, rendered third) === */}
+            {/* === COMING SOON (behind SOTY, rendered third) === */}
             <group ref={sotmRef} position={[0, 0.5, -0.2]}>
                 {/* Painted card (behind) - hidden until button hover */}
                 <mesh ref={sotmCardPaintedRef} position={[0, 0, -0.001]} visible={true}>
@@ -725,7 +789,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     position={[0, buttonY, 0.05]}
                     onHoverChange={makeCardHoverHandler(sotmCardRevealRef, sotmCardPaintedRef, sotmHideDelayRef)}
                 />
-                {/* AWARD LABEL */}
+                {/* PROJECT LABEL */}
                 <Text
                     position={[0, 0.95, 0.01]}
                     fontSize={0.45}
@@ -734,9 +798,9 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    SOTM
+                    COMING SOON
                 </Text>
-                {/* AWARD COUNT */}
+                {/* PROJECT COUNT */}
                 <Text
                     position={[-0.05, 0, 0.01]}
                     fontSize={0.8}
@@ -749,7 +813,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                 </Text>
             </group>
 
-            {/* === SOTY (front, center, rendered LAST = always on top) === */}
+            {/* === ALL PROJECTS (front, center, rendered LAST = always on top) === */}
             <group ref={sotyRef} position={[0, 0.5, 0]}>
                 {/* Painted card (behind) - hidden until button hover */}
                 <mesh ref={sotyCardPaintedRef} position={[0, 0, -0.001]} visible={true}>
@@ -785,7 +849,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     position={[0, buttonY, 0.05]}
                     onHoverChange={makeCardHoverHandler(sotyCardRevealRef, sotyCardPaintedRef, sotyHideDelayRef)}
                 />
-                {/* AWARD LABEL */}
+                {/* PROJECT LABEL */}
                 <Text
                     position={[0, 0.95, 0.01]}
                     fontSize={0.45}
@@ -794,9 +858,9 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    OTHER
+                    ALL PROJECTS
                 </Text>
-                {/* AWARD COUNT */}
+                {/* PROJECT COUNT */}
                 <Text
                     position={[-0.05, 0, 0.01]}
                     fontSize={0.8}
@@ -915,10 +979,10 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                 anchorY="middle"
                 font="/fonts/CabinSketch-Regular.ttf"
             >
-                My path so far...
+                From software engineering to AI development
             </Text>
 
-            {/* === UO ISLAND (Left) === */}
+            {/* === EDUCATION ISLAND (Left) === */}
             <group ref={uoRef} position={[-3.5, -1, 0]}>
                 <mesh>
                     <planeGeometry args={[islandHeight * uoAspect, islandHeight]} />
@@ -928,7 +992,7 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                         side={THREE.DoubleSide}
                     />
                 </mesh>
-                {/* NAPIS NA WYSPIE (UO) - EDYTUJ TUTAJ */}
+                {/* NAPIS NA WYSPIE (Education) - EDYTUJ TUTAJ */}
                 <Text
                     position={[0.1, -0.85, 0.1]} // POZYCJA (X, Y, Z)
                     fontSize={0.4}           // WIELKOŚĆ
@@ -937,11 +1001,11 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    2025-NOW
+                    2016-2024
                 </Text>
             </group>
 
-            {/* === FREELANCE ISLAND (Right) === */}
+            {/* === CAREER ISLAND (Right) === */}
             <group ref={freelanceRef} position={[3.5, -2, 0.5]}>
                 <mesh>
                     <planeGeometry args={[islandHeight * freelanceAspect, islandHeight]} />
@@ -951,7 +1015,7 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                         side={THREE.DoubleSide}
                     />
                 </mesh>
-                {/* NAPIS NA WYSPIE (Freelance) - EDYTUJ TUTAJ */}
+                {/* NAPIS NA WYSPIE (Career) - EDYTUJ TUTAJ */}
                 <Text
                     position={[0, -0.65, 0.1]} // POZYCJA (X, Y, Z)
                     fontSize={0.5}           // WIELKOŚĆ
@@ -960,7 +1024,7 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    2023-NOW
+                    2020-NOW
                 </Text>
             </group>
         </group>
@@ -973,23 +1037,25 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
  */
 
 // Balloon configuration: size category, texture path, position offset
+// V1: Menglan's 10-skill tech stack. Existing textures reused as placeholders.
+// Texture mapping: reused from original Tomasz balloons until custom icons are ready (P4).
 // === EDYTUJ WYSOKOŚĆ TUTAJ (zmień wartość 'y' dla każdego balona) ===
 const BALLOON_CONFIG = [
-    // Large balloons (main skills) - front and center
-    { texture: '/textures/about/reactduzybalon.webp', paintedTexture: '/textures/about/reactduzybalon_painted.webp', label: 'React', size: 'large', x: -2.5, y: 2, z: 0.3, phase: 0 },
-    { texture: '/textures/about/threejsduzybalon.webp', paintedTexture: '/textures/about/threejsduzybalon_painted.webp', label: 'Three.js', size: 'large', x: 2.5, y: 2.5, z: 0.2, phase: 1.5 },
-    { texture: '/textures/about/GSAPduzybalon.webp', paintedTexture: '/textures/about/GSAPduzybalon_painted.webp', label: 'GSAP', size: 'large', x: 0, y: 3, z: 0.5, phase: 3 },
+    // Large balloons (core skills) - front and center
+    { texture: '/textures/about/reactduzybalon.webp', paintedTexture: '/textures/about/reactduzybalon_painted.webp', label: 'Python', size: 'large', x: -2.5, y: 2, z: 0.3, phase: 0 },
+    { texture: '/textures/about/threejsduzybalon.webp', paintedTexture: '/textures/about/threejsduzybalon_painted.webp', label: 'AI Development', size: 'large', x: 2.5, y: 2.5, z: 0.2, phase: 1.5 },
+    { texture: '/textures/about/GSAPduzybalon.webp', paintedTexture: '/textures/about/GSAPduzybalon_painted.webp', label: 'Prompt Engineering', size: 'large', x: 0, y: 3, z: 0.5, phase: 3 },
 
     // Medium balloons - scattered around
-    { texture: '/textures/about/JSSREDNIBALON.webp', paintedTexture: '/textures/about/JSSREDNIBALON_painted.webp', label: 'JavaScript', size: 'medium', x: -4, y: 1, z: -0.3, phase: 0.8 },
-    { texture: '/textures/about/csssrednibalon.webp', paintedTexture: '/textures/about/csssrednibalon_painted.webp', label: 'CSS', size: 'medium', x: 4, y: 1.5, z: -0.2, phase: 2.2 },
-    { texture: '/textures/about/nextjssrednibalon.webp', paintedTexture: '/textures/about/nextjssrednibalon_painted.webp', label: 'Next.js', size: 'medium', x: 0, y: 0.5, z: -0.4, phase: 4 },
+    { texture: '/textures/about/JSSREDNIBALON.webp', paintedTexture: '/textures/about/JSSREDNIBALON_painted.webp', label: 'Claude Code', size: 'medium', x: -4, y: 1, z: -0.3, phase: 0.8 },
+    { texture: '/textures/about/csssrednibalon.webp', paintedTexture: '/textures/about/csssrednibalon_painted.webp', label: 'Git', size: 'medium', x: 4, y: 1.5, z: -0.2, phase: 2.2 },
+    { texture: '/textures/about/nextjssrednibalon.webp', paintedTexture: '/textures/about/nextjssrednibalon_painted.webp', label: 'RAG', size: 'medium', x: 0, y: 0.5, z: -0.4, phase: 4 },
 
     // Small balloons - background accents
-    { texture: '/textures/about/htmlmalybalon.webp', paintedTexture: '/textures/about/htmlmalybalon_painted.webp', label: 'HTML', size: 'small', x: -5.5, y: 2.5, z: -0.8, phase: 1.2 },
-    { texture: '/textures/about/gitmalybalon.webp', paintedTexture: '/textures/about/gitmalybalon_painted.webp', label: 'Git', size: 'small', x: 5.5, y: 3, z: -0.7, phase: 2.8 },
-    { texture: '/textures/about/figmamalybalon.webp', paintedTexture: '/textures/about/figmamalybalon_painted.webp', label: 'Figma', size: 'small', x: -3, y: 4.5, z: -0.5, phase: 3.5 },
-    { texture: '/textures/about/firebasemalybalon.webp', paintedTexture: '/textures/about/firebasemalybalon_painted.webp', label: 'Firebase', size: 'small', x: 3.5, y: 4, z: -0.6, phase: 4.5 },
+    { texture: '/textures/about/htmlmalybalon.webp', paintedTexture: '/textures/about/htmlmalybalon_painted.webp', label: 'SQL', size: 'small', x: -5.5, y: 2.5, z: -0.8, phase: 1.2 },
+    { texture: '/textures/about/gitmalybalon.webp', paintedTexture: '/textures/about/gitmalybalon_painted.webp', label: 'RPA', size: 'small', x: 5.5, y: 3, z: -0.7, phase: 2.8 },
+    { texture: '/textures/about/figmamalybalon.webp', paintedTexture: '/textures/about/figmamalybalon_painted.webp', label: 'Coze', size: 'small', x: -3, y: 4.5, z: -0.5, phase: 3.5 },
+    { texture: '/textures/about/firebasemalybalon.webp', paintedTexture: '/textures/about/firebasemalybalon_painted.webp', label: 'Azure', size: 'small', x: 3.5, y: 4, z: -0.6, phase: 4.5 },
 ];
 
 // Size multipliers for balloon categories
@@ -1399,7 +1465,7 @@ const SkillsMilestone = ({ z, scrollProgressRef }) => {
                 anchorY="middle"
                 font="/fonts/RubikScribble-Regular.ttf"
             >
-                SKILLS
+                TECH STACK
             </Text>
 
             {/* Subtitle */}
@@ -1411,7 +1477,7 @@ const SkillsMilestone = ({ z, scrollProgressRef }) => {
                 anchorY="middle"
                 font="/fonts/CabinSketch-Regular.ttf"
             >
-                Technologies I love working with
+                AI • Automation • Cloud • Development
             </Text>
 
             {/* === FLOATING BALLOONS === */}

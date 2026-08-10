@@ -17,8 +17,8 @@ const ROOM_META = {
     },
     about: {
         path: '/about',
-        title: 'About — Menglan',
-        description: 'Explore the About room in Menglan — an immersive 3D space with story milestones, awards, and interactive skill balloons.',
+        title: 'About Menglan | AI Developer & Automation Creator',
+        description: 'Learn more about Menglan, an AI Developer focused on AI applications, workflow automation, cloud technologies, and practical software solutions. Discover my journey, skills, and ongoing projects.',
     },
     gallery: {
         path: '/gallery',

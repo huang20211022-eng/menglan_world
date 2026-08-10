@@ -150,3 +150,84 @@
 **构建：** N/A（未修改源码）
 
 **Commit：** 待提交
+
+---
+
+## 2026-08-10 — About Room V1 Content Baseline
+
+**模块：** About Room 内容落地
+
+**This version is the baseline for future About Room V2/V3 iterations.**
+
+**修改内容：**
+
+**Personal Positioning：**
+- 角色：`AI Developer & Automation Creator`
+- Motto：`"AI should solve real problems."`
+- 副标题：`AI Developer & Automation Creator`
+
+**Life Milestones：**
+- Education：`2016-2020` Bachelor of Software Engineering, `2021-2024` Master of Computer Technology
+- Career：`2020-NOW`（IT Assistant Engineer → IoT Security Research → Azure Tech Support → AI Application Engineer → Freelance AI Developer）
+- Journey 副标题：`From software engineering to AI development`
+- 左岛标签：`2016-2024` (Education)
+- 右岛标签：`2020-NOW` (Career)
+
+**Technology Stack（10 技能气球）：**
+- Python, AI Development, Prompt Engineering, Claude Code, Git, RAG, SQL, RPA, Coze, Azure
+- 标题改为 `TECH STACK`，副标题 `AI • Automation • Cloud • Development`
+
+**Projects & Impact：**
+- `AWARDS` → `PROJECTS & IMPACT`
+- Menglan World（Current Project）
+- Family Menu AI（Coming Soon）
+- Desktop AI Companion（Coming Soon）
+- 卡片标签：`CURRENT` / `COMING SOON` / `ALL PROJECTS`
+
+**Technical Capabilities：** AI Development, Automation, Python, Cloud, Localization, Prompt Engineering, Workflow Design, Technical Support
+
+**Brand & Contact：** Menglan, menglan.world, AI Developer, China, Remote/Shanghai, GitHub, LinkedIn, YouTube, WeChat, Portfolio URL
+
+**SEO：**
+- About Title: `About Menglan | AI Developer & Automation Creator`
+- About Description: 更新为 AI Developer 定位
+- useDocumentMeta.js /about 路由更新
+- AchievementsContext: `Sky Walker` → `Sky Explorer`
+
+**隐藏/移除的 Tomasz 原始内容：**
+- Tomasz 姓名、Slogan（"Crafting digital experiences that push creative boundaries"）
+- University of Opole 引用
+- Tomasz 职业时间线（2025-NOW, 2023-NOW）
+- Awwwards, CSS Winner, GSAP SOTD, Orpetron, Design Nominees
+- 原始 AWARDS_DATA 中所有证书链接
+- 所有 Tomasz 个人链接
+
+**保留但未使用的 Legacy 数据：**
+- `LEGACY_AWARDS_DATA` — 完整保存原 Tomasz Awwwards 奖项数据，供未来参考
+- 备注：旧数据永不暴露于 UI
+
+**已完成的素材：**
+- Cloud Avatar — ✅
+- Wave Animation（wave01-wave09） — ✅
+
+**待完成的素材：**
+- Education Island 纹理 — P2
+- Career Island 纹理 — P2
+- Project Images（3 个） — P3
+- Skill Icons（10 个气球) — P4
+
+**涉及文件：**
+- `src/components/canvas/rooms/About/AboutRoom.jsx` — STORY_MILESTONES 更新
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx` — 主要修改：Intro motto, PROJECTS_DATA, BALLOON_CONFIG, Journey/Skills 文字
+- `src/hooks/useDocumentMeta.js` — /about SEO 更新
+- `src/context/AchievementsContext.jsx` — about_fly 成就 title 更新
+
+**技术架构保护：**
+- Three.js / R3F / InfiniteSkyManager / SkyChunk / PaperAirplane — 全部保留
+- 动量滚动、飞行效果、云层系统、GSAP、Shader、相机逻辑 — 全部保留
+- 气球爆裂 + respawn 机制 — 保留
+- 卡片浮动 + spread 动画 — 保留
+
+**构建：** ✅ 通过
+
+**Commit：** 待提交

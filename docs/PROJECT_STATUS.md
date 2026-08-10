@@ -8,11 +8,11 @@
 
 **阶段 1：品牌重塑 & Hero V1** — 进行中
 
-→ **当前焦点：About Room V1 内容规划**
+→ **当前焦点：About Room V1 完成，准备 V2 素材收集**
 
 ## 当前版本
 
-**v0.2.0-hero-v1**（未发布）
+**v0.3.0-about-v1**（未发布）
 
 ## 已完成模块
 
@@ -27,37 +27,61 @@
 | Hero V1 文案（Title, Subtitle, Slogan, Meta, 联系方式） | ✅ | 待提交 |
 | 项目文档系统（docs/） | ✅ | 待提交 |
 | 头像素材替换 | ✅ | 待提交 |
-| **About Room 技术分析** | ✅ | 待提交 |
+| About Room 技术分析 | ✅ | 待提交 |
+| **About Room V1 Content Baseline** | ✅ | 待提交 |
+
+### About Room V1 Content Baseline — 已完成清单
+
+| 内容项 | 状态 |
+|--------|------|
+| Personal Positioning（AI Developer & Automation Creator） | ✅ |
+| Introduction / Motto（"AI should solve real problems."） | ✅ |
+| Education Timeline（2016-2024） | ✅ |
+| Career Timeline（2020-NOW, 6 个阶段） | ✅ |
+| Technology Stack（10 技能：Python, AI Dev, Prompt Eng, Claude Code, Git, RAG, SQL, RPA, Coze, Azure） | ✅ |
+| Projects & Impact（Menglan World, Family Menu AI, Desktop AI Companion） | ✅ |
+| Technical Capabilities | ✅ |
+| Brand Information（Menglan, menglan.world, China, Remote/Shanghai） | ✅ |
+| Contact Information（email, GitHub, LinkedIn, YouTube, WeChat, Portfolio） | ✅ |
+| SEO（About title + description） | ✅ |
+| Cloud Avatar | ✅ |
+| Wave Animation（wave01-wave09） | ✅ |
+
+### About Room V1 — 待完成素材
+
+| 素材 | 优先级 | 状态 |
+|------|--------|------|
+| Education Island 纹理 | P2 | ⏳ 等待 |
+| Career Island 纹理 | P2 | ⏳ 等待 |
+| Project Images（3 个项目） | P3 | ⏳ 等待 |
+| Skill Icons（10 个技能气球纹理） | P4 | ⏳ 等待 |
 
 ## 当前正在开发
 
-**About Room 内容规划** — 技术分析完成，内容设计进行中。
-
-- 已完成：About Room 全部 8 个源文件 + 46 个纹理的审计
-- 已完成：ABOUT_CONTENT_PLAN.md 创建（品牌定位 + 4 个 Milestone 内容规划 + 素材清单 + 开发路线）
-- **等待中：用户提供 P0 素材（格言、项目名称、时间线、技能列表）**
+**About Room V2 素材准备** — V1 内容已就位，等待用户提供 P2/P3 图片素材后启动 V2。
 
 ## 下一步任务
 
 | 优先级 | 任务 | 阻塞因素 |
 |--------|------|---------|
-| **🔴 P0** | About Room V1 开发（文字与数据替换） | 等待 P0 素材 |
-| **🟡 P1** | About Room V2 开发（素材替换） | 等待 P1 素材 |
-| **🟡 P2** | `contentData.js` — 27 条硬编码 Studio 社交媒体数据替换 | 需要社交链接 |
+| **🟡 P2** | `contentData.js` — 27 条硬编码 Studio 社交媒体数据替换 | 需要社交内容链接 |
 | **🟡 P2** | `MessagePaper.jsx` — 允许域名更新 | 无 |
-| **🟡 P2** | `LICENSE` — 版权所有者更新 | 无 |
+| **🟡 P2** | `LICENSE` — 版权所有者更新（© 2026 Menglan Huang） | 无 |
+| **🟡 P2** | About Room V2 — 替换岛屿 + 项目卡片纹理 | 等待 P2 素材 |
 | **🟢 P3** | 代码注释清理（Experience, EntranceDoors 等） | 无 |
 | **🟢 P3** | `AchievementsContext.jsx` — localStorage 键名 `itom_achievements` 迁移 | 无 |
 | **🟢 P3** | `public/og-image.webp` + 品牌 favicon 替换 | 需要 OG 图片和 favicon |
+| **🟢 P3** | About Room V2 — 替换项目截图 | 等待 P3 素材 |
 | **🔵 Future** | About Room V3 — Sanity CMS 动态内容接入 | 依赖 V1+V2 完成 |
+| **🔵 Future** | About Room V3 — 自定义技能气球纹理 | 等待 P4 素材 |
 | **🔵 Future** | Avatar 九帧动画重新制作 | 需要动画素材 |
 | **🔵 Future** | EntranceDoors 门纹理重新设计 | 需要门纹理素材 |
 
 ## About Room 开发路线
 
 ```
-V1 (文字层) → V2 (图片层) → V3 (数据层)
- ← 当前阶段      ~2-4 天         ~2-3 天
+V1 ✅ (文字/数据层) → V2 (图片层) → V3 (数据层)
+ 已完成                ← 当前阶段         未来
 ```
 
 详见 `docs/ABOUT_CONTENT_PLAN.md`。
@@ -66,11 +90,12 @@ V1 (文字层) → V2 (图片层) → V3 (数据层)
 
 | 风险 | 严重性 | 说明 |
 |------|--------|------|
-| About Room P0 素材未到位 | 中 | V1 开发被阻塞，需用户提供格言、项目名、时间线、技能列表 |
-| 社交链接为占位 | 低 | LinkedIn/YouTube/Website 已填入实际链接，但需验证有效性 |
+| P2/P3 图片素材未到位 | 低 | 现有 Tomasz 纹理作为占位符正常工作，不阻塞功能 |
+| 项目均为 "Coming Soon" | 低 | 项目卡片显示占位数据，等真实项目上线后更新 |
+| 社交链接为占位 | 低 | LinkedIn/YouTube/Website 已填入实际链接 |
 | WeChat 未集成 | 低 | Contact Room 5 个桶已满，微信需额外交互方式 |
 | 域名未验证 | 中 | `menglan.world` 实际 DNS/部署状态未确认 |
 
 ## 最近更新时间
 
-2026-08-07
+2026-08-10

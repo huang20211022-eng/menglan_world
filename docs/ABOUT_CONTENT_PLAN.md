@@ -478,10 +478,88 @@ V1 (文字层) → V2 (图片层) → V3 (数据层)
 
 ---
 
-> **下一步：** 等待你提供 P0 素材（格言、项目名称、时间线、技能列表）后，即可启动 About V1 开发。
+> **下一步：** V1 Content Baseline 已确认并实现 (2026-08-10)。等待 P2 素材（Education/Career Island 纹理）后启动 About V2。
 >
 > **关联文档：**
 > - `CLAUDE.md` — About Room 架构设计（第 424-452 行）
 > - `MY_PROJECT_SPEC.md` — 第 8.6 节 About Room 需求规格
 > - `PROJECT_STATUS.md` — 当前阶段和任务状态
 > - `ITOM_ANALYSIS.md` — 原始 ITom 项目深度分析（遗留参考）
+
+---
+
+## V1 Content Baseline
+
+> **Status:** ✅ Confirmed & Implemented
+>
+> **Date:** 2026-08-10
+>
+> The V1 content has been confirmed by the project owner and implemented as the current content baseline.
+>
+> Future changes should be recorded as V2, V3, etc., rather than overwriting this baseline.
+
+### V1 Content Manifest
+
+| Milestone | Element | V1 Content |
+|-----------|---------|------------|
+| **Intro** | Title | `MENGLAN` |
+| | Subtitle | `AI Developer & Automation Creator` |
+| | Motto L1 | `"AI should solve` |
+| | Motto L2 | `real problems."` |
+| | Avatar | Cloud avatar — ✅ replaced |
+| **Projects** | Title | `PROJECTS & IMPACT` |
+| | Card 1 (Left) | `CURRENT` — Menglan World (2026) |
+| | Card 2 (Right) | `COMING SOON` — Family Menu AI + Desktop AI Companion |
+| | Card 3 (Center) | `ALL PROJECTS` — All 3 projects overview |
+| | Data | `PROJECTS_DATA` (new) |
+| | Legacy | `LEGACY_AWARDS_DATA` (preserved, unused) |
+| **Journey** | Title | `JOURNEY` |
+| | Subtitle | `From software engineering to AI development` |
+| | Left Island | Education: `2016-2024` |
+| | Right Island | Career: `2020-NOW` |
+| **Skills** | Title | `TECH STACK` |
+| | Subtitle | `AI • Automation • Cloud • Development` |
+| | Large 1 | Python |
+| | Large 2 | AI Development |
+| | Large 3 | Prompt Engineering |
+| | Medium 1 | Claude Code |
+| | Medium 2 | Git |
+| | Medium 3 | RAG |
+| | Small 1 | SQL |
+| | Small 2 | RPA |
+| | Small 3 | Coze |
+| | Small 4 | Azure |
+| **SEO** | Title | `About Menglan \| AI Developer & Automation Creator` |
+| | Description | AI Developer focused on AI applications, workflow automation... |
+| **Achievement** | about_fly | `Sky Explorer` (was: `Sky Walker`) |
+
+### V1 Asset Checklist
+
+| Asset | Priority | Status |
+|-------|----------|--------|
+| Cloud Avatar | P0 | ✅ Completed |
+| Wave Animation (wave01-wave09) | P1 | ✅ Completed |
+| Education Island texture | P2 | ⬜ Pending |
+| Career Island texture | P2 | ⬜ Pending |
+| Project Image — Menglan World | P3 | ⬜ Pending |
+| Project Image — Family Menu AI | P3 | ⬜ Pending |
+| Project Image — Desktop AI Companion | P3 | ⬜ Pending |
+| Skill Icon — Python | P4 | ⬜ Pending |
+| Skill Icon — AI Development | P4 | ⬜ Pending |
+| Skill Icon — Prompt Engineering | P4 | ⬜ Pending |
+| Skill Icon — Claude Code | P4 | ⬜ Pending |
+| Skill Icon — RAG | P4 | ⬜ Pending |
+| Skill Icon — SQL | P4 | ⬜ Pending |
+| Skill Icon — RPA | P4 | ⬜ Pending |
+| Skill Icon — Coze | P4 | ⬜ Pending |
+| Skill Icon — Azure | P4 | ⬜ Pending |
+| Skill Icon — Git (custom) | P4 | ⬜ Pending (currently reusing original) |
+
+### V1 Technical Notes
+
+- All existing textures (SOTY/SOTD/SOTM, island textures, balloon textures) reused as placeholders
+- `LEGACY_AWARDS_DATA` preserved in `InfiniteSkyManager.jsx` with clear `// LEGACY:` comment block
+- Three.js / R3F / GSAP / Shader / camera architecture untouched
+- All animation patterns (spread, float-up, pop+respawn, brush-reveal) preserved
+- `StoryMilestone.jsx` component noted as unused (kept for potential future use)
+- Legacy `.cjs` tool scripts (`fix_hover_stutter.cjs`, `mobile_opt.cjs`, `mobile_opt2.cjs`) preserved
