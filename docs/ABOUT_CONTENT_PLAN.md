@@ -539,27 +539,64 @@ V1 (文字层) → V2 (图片层) → V3 (数据层)
 |-------|----------|--------|
 | Cloud Avatar | P0 | ✅ Completed |
 | Wave Animation (wave01-wave09) | P1 | ✅ Completed |
-| Education Island texture | P2 | ⬜ Pending |
-| Career Island texture | P2 | ⬜ Pending |
-| Project Image — Menglan World | P3 | ⬜ Pending |
-| Project Image — Family Menu AI | P3 | ⬜ Pending |
-| Project Image — Desktop AI Companion | P3 | ⬜ Pending |
-| Skill Icon — Python | P4 | ⬜ Pending |
-| Skill Icon — AI Development | P4 | ⬜ Pending |
-| Skill Icon — Prompt Engineering | P4 | ⬜ Pending |
-| Skill Icon — Claude Code | P4 | ⬜ Pending |
-| Skill Icon — RAG | P4 | ⬜ Pending |
-| Skill Icon — SQL | P4 | ⬜ Pending |
-| Skill Icon — RPA | P4 | ⬜ Pending |
-| Skill Icon — Coze | P4 | ⬜ Pending |
-| Skill Icon — Azure | P4 | ⬜ Pending |
-| Skill Icon — Git (custom) | P4 | ⬜ Pending (currently reusing original) |
+| Education Island texture | P2 | ✅ Completed (2026-08-12) |
+| Career Island texture | P2 | ✅ Completed (2026-08-12) |
+| Project Image — Menglan World | P3 | ⬜ Pending (SOTY.webp as placeholder) |
+| Project Image — Family Menu AI | P3 | ⬜ Pending (SOTD.webp as placeholder) |
+| Project Image — Desktop AI Companion | P3 | ⬜ Pending (SOTM.webp as placeholder) |
+| Skill Icon — Python | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — AI Development | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — Prompt Engineering | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — Claude Code | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — RAG | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — SQL | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — RPA | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — Coze | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — Azure | P4 | ✅ Completed (2026-08-12) |
+| Skill Icon — Git (custom) | P4 | ✅ Completed (2026-08-12) |
+| Certificate — MSdegree | P2 | ✅ Completed (2026-08-12) |
+| Certificate — MSdegree_1 | P2 | ✅ Completed (2026-08-12) |
+| Certificate — CET6 | P2 | ✅ Completed (2026-08-12) |
+| Certificate — RPAcertification | P2 | ✅ Completed (2026-08-12) |
 
 ### V1 Technical Notes
 
-- All existing textures (SOTY/SOTD/SOTM, island textures, balloon textures) reused as placeholders
+- Skill balloon textures: custom Menglan icons replace original Tomasz balloon textures
+- Island textures: `uowyspa_ml.webp` (EDU island) and `freelancewyspa_ml.webp` (Career island) replace original
+- Journey island text expanded: Education shows full degree info, Career shows all 6 stages
+- Certificate images: Menglan's MSdegree, MSdegree_1, CET6, RPAcertification replace Tomasz SOTD certificates
+- SOTY/SOTD/SOTM card textures retained as visual decoration (no Tomasz-specific content)
+- Original Tomasz island/balloon/certificate textures preserved as backup (not deleted)
 - `LEGACY_AWARDS_DATA` preserved in `InfiniteSkyManager.jsx` with clear `// LEGACY:` comment block
 - Three.js / R3F / GSAP / Shader / camera architecture untouched
 - All animation patterns (spread, float-up, pop+respawn, brush-reveal) preserved
 - `StoryMilestone.jsx` component noted as unused (kept for potential future use)
 - Legacy `.cjs` tool scripts (`fix_hover_stutter.cjs`, `mobile_opt.cjs`, `mobile_opt2.cjs`) preserved
+
+---
+
+## V1 Material Integration (2026-08-12)
+
+> **Status:** ✅ Completed
+>
+> All P2-P4 image assets have been integrated. Custom Menglan skill balloon textures, island textures, and certificate images are now live.
+
+### What was done
+
+| Area | Change |
+|------|--------|
+| **Intro** | Title `MENGLAN WORLD` → `MENGLAN`, Subtitle `Menglan World` → `AI Developer & Automation Creator` |
+| **Journey Islands** | Textures updated to `ml/` variants; dynamic text shows full education + career details |
+| **Skills Balloons** | All 10 balloon textures replaced with custom Menglan icons (20 files: sketch + painted) |
+| **Certificates** | 4 Menglan certificates replace Tomasz SOTD awards in the CERTIFICATIONS card |
+| **Preload** | 28 new `ml/` texture paths added to texture preload list |
+
+### What's still Coming Soon
+
+| Item | Status |
+|------|--------|
+| Project screenshots (Menglan World, Family Menu AI, Desktop AI Companion) | Using SOTY/SOTD/SOTM as placeholders |
+| Project card textures (SOTY/SOTD/SOTM → Menglan-themed) | Retained as visual decor for now |
+| Sanity CMS dynamic content | Future (V3) |
+| OG image + favicon replacement | Needs assets |
+| Entrance door textures | Future |

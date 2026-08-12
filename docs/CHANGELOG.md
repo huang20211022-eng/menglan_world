@@ -230,4 +230,55 @@
 
 **构建：** ✅ 通过
 
+**Commit：** `efc55fa`
+
+---
+
+## 2026-08-12 — About Room V1 Material Integration
+
+**模块：** About Room 素材集成 + 内容完善
+
+**This version integrates all P2-P4 Menglan image assets into the About Room.**
+
+**修改内容：**
+
+**Intro Milestone：**
+- Title: `MENGLAN WORLD` → `MENGLAN`
+- Subtitle: `Menglan World` → `AI Developer & Automation Creator`
+
+**Journey Milestone：**
+- Education Island 纹理: `uowyspa.webp` → `ml/uowyspa_ml.webp`
+- Career Island 纹理: `freelancewyspa.webp` → `ml/freelancewyspa_ml.webp`
+- Education Island 文字: 动态显示 B.S. Software Engineering (2016-2020) + M.S. Computer Technology (2021-2024)
+- Career Island 文字: 动态显示 6 个职业阶段（IT Assistant Eng → Freelance AI Dev）
+
+**Technology Stack（10 技能气球纹理）：**
+- 所有 10 个技能气球纹理替换为自定义 Menglan 图标（sketch + painted 共 20 张）
+- 纹理路径全部指向 `public/textures/about/ml/`
+- Python, AI Development, Prompt Engineering, Claude Code, Git, RAG, SQL, RPA, Coze, Azure
+- `legacyAspects` 映射更新为新纹理的实际宽高比
+
+**Projects & Impact：**
+- Certificate 图片替换: Tomasz SOTD 证书 → Menglan 证书 (MSdegree, MSdegree_1, CET6, RPAcertification)
+- 中心卡片标签: `ALL PROJECTS` → `CERTIFICATIONS`
+- 原 Tomasz 证书图片保留不删除
+
+**纹理预加载：**
+- `texturePreloadList.js` 新增 28 条 `ml/` 纹理预加载路径
+- 保留所有原始 Tomasz 纹理预加载路径（备份）
+
+**未修改 / 保留：**
+- SOTY/SOTD/SOTM 卡片纹理 — 作为视觉装饰保留
+- SOTDAYYOUNGMULTI*.webp — 保留作为备份
+- 所有原始气球纹理 — 保留不删除
+- 所有原始岛屿纹理 — 保留不删除
+- LEGACY_AWARDS_DATA — 保留不删除
+- 所有 Three.js / R3F / GSAP / Shader / 动画代码 — 零改动
+
+**涉及文件：**
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx`
+- `src/config/texturePreloadList.js`
+
+**构建：** ✅ 通过
+
 **Commit：** 待提交

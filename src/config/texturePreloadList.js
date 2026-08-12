@@ -190,29 +190,58 @@ export const ABOUT_TEXTURES = [
     '/textures/about/SOTM_painted.webp',
     '/textures/about/button.webp',
     '/textures/about/button_painted.webp',
-    // Award images (for overlay)
+    // Award images (for overlay) — Legacy Tomasz, preserved as backup
     '/textures/about/SOTDAYYOUNGMULTICSSWINNER.webp',
     '/textures/about/SOTDAYYOUNGMULTIGSAP.webp',
     '/textures/about/SOTDAYYOUNGMULTIORPETRON.webp',
     '/textures/about/SOTDAYYOUNGMULTIDESIGNNOMINESS.webp',
-    // Journey islands
+    // Journey islands — V1 Menglan
+    '/textures/about/ml/uowyspa_ml.webp',
+    '/textures/about/ml/freelancewyspa_ml.webp',
+    // Journey islands — Legacy Tomasz, preserved as backup
     '/textures/about/uowyspa.webp',
     '/textures/about/freelancewyspa.webp',
-    // Skill balloons - large
+    // Skill balloons — V1 Menglan (custom icons)
+    '/textures/about/ml/python.webp',
+    '/textures/about/ml/python_painted.webp',
+    '/textures/about/ml/AI.webp',
+    '/textures/about/ml/AI_painted.webp',
+    '/textures/about/ml/prompt.webp',
+    '/textures/about/ml/prompt_painted.webp',
+    '/textures/about/ml/Claude.webp',
+    '/textures/about/ml/Claude_painted.webp',
+    '/textures/about/ml/git.webp',
+    '/textures/about/ml/git_painted.webp',
+    '/textures/about/ml/RAG.webp',
+    '/textures/about/ml/RAG_painted.webp',
+    '/textures/about/ml/SQL.webp',
+    '/textures/about/ml/SQL_painted.webp',
+    '/textures/about/ml/RPA.webp',
+    '/textures/about/ml/RPA_painted.webp',
+    '/textures/about/ml/coze.webp',
+    '/textures/about/ml/coze_painted.webp',
+    '/textures/about/ml/Azure.webp',
+    '/textures/about/ml/Azure_painted.webp',
+    // Certificate images — V1 Menglan
+    '/textures/about/ml/MSdegree.webp',
+    '/textures/about/ml/MSdegree_1.webp',
+    '/textures/about/ml/CET6.webp',
+    '/textures/about/ml/RPAcertification.webp',
+    // Skill balloons — Legacy Tomasz, preserved as backup
     '/textures/about/reactduzybalon.webp',
     '/textures/about/reactduzybalon_painted.webp',
     '/textures/about/threejsduzybalon.webp',
     '/textures/about/threejsduzybalon_painted.webp',
     '/textures/about/GSAPduzybalon.webp',
     '/textures/about/GSAPduzybalon_painted.webp',
-    // Skill balloons - medium
+    // Skill balloons - medium (Legacy)
     '/textures/about/JSSREDNIBALON.webp',
     '/textures/about/JSSREDNIBALON_painted.webp',
     '/textures/about/csssrednibalon.webp',
     '/textures/about/csssrednibalon_painted.webp',
     '/textures/about/nextjssrednibalon.webp',
     '/textures/about/nextjssrednibalon_painted.webp',
-    // Skill balloons - small
+    // Skill balloons - small (Legacy)
     '/textures/about/htmlmalybalon.webp',
     '/textures/about/htmlmalybalon_painted.webp',
     '/textures/about/gitmalybalon.webp',
