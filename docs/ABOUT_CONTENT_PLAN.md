@@ -600,3 +600,42 @@ V1 (文字层) → V2 (图片层) → V3 (数据层)
 | Sanity CMS dynamic content | Future (V3) |
 | OG image + favicon replacement | Needs assets |
 | Entrance door textures | Future |
+
+---
+
+## V1.1 UI & Interaction Refinement (2026-08-12)
+
+> **Status:** ✅ Completed
+>
+> UI polish + data source investigation and fix.
+
+### Changes
+
+| Area | Change |
+|------|--------|
+| **Journey Islands** | Default: compact summary + VIEW JOURNEY button → click expands full timeline → ✕ CLOSE to collapse |
+| **MENGLAN Title** | Added `letterSpacing: 0.06` for improved readability |
+| **Sanity fallback** | Updated `useSanityData.js` cache titles from Tomasz ("Site of the Day Awards") to Menglan ("Current Project", "Coming Soon", "Certifications & Qualifications") |
+
+### VIEW Button Data Flow (Investigation Result)
+
+```
+InfiniteSkyManager.jsx: AwardButton onClick
+  → useScene().openOverlay(awardsData.category)
+    → SceneContext: setOverlayContent()
+      → GlobalOverlay.jsx: certificate_grid layout
+        → <img src={item.image}> → Sanity CDN images
+```
+
+**Key finding:** `useSanityData.js` fetches `*[_type == "awardCertificate"]` from Sanity CMS. If Sanity has data, it OVERRIDES the local `PROJECTS_DATA` fallback. The cache builder had hardcoded Tomasz titles.
+
+**Remaining old images (Sanity CDN, not local):**
+- Tomasz certificate images hosted on Sanity CDN (via `/sanity-cdn` proxy)
+- These require Sanity CMS update to replace — can't be fixed by local file changes alone
+
+**Local images safely retained:**
+- SOTY.webp / SOTD.webp / SOTM.webp — card decoration (no Tomasz text)
+- SOTY_painted.webp / SOTD_painted.webp / SOTM_painted.webp
+- SOTDAYYOUNGMULTI*.webp × 4 — legacy backup
+- All original balloon textures — legacy backup
+- All original island textures — legacy backup

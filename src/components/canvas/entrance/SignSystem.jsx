@@ -1,5 +1,5 @@
 import { useRef, useMemo } from 'react';
-import { useTexture } from '@react-three/drei';
+import { Text, useTexture } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -52,6 +52,26 @@ const SignSystem = (props) => {
                         depthWrite={false} // Fix for seeing objects behind transparent parts
                     />
                 </mesh>
+
+                {/* === MENGLAN Dynamic Text Overlay === */}
+                {/* Opaque background strip — fully covers the cramped raster MENGLAN baked into sign.webp */}
+                <mesh position={[0, -0.12, 0.02]}>
+                    <planeGeometry args={[1.9, 0.34]} />
+                    <meshBasicMaterial color="#e0e0e0"
+                        transparent={false}
+                        side={THREE.DoubleSide}
+                        depthWrite={false}
+                    />
+                </mesh>
+                {/* Per-letter MENGLAN — each letter individually positioned for even, generous spacing */}
+                {/* 7 letters spread across 1.56 units (step 0.26), centered on the 2-unit-wide sign */}
+                <Text position={[-0.78, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">M</Text>
+                <Text position={[-0.52, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">E</Text>
+                <Text position={[-0.26, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">N</Text>
+                <Text position={[ 0.00, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">G</Text>
+                <Text position={[ 0.26, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">L</Text>
+                <Text position={[ 0.52, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">A</Text>
+                <Text position={[ 0.78, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">N</Text>
             </group>
         </group>
     );

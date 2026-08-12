@@ -347,6 +347,7 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
                 ref={titleRef}
                 position={[0, 5, 0.1]}
                 fontSize={0.8}
+                letterSpacing={0.15}
                 color="#1a1a1a"
                 anchorX="center"
                 anchorY="middle"
@@ -888,10 +889,10 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
 const JourneyMilestone = ({ z, scrollProgressRef }) => {
     const { camera, viewport } = useThree();
     const isTouch = isTouchDevice();
+    const { openOverlay } = useScene();
     const groupRef = useRef();
     const uoRef = useRef();
     const freelanceRef = useRef();
-
     // Load textures
     const uoTexture = useLoader(THREE.TextureLoader, '/textures/about/ml/uowyspa_ml.webp');
     const freelanceTexture = useLoader(THREE.TextureLoader, '/textures/about/ml/freelancewyspa_ml.webp');
@@ -997,9 +998,9 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                         side={THREE.DoubleSide}
                     />
                 </mesh>
-                {/* Education details — dynamically rendered via code */}
+                {/* Education header */}
                 <Text
-                    position={[0.1, -0.25, 0.1]}
+                    position={[0.1, -0.15, 0.1]}
                     fontSize={0.32}
                     color="#1a1a1a"
                     anchorX="center"
@@ -1008,45 +1009,39 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                 >
                     Education
                 </Text>
+
+                {/* Compact summary */}
                 <Text
-                    position={[0.1, -0.65, 0.1]}
-                    fontSize={0.22}
-                    color="#444444"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/CabinSketch-Regular.ttf"
-                >
-                    B.S. Software Engineering
-                </Text>
-                <Text
-                    position={[0.1, -0.9, 0.1]}
+                    position={[0.1, -0.55, 0.1]}
                     fontSize={0.2}
-                    color="#666666"
+                    color="#555555"
                     anchorX="center"
                     anchorY="middle"
                     font="/fonts/CabinSketch-Regular.ttf"
                 >
-                    2016 – 2020
+                    Degrees & Studies
                 </Text>
+                {/* VIEW JOURNEY button */}
                 <Text
-                    position={[0.1, -1.2, 0.1]}
-                    fontSize={0.22}
-                    color="#444444"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/CabinSketch-Regular.ttf"
-                >
-                    M.S. Computer Technology
-                </Text>
-                <Text
-                    position={[0.1, -1.45, 0.1]}
+                    position={[0.1, -0.95, 0.1]}
                     fontSize={0.2}
-                    color="#666666"
+                    color="#1a1a1a"
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/CabinSketch-Regular.ttf"
+                    font="/fonts/CabinSketch-Bold.ttf"
+                    onClick={(e) => { e.stopPropagation(); openOverlay({
+                        layout: 'journey',
+                        title: 'EDUCATION JOURNEY',
+                        platformConfig: { label: 'JOURNEY' },
+                        items: [
+                            { year: '2016 – 2020', label: 'Bachelor of Software Engineering' },
+                            { year: '2021 – 2024', label: 'Master of Computer Technology' }
+                        ]
+                    }); }}
+                    onPointerOver={() => { if (!isTouch) document.body.style.cursor = 'pointer'; }}
+                    onPointerOut={() => { if (!isTouch) document.body.style.cursor = 'auto'; }}
                 >
-                    2021 – 2024
+                    VIEW JOURNEY ▶
                 </Text>
             </group>
 
@@ -1060,9 +1055,9 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                         side={THREE.DoubleSide}
                     />
                 </mesh>
-                {/* Career details — dynamically rendered via code */}
+                {/* Career header */}
                 <Text
-                    position={[0, 0.15, 0.1]}
+                    position={[0, 0.25, 0.1]}
                     fontSize={0.32}
                     color="#1a1a1a"
                     anchorX="center"
@@ -1071,55 +1066,42 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                 >
                     Career
                 </Text>
+
+                {/* Compact summary */}
                 <Text
                     position={[0, -0.2, 0.1]}
-                    fontSize={0.18}
-                    color="#444444"
+                    fontSize={0.2}
+                    color="#555555"
                     anchorX="center"
                     anchorY="middle"
                     font="/fonts/CabinSketch-Regular.ttf"
                 >
-                    IT Assistant Eng. · 2020 – 2021
+                    Professional Journey
                 </Text>
+                {/* VIEW JOURNEY button */}
                 <Text
-                    position={[0, -0.45, 0.1]}
-                    fontSize={0.18}
-                    color="#444444"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/CabinSketch-Regular.ttf"
-                >
-                    IoT Security Research · 2022 – 2023
-                </Text>
-                <Text
-                    position={[0, -0.7, 0.1]}
-                    fontSize={0.18}
-                    color="#444444"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/CabinSketch-Regular.ttf"
-                >
-                    Azure Tech Support · 2024 – 2025
-                </Text>
-                <Text
-                    position={[0, -0.95, 0.1]}
-                    fontSize={0.18}
-                    color="#444444"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/CabinSketch-Regular.ttf"
-                >
-                    AI Application Eng. · 2025 – 2026
-                </Text>
-                <Text
-                    position={[0, -1.2, 0.1]}
-                    fontSize={0.18}
+                    position={[0, -0.6, 0.1]}
+                    fontSize={0.2}
                     color="#1a1a1a"
                     anchorX="center"
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
+                    onClick={(e) => { e.stopPropagation(); openOverlay({
+                        layout: 'journey',
+                        title: 'CAREER JOURNEY',
+                        platformConfig: { label: 'JOURNEY' },
+                        items: [
+                            { year: '2020 – 2021', label: 'IT Assistant Engineer — C# • SQL • BIS • PLM' },
+                            { year: '2022 – 2023', label: 'IoT Security Research Intern, Chinese Academy of Sciences — Python • PyTorch • AI' },
+                            { year: '2024 – 2025', label: 'Azure Technical Support Engineer — Azure Backup • Enterprise Troubleshooting • Global Customer Support' },
+                            { year: '2025 – 2026', label: 'AI Application Engineer — RPA • RAG • Coze Workflow • Project Management' },
+                            { year: '2026 – Present', label: 'Freelance AI Developer — Claude Code • VS Code • DeepSeek' }
+                        ]
+                    }); }}
+                    onPointerOver={() => { if (!isTouch) document.body.style.cursor = 'pointer'; }}
+                    onPointerOut={() => { if (!isTouch) document.body.style.cursor = 'auto'; }}
                 >
-                    Freelance AI Dev. · 2026 – Present
+                    VIEW JOURNEY ▶
                 </Text>
             </group>
         </group>

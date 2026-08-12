@@ -282,3 +282,413 @@
 **构建：** ✅ 通过
 
 **Commit：** 待提交
+
+---
+
+## 2026-08-12 — About Room V1.1 UI & Interaction Refinement
+
+**模块：** About Room 交互优化 + 数据源修复
+
+**修改内容：**
+
+**Journey Islands — VIEW JOURNEY 交互：**
+- Education Island: 默认显示简洁摘要（"Degrees & Studies"）+ VIEW JOURNEY 按钮
+- Career Island: 默认显示简洁摘要（"Professional Journey"）+ VIEW JOURNEY 按钮
+- 点击 VIEW JOURNEY 后动态展开完整时间线（2 个学位 + 6 个职业阶段）
+- 点击 ✕ CLOSE 收起回到简洁模式
+- 解决了上一版本文字溢出白框的问题
+
+**MENGLAN 标题字间距：**
+- Intro Milestone 标题增加 `letterSpacing: 0.06`
+- 字母间更舒展，可读性更好
+
+**Projects VIEW 按钮数据源追踪与修复：**
+- 完整追踪链路：VIEW button → openOverlay() → GlobalOverlay → Sanity/fallback data
+- 发现 `useSanityData.js` 中硬编码了原 Tomasz 标题：
+  - `'Site of the Day Awards'` → `'Current Project'`
+  - `'Site of the Month Awards'` → `'Coming Soon'`
+  - `'Other Awards'` → `'Certifications & Qualifications'`
+- platformConfig label/icon 同步更新为 Menglan 品牌
+
+**VIEW 按钮数据链路分析结果：**
+- A. 实现文件: `InfiniteSkyManager.jsx` (AwardButton) + `GlobalOverlay.jsx` (DOM overlay)
+- B. 数据源: `useSanityData.js` → Sanity CMS `awardCertificate` → `PROJECTS_DATA` fallback
+- C. 图片来源: Sanity CDN 托管的 Tomasz 证书图片（通过 `/sanity-cdn` Cloudflare proxy）
+- D. 保留图片: SOTY.webp / SOTD.webp / SOTM.webp（卡片装饰，不含 Tomasz 文本）
+- E. 如需替换: 需在 Sanity CMS 中更新 `awardCertificate` 文档的 `certificateImage` 字段
+- F. 本地证书图片已替换: `ml/MSdegree.webp`, `ml/MSdegree_1.webp`, `ml/CET6.webp`, `ml/RPAcertification.webp`
+
+**涉及文件：**
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx`
+- `src/hooks/useSanityData.js`
+
+**构建：** ✅ 通过
+
+**Commit：** 待提交
+
+---
+
+## 2026-08-12 — V1.1.2 Sanity Startup Decoupling / Local-First Fallback
+
+**模块：** Sanity 启动解耦 / 真正的本地优先降级
+
+**Why V1.1.1 Failed：**
+
+V1.1.1 仅修复了 `RoomWarmup` → `cache.loaded` 阻塞链（Sanity fetch timeout），但**未发现第二个阻塞链**：
+
+```
+Preloader → DefaultLoadingManager.onLoad → active = false → targetProgress = 100 → exit
+```
+
+`loadSanityData()` 内的 `useTexture.preload()` 和 `useLoader.preload(TextureLoader, ...)` 调用会向 `THREE.DefaultLoadingManager` 注册 Sanity CDN URL。当本地纹理加载完成后，Sanity 图片预加载**重新激活**了 loading manager（触发 `onStart`）。由于 Sanity CDN 不可达，这些图片加载卡住，`onLoad` 永不触发——导致 `active` 卡在 `true`，`targetProgress` 卡在 85%，Preloader 永远无法退出。——
+
+即使 `cache.loaded = true` + `sceneReady = true`，Preloader 进度条仍卡在 85%。
+
+**修改内容：**
+
+**1. `src/hooks/useSanityData.js` — 移除 GPU 纹理预加载中的 Sanity 图片**
+- 删除 `useTexture.preload()` 调用（通过 drei 缓存 + Three.js DefaultLoadingManager）
+- 删除 `useLoader.preload(TextureLoader, ...)` 调用（同上）
+- 保留 `preloadBrowserImage()`（`new Image()`——不注册 DefaultLoadingManager）
+- 删除不再使用的 3 个 imports：`useTexture`、`useLoader`、`TextureLoader`
+
+**2. `src/components/dom/Preloader.jsx` — 安全防护**
+- 添加场景就绪 2 秒后强制退出机制：当 `ready` 为 true 且 2 秒内未退出，强制执行 `setActive(false)` + `setTargetProgress(100)`
+- 防御性措施——即使未来有任何纹理加载卡在 loading manager 中，也不能无限期阻塞
+
+**架构变更：**
+
+```
+Before (ITom 遗留):
+  Sanity Required → Local Fallback
+  Sanity API 阻塞 RoomWarmup (30s timeout)
+  Sanity CDN 图片阻塞 Preloader (DefaultLoadingManager)
+
+After (V1.1.2):
+  Local First → Sanity Enhancement
+  Sanity API: max 8s timeout → fallback
+  Sanity CDN 图片: 永不阻塞 (browser-only preload)
+  Preloader: 2s 场景就绪后强制退出
+```
+
+**Sanity 不可达时的行为：**
+- Sanity API 不可达 → 8s 超时 → `cache.loaded = true` → RoomWarmup 继续 → 所有房间使用本地 fallback
+- Sanity API 可达但 CDN 不可达 → fetch 成功 → 数据已缓存（CDN URL）→ 但无 `useTexture.preload()`，所以不阻塞 Preloader
+- Sanity 完全不可达 → 同第一条路径
+- 任何情况下，Preloader 在 `sceneReady` 后最多 2s 强制退出
+
+**涉及文件：**
+- `src/hooks/useSanityData.js` — 移除 GPU 纹理预加载，仅保留 `preloadBrowserImage()`
+- `src/components/dom/Preloader.jsx` — 添加场景就绪强制退出安全防护
+- `src/components/canvas/corridor/HeroText.jsx` — MENGLAN 字母间距：baseX 0.27→0.35 (+30%)
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx` — IntroMilestone MENGLAN letterSpacing: 0.06→0.15
+
+**MENGLAN 字间距修改：**
+- HeroText 走廊 MENGLAN：字母基位置间距从 0.27 → 0.35（+30%），tagline 括号同步扩展
+- About Room IntroMilestone MENGLAN：letterSpacing 从 0.06 → 0.15（+150%）
+- Responsive scale 仍然适用（0.65x–1.0x 视口），移动端自动适应
+- 未更改 fontSize、字体、内容、布局结构
+
+**构建：** ✅ 通过（11.93s）
+
+**Commit：** 待提交
+
+**模块：** Sanity 离线降级 / 运行时稳定性热修复
+
+This is a runtime stability hotfix — minimal change, maximum impact.
+
+**问题诊断：**
+
+当 Sanity API 不可达时（网络断开、CDN 故障、TLS 错误），网站预加载器会卡死在加载画面，无法进入主场景。
+
+**调用链分析：**
+
+```
+loadSanityData() [module-level auto-call]
+  → sanityClient.fetch() ×3 [~30s default timeout]
+  → cache.loaded = true [set after fetch completes or errors]
+  
+RoomWarmup.useFrame()
+  → if (!isSanityDataLoaded()) return;  // ← 阻塞点
+  → onWarmupComplete → sceneReady → Preloader exit
+```
+
+**根因：** `RoomWarmup.jsx:35` 每帧检查 `isSanityDataLoaded()`，该函数返回 `cache.loaded`，而 `cache.loaded` 只有在 Sanity fetch 成功或失败后才设为 `true`。Sanity client 默认超时约 30 秒，在此期间整个预加载器被阻塞。
+
+**已有 Fallback 验证：**
+
+| 房间 | Fallback 变量 | 状态 |
+|------|-------------|------|
+| Gallery | `FALLBACK_PROJECTS` | ✅ `GalleryRoom.jsx:213` |
+| Studio | `CONTENT_DATA` | ✅ `StudioRoom.jsx:112` |
+| About | `PROJECTS_DATA` | ✅ `InfiniteSkyManager.jsx:550` |
+
+三个房间均已有本地数据兜底——只需让 fetch 快速超时即可激活。
+
+**修复内容：**
+
+- `src/hooks/useSanityData.js`：为 3 个 `sanityClient.fetch()` 调用添加 `withTimeout()` 包装（8 秒超时）
+- 超时后返回 `null`，现有 null 检查（line 111/125/139）自动跳过 Sanity 数据映射
+- `cache.loaded = true` 正常设置，RoomWarmup 解除阻塞
+- 所有房间自动使用本地 fallback 数据
+- Sanity 正常工作时行为完全不变（zero regression risk）
+
+**技术细节：**
+- `withTimeout()` 使用 `Promise.race` + `setTimeout` 实现
+- `clearTimeout()` 在 finally 中清理，防止内存泄漏
+- 超时时返回 `null`（非 reject），避免破坏 `Promise.all` 解构
+- 三个 fetch 各有独立 timeout（总计最多 8s），并行执行
+
+**涉及文件：**
+- `src/hooks/useSanityData.js` — 添加 `withTimeout` 包装器 + `SANITY_FETCH_TIMEOUT` 常量
+
+**构建：** ✅ 通过
+
+**Commit：** 待提交
+
+---
+
+## 2026-08-12 — V1.1.3 Canvas Crash Fix / Local-First Gallery & Studio
+
+**模块：** CanvasImpl 崩溃修复 / Gallery & Studio 本地优先
+
+**Why V1.1.2 Failed：**
+
+V1.1.2 解决了**启动时**的 DefaultLoadingManager 阻塞（移除了 `useTexture.preload` / `useLoader.preload` 用于 Sanity 图片）和 Preloader 无限制挂起（2 秒安全防护）。但**第二层崩溃路径**未被发现：
+
+```
+loadSanityData() fetch 成功
+  → cache.projects / cache.content 填充了 Sanity CDN URL
+  → useGalleryProjects() / useStudioContent() 返回 CDN URL
+  → GalleryRoom.jsx:224  useTexture([cdn_sanity_url, ...])
+  → StudioRoom.jsx:642   useLoader(TextureLoader, cdn_sanity_url)
+  → Sanity CDN → 500 Internal Server Error
+  → Three.js TextureLoader → Uncaught Error
+  → <CanvasImpl> 崩溃 → 白屏
+```
+
+**浏览器控制台错误：**
+- `Uncaught Error: Could not load /sanity-cdn/images/kv5wjjmj/production/b74f1f8354f55b3025e57f9ab1d199b34058eb3d-1696x2528.png?w=1024&q=80&auto=format`
+- `An error occurred in the <CanvasImpl> component.`
+- `GET /sanity-cdn/images/... 500 (Internal Server Error)`
+
+**根因：** GalleryRoom 和 StudioRoom 的 `activeProjects = sanityProjects || FALLBACK_PROJECTS` 降级仅当 `sanityProjects` 为 `null` 时触发。当 Sanity API **可达**时，`cache.projects` / `cache.content` 被填充了 CDN URL——非 null → Gallery/Studio 将 CDN URL 传入 Three.js `useTexture()` / `TextureLoader` → CDN 500 → Canvas 崩溃。
+
+**修复内容：**
+
+**1. `src/hooks/useSanityData.js` — 禁用 Gallery/Studio Sanity 数据缓存**
+- 注释掉 `cache.projects` 的数据映射（原 lines 108-119）—— 防止 GalleryRoom 使用 CDN URL
+- 注释掉 `cache.content` 的数据映射（原 lines 121-133）—— 防止 StudioRoom 使用 CDN URL
+- **保留** `cache.awards` 映射 —— About room 奖项通过 DOM overlay 渲染（不会崩溃 Canvas）
+- **保留**所有 Sanity fetch/query 代码 —— 未来 V3 重新激活仅需取消注释
+- 两个 `preloadBrowserImage()` 安全码段保持不变（`if (cache.projects)` / `if (cache.content)` 为 null 时自然跳过）
+
+**2. `src/components/canvas/corridor/HeroText.jsx` — 修复重复 React key（P1）**
+- Line 141：`key={letter.char}` → `key={`${letter.char}-${i}`}`
+- 问题："MENGLAN"包含两个字面上的 `'N'` 字符 → 两个 `key="N"` → React 重复 key 警告
+- Key 现在是 `"M-0"`, `"E-1"`, `"N-2"`, `"G-3"`, `"L-4"`, `"A-5"`, `"N-6"` —— 全部唯一
+
+**修复后的行为：**
+- `useGalleryProjects()` → 返回 `null` → `FALLBACK_PROJECTS`（本地纹理路径）
+- `useStudioContent()` → 返回 `null` → `CONTENT_DATA`（本地纹理路径）
+- `useAwards()` → 仍然返回 Sanity 数据（如果可用），通过 DOM overlay 中的 `<img>` 标签渲染
+- Gallery 和 Studio 渲染原始 ITom 项目图片（V1 版本无 Menglan 品牌素材）
+- Sanity CDN 500 → 不会崩溃 Canvas —— 没有 CDN URL 被 Three.js 加载
+- Vite proxy TLS 错误在终端输出是预期的且完全无害
+
+**Local-First 验证清单：**
+
+| 条件 | 预期结果 |
+|------|--------|
+| Sanity API 不可达 | 所有房间使用本地 fallback ✅ |
+| Sanity API 可达，CDN 不可达 | Gallery/Studio 使用本地 fallback，About DOM 奖项显示空图片但不会崩溃 ✅ |
+| Sanity API + CDN 可达 | Gallery/Studio 使用本地 fallback，About DOM 奖项通过 CDN 正常加载 ✅ |
+| 无网络 | 所有房间使用本地 fallback ✅ |
+
+**架构原则（强化）：**
+
+> Sanity is an **enhancement**, not a startup prerequisite.
+> Three.js must never receive a URL pointing at an unreliable external service.
+> For V1, Gallery and Studio always use local ITom textures — CMS integration is deferred to V3.
+
+**涉及文件：**
+- `src/hooks/useSanityData.js` — 禁用 cache.projects / cache.content 填充
+- `src/components/canvas/corridor/HeroText.jsx` — 修复重复 React key
+
+**构建：** ✅ 通过（2m 23s）
+
+**Commit：** 待提交
+
+---
+
+## 2026-08-12 — V1.1.4 Journey Modal + Entrance Hero Refinement
+
+**模块：** About Room Journey Modal 重构 + 入口 MENGLAN 间距修复
+
+**修改内容：**
+
+**1. Education/Career Journey — 从 3D 岛屿内展开改为独立 2D Modal**
+
+原行为：点击 VIEW JOURNEY → 本地 `useState` 切换 → 3D Text 元素嵌入在岛屿平面上展开。文字空间不足，内容溢出岛屿。
+
+新行为：点击 VIEW JOURNEY → `openOverlay()` → GlobalOverlay 渲染独立的 2D DOM Modal。
+
+- Education: 岛屿牌子上始终仅显示简短内容（"Education / Degrees & Studies / VIEW JOURNEY"）
+- Career: 岛屿牌子上始终仅显示简短内容（"Career / Professional Journey / VIEW JOURNEY"）
+- 详细时间线在居中 paper-card Modal 中展示，桌面端宽度 `clamp(320px, 50vw, 600px)`
+- Career 时间线包含子标题（Chinese Academy of Sciences 等）
+
+**2. GlobalOverlay — 新增 `journey` 布局**
+
+`src/components/ui/GlobalOverlay.jsx` 的 ContentCard 新增第三种布局类型：
+
+- 居中 paper card（同 SVG 手撕边框 + Cabin Sketch 字体）
+- Timeline 结构：`{ year, label }` → 粗体年份 + 内容描述
+- 年度项目间以虚线边框分隔
+- 内容区域可滚动（长 Career 时间线在移动端需要）
+- 桌面端无聚光灯蒙版（与 certificate_grid 行为一致）
+- 点击背景或 Close（✕ 按钮）关闭
+- 弹出/关闭动画与现有 Overlay 系统一致
+
+**3. Entrance MENGLAN — 动态 Text 叠加**
+
+入口 "MENGLAN" 由 `public/textures/entrance/sign.webp` 作为栅格图片渲染。栅格图案上原有的文字拥挤无法在代码中调整。
+
+解决方案：在 SignSystem 中叠加动态 `<Text>` 组件：
+- 背景条覆盖原有拥挤的栅格文字（`planeGeometry [1.8, 0.28]`，`#e0e0e0` 不透明度 92%）
+- RubikScribble 字体带有 `letterSpacing={0.08}` 和细描边（outlineWidth 0.006）
+- 文字大小适配标志宽度（fontSize 0.28 → 7 个字母适配 2 单位宽度，留有间隙）
+- 深度写入关闭（避免遮挡透明标志背景）
+- 随标志一起响应风动摇摆动画（同一 group）
+- 不改变头像、副标题、入口门、猫、老鼠、鸭子或任何装饰元素
+
+**已使用/复用的机制：**
+- Education/Career Modal：复用 `SceneContext.openOverlay()` + `GlobalOverlay`（`journey` 布局）
+- Entrance MENGLAN：SignSystem 中的 `<Text>` 组件，复用标志的 group ref 动画
+- 弹窗打开时，AboutRoom 的滚动阻止（`overlayRef.current`）自动生效，无需额外改动
+
+**涉及文件：**
+- `src/components/ui/GlobalOverlay.jsx` — 新增 `journey` 布局 + cardStyle 覆盖 + maskStyle 覆盖
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx` — JourneyMilestone 移除内联展开，替换为 `openOverlay()` 调用
+- `src/components/canvas/entrance/SignSystem.jsx` — 新增 Text overlay import，在标志上方添加 MENGLAN 文字覆盖层
+
+**未修改（按要求冻结）：**
+- Projects & Impact / SOTY / SOTD / SOTM / Certificates — 零改动
+- Sanity awards 数据 — 零改动
+- 走廊 HeroText MENGLAN — 零改动（仅入口标志受影响）
+- Education/Career Island 纹理 — 零改动
+- Camera / Flight / Scroll / SkyChunk — 零改动
+- 头像窗口 / AI Developer 副标题 / 门 / 猫 / 老鼠 / 鸭子 / bug — 零改动
+
+**构建：** ✅ 通过（57.40s）
+
+**Commit：** 待提交
+
+---
+
+## 2026-08-12 — V1.1.5 Entrance MENGLAN Typography Refinement
+
+**模块：** 入口 MENGLAN 排版修复（逐字母定位）
+
+**问题诊断：**
+
+V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问题：
+
+1. **双层渲染** — `sign.webp` 光栅图本身包含写入的 "MENGLAN" 文字。动态背景条使用了 `transparent opacity=0.92`（半透明），导致下方旧文字透过来 → 出现拥挤的双重图像效果。
+
+2. **letterSpacing 不够精确** — 单个 `<Text letterSpacing={0.08}>` 无法为 RubikScribble 手绘字体提供足够均匀的间距。字母 "M"、"G"、"A" 比 "E"、"N"、"L" 更宽，统一间距会使宽窄字母之间的间隙不一致。
+
+**确认：** 在代码库中搜索了所有 "MENGLAN" 字符串、Text 组件和 SignSystem 用法后确认——入口场景中渲染的 "MENGLAN" **唯一**来源于 `sign.webp` 光栅图像，由 `SignSystem.jsx` 渲染。代码库中没有其他入口 MENGLAN 组件。不存在第三层。
+
+**修复：**
+
+**`src/components/canvas/entrance/SignSystem.jsx`：**
+
+1. **全覆盖背景条** — `transparent={false}`（完全遮挡下方光栅文字），`planeGeometry [1.9, 0.34]`（更宽更高以完全覆盖）。颜色匹配原标志纸色（`#e0e0e0`）。
+
+2. **逐字母定位** — 一个 `<Text>` 组件替换为 7 个独立 `<Text>` 组件，每个字母具有精确的 X 坐标：
+
+   | 字母 | X 坐标 |  |
+   |--------|-----------|---|
+   | M | -0.78 | ← 最左 |
+   | E | -0.52 | |
+   | N | -0.26 | |
+   | G | 0.00 | ← 正中心 |
+   | L | 0.26 | |
+   | A | 0.52 | |
+   | N | 0.78 | ← 最右 |
+
+   - 间距：字母中心之间 0.26 单位——宽窄字母间隙均匀
+   - 展开范围：1.56 单位——舒适地位于 2 单位宽的标志内（每侧边距 0.22）
+   - fontSize：0.28——在保持清晰度的前提下尽可能大
+   - 字体：RubikScribble-Regular.ttf——保留手绘风格
+
+**涉及文件：**
+- `src/components/canvas/entrance/SignSystem.jsx` — 不透明背景条 + 逐字母 MENGLAN
+
+**未修改：**
+- Education Modal、Career Modal、Journey Islands
+- Projects、Certificates、Skills、Sanity
+- Gallery、Studio、Contact
+- 头像、AI Developer 副标题、猫、老鼠、鸭子、bug
+- 入口门、门动画、Camera、GSAP、走廊 HeroText
+
+**构建：** ✅ 通过（9.58s）
+
+**Commit：** 已合并
+
+---
+
+## 2026-08-12 — Phase Finalization: About Room V1 Handoff
+
+**模块：** 阶段 1 第一轮收尾 / 文档更新 + Git 提交 + GitHub Push
+
+**阶段总结：**
+
+本次阶段完成了 About Room 和 Hero 区域的第一轮品牌迁移。从 ITom 原始项目出发，经过 V1 Content Baseline → Material Integration → V1.1 UI & Interaction → V1.1.1~V1.1.5 五个子版本的迭代，最终交付了一个稳定可用的 V1 版本。
+
+**完成的核心工作：**
+
+| 维度 | 成果 |
+|------|------|
+| **品牌替换** | 全站 ITom → Menglan World（index.html, sitemap, _headers, SEO, useDocumentMeta, ContactRoom, ScreenReaderOverlay, seo-plugin, main.jsx, HeroText, InfiniteSkyManager, AboutRoom） |
+| **About Room 内容** | 4 个 Milestone（Intro / Journey / Skills / Projects）全部替换为 Menglan 个人内容 |
+| **素材集成** | Avatar、岛屿纹理、10 个技能气球、4 个证书图片 — 共 ~50 张素材完成替换 |
+| **Journey Modal** | Education + Career 从 3D 岛屿内展开改为独立 DOM Modal（GlobalOverlay journey layout） |
+| **入口 MENGLAN** | 逐字母 `<Text>` 定位 + 不透明遮罩覆盖 sign.webp 光栅文字 |
+| **稳定性** | Sanity 离线降级（8s timeout）、Canvas 崩溃修复（不再传 CDN URL 给 Three.js）、Preloader 2s 安全防护 |
+| **代码质量** | HeroText 重复 key 修复、MENGLAN 字间距优化、useSanityData 数据链路追踪 |
+
+**修改文件汇总（本次提交）：**
+
+| 文件 | 变更内容 |
+|------|---------|
+| `src/hooks/useSanityData.js` | Sanity offline fallback + cache.projects/content 禁用 + withTimeout |
+| `src/components/dom/Preloader.jsx` | 2s 场景就绪后强制退出安全防护 |
+| `src/components/canvas/corridor/HeroText.jsx` | MENGLAN 字间距 + 重复 key 修复 |
+| `src/components/canvas/entrance/SignSystem.jsx` | 逐字母 MENGLAN Text overlay |
+| `src/components/canvas/rooms/About/InfiniteSkyManager.jsx` | Journey Modal + letterSpacing |
+| `src/components/ui/GlobalOverlay.jsx` | journey layout |
+| `docs/ABOUT_CONTENT_PLAN.md` | 内容规划文档 |
+| `docs/CHANGELOG.md` | V1.1.1~V1.1.5 + 收尾条目 |
+| `docs/PROJECT_STATUS.md` | 阶段状态覆盖更新 |
+| `public/textures/about/awatarnachmurce.webp` | 头像替换 |
+
+**未跟踪文件（备份，不提交）：**
+
+| 文件 | 说明 |
+|------|------|
+| `public/textures/about/awatarnachmurce_itom.webp` | ITom 原头像备份 |
+| `public/textures/about/backups/awatarnachmurce_ml.webp` | ML 头像备份 |
+
+**冻结项（留给下一阶段）：**
+
+- MENGLAN 入口标识最终视觉效果（需设计师微调手写字体间距）
+- Projects VIEW 按钮旧 ITom 内容
+- Gallery/Studio 房间旧纹理
+- contentData.js 27 条硬编码数据
+- Sanity CMS 动态内容接入（V3）
+
+**构建：** ✅ 通过
+
+**Commit：** 当前提交

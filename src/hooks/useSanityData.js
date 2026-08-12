@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { sanityClient, urlFor, getProxyUrl } from '../config/sanity';
-import { useTexture } from '@react-three/drei';
-import { useLoader } from '@react-three/fiber';
-import { TextureLoader } from 'three';
 
 // Flaga bezpieczeństwa: Jeśli użytkownik nie wpisał jeszcze Project ID, 
 // hooki zwrócą null, co pozwoli na załadowanie danych hardcodowanych (fallback).
@@ -40,6 +37,18 @@ const preloadBrowserImage = (path) => {
 // Sprawdzenie, czy urządzenie obsługuje hover (kursory, komputery)
 const supportsHover = typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches;
 
+// Timeout wrapper for Sanity fetch — prevents preloader from hanging
+// indefinitely when Sanity API is unreachable (default client timeout is ~30s).
+// After timeout, cache.loaded is set to true and local fallback data is used.
+const SANITY_FETCH_TIMEOUT = 8000;
+const withTimeout = (promise, ms) => {
+    let timer;
+    const timeout = new Promise((resolve) => {
+        timer = setTimeout(() => resolve(null), ms);
+    });
+    return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+};
+
 export function loadSanityData() {
     if (!isSanityConfigured) {
         cache.loaded = true;
@@ -56,7 +65,7 @@ export function loadSanityData() {
         try {
             const [projectsData, contentData, awardsData] = await Promise.all([
                 // 1. Projects (Galeria)
-                sanityClient.fetch(`
+                withTimeout(sanityClient.fetch(`
                     *[_type == "galleryProject"] {
                         title,
                         "id": slug.current,
@@ -66,9 +75,9 @@ export function loadSanityData() {
                         paintedImage,
                         techStack
                     }
-                `),
+                `), SANITY_FETCH_TIMEOUT),
                 // 2. Studio Content
-                sanityClient.fetch(`
+                withTimeout(sanityClient.fetch(`
                     *[_type == "studioItem"] {
                         title,
                         platform,
@@ -82,9 +91,9 @@ export function loadSanityData() {
                         duration,
                         readTime
                     } | order(date desc)
-                `),
+                `), SANITY_FETCH_TIMEOUT),
                 // 3. Awards (Certyfikaty w About)
-                sanityClient.fetch(`
+                withTimeout(sanityClient.fetch(`
                     *[_type == "awardCertificate"] {
                         title,
                         category,
@@ -92,36 +101,49 @@ export function loadSanityData() {
                         date,
                         url
                     } | order(date desc)
-                `)
+                `), SANITY_FETCH_TIMEOUT)
             ]);
 
-            // Mapowanie danych galerii i techStack na ścieżki lokalne oraz optymalizacja obrazków z Sanity
-            if (projectsData && projectsData.length > 0) {
-                cache.projects = projectsData.map(p => {
-                    const frontUrl = p.frontImage ? getProxyUrl(urlFor(p.frontImage).width(1024).quality(80).auto('format')) : null;
-                    const paintedUrl = p.paintedImage ? getProxyUrl(urlFor(p.paintedImage).width(1024).quality(80).auto('format')) : null;
-                    return {
-                        ...p,
-                        front: frontUrl,
-                        painted: paintedUrl,
-                        techStack: p.techStack ? p.techStack.map(t => '/textures/gallery/' + t) : []
-                    };
-                });
-            }
+            // ═══════════════════════════════════════════════════════════════════
+            // V1.1.3: Gallery and Studio rooms ALWAYS use local fallback textures.
+            // Sanity CDN URLs are NOT populated into cache.projects / cache.content
+            // because GalleryRoom.jsx and StudioRoom.jsx pass these URLs directly to
+            // Three.js useTexture() / TextureLoader, which throws uncaught errors when
+            // the CDN is unreachable — crashing <CanvasImpl> and causing a white screen.
+            //
+            // When Menglan-branded Gallery/Studio assets are prepared (V3), uncomment
+            // the mappings below and the rooms will use CMS data instead of fallbacks.
+            // ═══════════════════════════════════════════════════════════════════
 
+            // --- DISABLED for V1: Gallery projects from Sanity CDN ---
+            // Mapowanie danych galerii i techStack na ścieżki lokalne oraz optymalizacja obrazków z Sanity
+            // if (projectsData && projectsData.length > 0) {
+            //     cache.projects = projectsData.map(p => {
+            //         const frontUrl = p.frontImage ? getProxyUrl(urlFor(p.frontImage).width(1024).quality(80).auto('format')) : null;
+            //         const paintedUrl = p.paintedImage ? getProxyUrl(urlFor(p.paintedImage).width(1024).quality(80).auto('format')) : null;
+            //         return {
+            //             ...p,
+            //             front: frontUrl,
+            //             painted: paintedUrl,
+            //             techStack: p.techStack ? p.techStack.map(t => '/textures/gallery/' + t) : []
+            //         };
+            //     });
+            // }
+
+            // --- DISABLED for V1: Studio content from Sanity CDN ---
             // Mapowanie danych studio, przypisanie id oraz optymalizacja obrazków z Sanity
-            if (contentData && contentData.length > 0) {
-                cache.content = contentData.map((item, index) => {
-                    const frontTextureUrl = item.frontTexture ? getProxyUrl(urlFor(item.frontTexture).width(1024).quality(80).auto('format')) : null;
-                    const paintedFrontTextureUrl = item.paintedFrontTexture ? getProxyUrl(urlFor(item.paintedFrontTexture).width(1024).quality(80).auto('format')) : null;
-                    return {
-                        ...item,
-                        id: item.platform + '-' + index,
-                        frontTexture: frontTextureUrl,
-                        paintedFrontTexture: paintedFrontTextureUrl
-                    };
-                });
-            }
+            // if (contentData && contentData.length > 0) {
+            //     cache.content = contentData.map((item, index) => {
+            //         const frontTextureUrl = item.frontTexture ? getProxyUrl(urlFor(item.frontTexture).width(1024).quality(80).auto('format')) : null;
+            //         const paintedFrontTextureUrl = item.paintedFrontTexture ? getProxyUrl(urlFor(item.paintedFrontTexture).width(1024).quality(80).auto('format')) : null;
+            //         return {
+            //             ...item,
+            //             id: item.platform + '-' + index,
+            //             frontTexture: frontTextureUrl,
+            //             paintedFrontTexture: paintedFrontTextureUrl
+            //         };
+            //     });
+            // }
 
             // Mapowanie nagród do struktury oczekiwanej przez overlay oraz optymalizacja certyfikatów z Sanity
             if (awardsData && awardsData.length > 0) {
@@ -137,56 +159,57 @@ export function loadSanityData() {
 
                 cache.awards = {
                     sotd: {
-                        id: 'award-sotd',
+                        id: 'project-current',
                         layout: 'certificate_grid',
-                        title: 'Site of the Day Awards',
+                        title: 'Current Project',
                         items: mapItems(awardsData.filter(a => a.category === 'sotd')),
-                        platformConfig: { label: 'ACHIEVEMENT', color: '#1a1a1a', icon: '🏆' }
+                        platformConfig: { label: 'CURRENT', color: '#1a1a1a', icon: '💻' }
                     },
                     sotm: {
-                        id: 'award-sotm',
+                        id: 'project-upcoming',
                         layout: 'certificate_grid',
-                        title: 'Site of the Month Awards',
+                        title: 'Coming Soon',
                         items: mapItems(awardsData.filter(a => a.category === 'sotm')),
-                        platformConfig: { label: 'AWARD', color: '#1a1a1a', icon: '📅' }
+                        platformConfig: { label: 'SOON', color: '#1a1a1a', icon: '🔮' }
                     },
                     other: {
-                        id: 'award-other',
+                        id: 'project-more',
                         layout: 'certificate_grid',
-                        title: 'Other Awards',
+                        title: 'Certifications & Qualifications',
                         items: mapItems(awardsData.filter(a => a.category === 'other')),
-                        platformConfig: { label: 'PRESTIGE', color: '#1a1a1a', icon: '👑' }
+                        platformConfig: { label: 'CERTIFICATIONS', color: '#1a1a1a', icon: '✨' }
                     }
                 };
             }
 
             // PRELOADING ZDJĘĆ/TEKSTUR Z SANITY
-            
-            // 1. Projekty galerii
+            // ⚠️ CRITICAL: Only use preloadBrowserImage() (new Image()) for Sanity CDN URLs.
+            // Do NOT use useTexture.preload() or useLoader.preload(TextureLoader, ...) because
+            // they register with THREE.DefaultLoadingManager, which would REACTIVATE the
+            // loading manager and block the Preloader from exiting if the CDN is unreachable.
+            // (The Preloader waits for DefaultLoadingManager.onLoad to fire.)
+
+            // 1. Projekty galerii — browser-level preload only
             if (cache.projects) {
                 cache.projects.forEach(p => {
                     if (p.front) {
-                        useTexture.preload(p.front);
                         preloadBrowserImage(p.front);
                     }
                     // Optymalizacja mobilna: Ładujemy malowane wersje TYLKO jeśli urządzenie wspiera hover (komputery)
                     if (p.painted && supportsHover) {
-                        useTexture.preload(p.painted);
                         preloadBrowserImage(p.painted);
                     }
                 });
             }
 
-            // 2. Studio
+            // 2. Studio — browser-level preload only
             if (cache.content) {
                 cache.content.forEach(c => {
                     if (c.frontTexture) {
-                        useLoader.preload(TextureLoader, c.frontTexture);
                         preloadBrowserImage(c.frontTexture);
                     }
                     // Optymalizacja mobilna: Ładujemy malowane wersje TYLKO dla komputerów (z myszką/hover)
                     if (c.paintedFrontTexture && supportsHover) {
-                        useLoader.preload(TextureLoader, c.paintedFrontTexture);
                         preloadBrowserImage(c.paintedFrontTexture);
                     }
                 });

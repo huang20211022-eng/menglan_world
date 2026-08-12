@@ -301,6 +301,24 @@ const Preloader = ({ onComplete, ready }) => {
     }
   }, [ready]);
 
+  // === SAFETY NET: Force exit when scene ready, even if loading manager is stuck ===
+  // This prevents Sanity CDN image loads (or any stuck texture load) from blocking
+  // the preloader indefinitely. When sceneReady is true, the 3D scene is functional
+  // — waiting longer for tracked texture loads only blocks the user.
+  useEffect(() => {
+    if (!ready) return;
+
+    const forceTimer = setTimeout(() => {
+      if (exitStarted.current) return;
+      // Force loading complete: deactivate loading state and jump to 100%
+      setActive(false);
+      setRealProgress(100);
+      setTargetProgress(100);
+    }, 2000);
+
+    return () => clearTimeout(forceTimer);
+  }, [ready]);
+
   const startExit = () => {
     exitStarted.current = true;
 

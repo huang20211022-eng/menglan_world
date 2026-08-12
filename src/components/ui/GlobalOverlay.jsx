@@ -237,7 +237,7 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
     });
 
     // --- KONFIGURACJA MASKI (SPOTLIGHT - CZARNA DZIURA) ---
-    const maskStyle = (content.layout === 'certificate_grid') ? {
+    const maskStyle = (content.layout === 'certificate_grid' || content.layout === 'journey') ? {
         maskImage: 'none',
         WebkitMaskImage: 'none'
     } : isMobile ? {
@@ -322,6 +322,16 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                             right: 'auto',
                             bottom: 'auto',
                             transform: isOpen ? 'translate(-50%, -50%)' : 'translate(-50%, 100%)',
+                        } : {}),
+                        // Override styles for journey layout — centered, medium-width card
+                        ...(content.layout === 'journey' ? {
+                            width: isMobile ? '92vw' : 'clamp(320px, 50vw, 600px)',
+                            maxHeight: isMobile ? '70vh' : '80vh',
+                            left: '50%',
+                            top: '50%',
+                            right: 'auto',
+                            bottom: 'auto',
+                            transform: isOpen ? 'translate(-50%, -50%) rotate(-0.5deg)' : 'translate(-50%, 100%) rotate(10deg)',
                         } : {})
                     }}
                     className="studio-paper-card"
@@ -406,8 +416,48 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                         </button>
                     </div>
 
-                    {/* === LAYOUT: CERTIFICATE GRID === */}
-                    {content.layout === 'certificate_grid' ? (
+                    {/* === LAYOUT: JOURNEY TIMELINE === */}
+                    {content.layout === 'journey' ? (
+                        <div
+                            ref={scrollContainerRef}
+                            style={{
+                                flex: 1,
+                                minHeight: 0,
+                                overflowY: 'auto',
+                                overflowX: 'hidden',
+                                padding: isMobile ? '0.5rem 0.5rem 1rem 0.5rem' : '1rem 2rem 2rem 1rem',
+                                ...getStaggerStyle(200)
+                            }}>
+                            {content.items?.map((item, index) => (
+                                <div key={index} style={{
+                                    display: 'flex',
+                                    gap: isMobile ? '0.8rem' : '1.5rem',
+                                    padding: isMobile ? '0.8rem 0' : '1rem 0',
+                                    borderBottom: index < (content.items?.length || 0) - 1 ? '2px dashed #ddd' : 'none',
+                                    alignItems: 'baseline'
+                                }}>
+                                    <span style={{
+                                        fontSize: isMobile ? '0.9rem' : '1.1rem',
+                                        fontWeight: 700,
+                                        color: '#1a1a1a',
+                                        whiteSpace: 'nowrap',
+                                        minWidth: isMobile ? '90px' : '130px',
+                                        fontFamily: "'Cabin Sketch', cursive"
+                                    }}>
+                                        {item.year}
+                                    </span>
+                                    <span style={{
+                                        fontSize: isMobile ? '0.9rem' : '1.05rem',
+                                        color: '#444',
+                                        lineHeight: 1.5,
+                                        fontFamily: "'Cabin Sketch', cursive"
+                                    }}>
+                                        {item.label}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : content.layout === 'certificate_grid' ? (
                         <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
                             <div
                                 ref={scrollContainerRef}

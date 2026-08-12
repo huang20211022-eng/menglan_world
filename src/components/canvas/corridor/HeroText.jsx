@@ -55,22 +55,23 @@ const HeroText = ({ position = [0, 0.3, 0] }) => {
     const worldPosVec = useRef(new THREE.Vector3());
 
     // Letter positions for MENGLAN split effect
+    // Spacing increased from 0.27 to 0.35 for visible breathing room between letters
     const letters = useMemo(() => [
-        { char: 'M', baseX: -0.81, splitDir: -1.6, delay: 0 },
-        { char: 'E', baseX: -0.54, splitDir: -1.1, delay: 0 },
-        { char: 'N', baseX: -0.27, splitDir: -0.55, delay: 0 },
+        { char: 'M', baseX: -1.05, splitDir: -2.1, delay: 0 },
+        { char: 'E', baseX: -0.70, splitDir: -1.4, delay: 0 },
+        { char: 'N', baseX: -0.35, splitDir: -0.7, delay: 0 },
         { char: 'G', baseX: 0, splitDir: 0, delay: 0 },
-        { char: 'L', baseX: 0.27, splitDir: 0.55, delay: 0 },
-        { char: 'A', baseX: 0.54, splitDir: 1.1, delay: 0 },
-        { char: 'N', baseX: 0.81, splitDir: 1.6, delay: 0 },
+        { char: 'L', baseX: 0.35, splitDir: 0.7, delay: 0 },
+        { char: 'A', baseX: 0.70, splitDir: 1.4, delay: 0 },
+        { char: 'N', baseX: 1.05, splitDir: 2.1, delay: 0 },
     ], []);
 
     // Tagline words for split effect
     const taglineWords = useMemo(() => [
-        { text: '<', baseX: -0.85, splitDir: -1.5, delay: 0 },
-        { text: 'AI', baseX: -0.3, splitDir: -0.7, delay: 0 },
+        { text: '<', baseX: -1.1, splitDir: -2.0, delay: 0 },
+        { text: 'AI', baseX: -0.35, splitDir: -0.8, delay: 0 },
         { text: 'Developer', baseX: 0.55, splitDir: 0.8, delay: 0 },
-        { text: '/>', baseX: 0.85, splitDir: 1.5, delay: 0 },
+        { text: '/>', baseX: 1.1, splitDir: 2.0, delay: 0 },
     ], []);
 
     // Animation loop
@@ -137,7 +138,7 @@ const HeroText = ({ position = [0, 0.3, 0] }) => {
             {/* MENGLAN Letters - Rubik Scribble font with fade-in animation */}
             {letters.map((letter, i) => (
                 <Text
-                    key={letter.char}
+                    key={`${letter.char}-${i}`}
                     ref={(el) => (letterRefs.current[i] = el)}
                     position={[letter.baseX, 0.2, 0]}
                     fontSize={0.9}
