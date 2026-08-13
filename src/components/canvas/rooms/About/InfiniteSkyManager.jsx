@@ -3,7 +3,7 @@ import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Text, PositionalAudio } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
-import SkyChunk, { CHUNK_LENGTH, ROOM_Z } from './SkyChunk';
+import SkyChunk, { CHUNK_LENGTH, ROOM_Z, CORRIDOR_CLIP_Z } from './SkyChunk';
 import { useScene } from '../../../../context/SceneContext';
 import '../../shaders/RevealBasicMaterial'; // Registers brush-stroke reveal for BasicMaterial
 import { isTouchDevice } from '../../../../utils/deviceDetect';
@@ -144,10 +144,7 @@ const AwardButton = ({ onClick, texture, paintedTexture, width, height, position
 // Each milestone appears once per "story cycle" (4 chunks = 160 units)
 const STORY_CYCLE_LENGTH = 160;
 
-// === TWARDA LINIA ZANIKANIA DLA MILESTONES (WORLD SPACE) ===
-// Pokój About jest na Z = -25, więc -25 to drzwi pokoju
-// -27 = 2 metry za drzwiami (w głąb pokoju) - musi matchować CORRIDOR_CLIP_Z w SkyChunk
-const MILESTONE_CORRIDOR_CLIP_Z = -8.0;
+// CORRIDOR_CLIP_Z is imported from SkyChunk.jsx (shared constant, value: -8.0)
 
 const InfiniteSkyManager = ({ scrollProgressRef }) => {
     // PRE-CALCULATED FOR scrolProgress = 0
@@ -290,7 +287,7 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
         // worldZ = pokój(-25) + scrollProgress + lokalna pozycja milestone
         const scrollProgress = scrollProgressRef?.current || 0;
         const worldZ = ROOM_Z + scrollProgress + z;
-        groupRef.current.visible = worldZ < MILESTONE_CORRIDOR_CLIP_Z;
+        groupRef.current.visible = worldZ < CORRIDOR_CLIP_Z;
 
         // Skip rest if not visible
         if (!groupRef.current.visible) return;
@@ -640,7 +637,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
 
         const scrollProgress = scrollProgressRef?.current || 0;
         const worldZ = ROOM_Z + scrollProgress + z;
-        groupRef.current.visible = worldZ < MILESTONE_CORRIDOR_CLIP_Z;
+        groupRef.current.visible = worldZ < CORRIDOR_CLIP_Z;
         if (!groupRef.current.visible) return;
 
         const distanceZ = z + scrollProgress - 55;
@@ -916,7 +913,7 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
         // === TWARDA LINIA CLIP (RĘCZNE OBLICZENIE WORLD Z) ===
         const scrollProgress = scrollProgressRef?.current || 0;
         const worldZ = ROOM_Z + scrollProgress + z;
-        groupRef.current.visible = worldZ < MILESTONE_CORRIDOR_CLIP_Z;
+        groupRef.current.visible = worldZ < CORRIDOR_CLIP_Z;
         if (!groupRef.current.visible) return;
 
         const time = state.clock.elapsedTime;
@@ -1488,7 +1485,7 @@ const SkillsMilestone = ({ z, scrollProgressRef }) => {
         // === TWARDA LINIA CLIP (RĘCZNE OBLICZENIE WORLD Z) ===
         const scrollProgress = scrollProgressRef?.current || 0;
         const worldZ = ROOM_Z + scrollProgress + z;
-        groupRef.current.visible = worldZ < MILESTONE_CORRIDOR_CLIP_Z;
+        groupRef.current.visible = worldZ < CORRIDOR_CLIP_Z;
         if (!groupRef.current.visible) return;
 
         timeRef.current = state.clock.elapsedTime;

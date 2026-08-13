@@ -234,6 +234,10 @@ export function loadSanityData() {
             cache.loading = false;
             // Oznaczamy jako załadowane w razie błędu, żeby aplikacja nie wisiała w nieskończoność na preloaderze
             cache.loaded = true;
+        } finally {
+            // Reset fetchPromise so future loadSanityData() calls can retry
+            // instead of returning the same failed/rejected Promise forever.
+            fetchPromise = null;
         }
 
         notifyUpdate();

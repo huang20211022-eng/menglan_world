@@ -692,3 +692,39 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 **构建：** ✅ 通过
 
 **Commit：** 当前提交
+
+---
+
+## 2026-08-13 — Phase 2.1 Task 1: Architecture Stabilization
+
+**模块：** Sanity 重试死锁修复 + 走廊裁剪常量共享
+
+**Task 1A — `fetchPromise` 死锁修复：**
+
+`src/hooks/useSanityData.js` 中存在一个模块级 `let fetchPromise = null`，在 `loadSanityData()` 中一旦发起 Sanity fetch 就赋值，但从未重置。当 Sanity fetch 失败（8s 超时或 reject）后，`fetchPromise` 永久保留为已拒绝的 Promise，导致后续所有 `loadSanityData()` 调用都因 `if (fetchPromise) return fetchPromise` 而直接返回同一个失败的 Promise，只能整页刷新才能恢复。
+
+**修复：** 在 fetch 链的 `finally` 块中重置 `fetchPromise = null`，使失败后未来调用可重新发起请求。不影响 in-flight 请求（`finally` 仅在 Promise settle 后执行）、Local-First fallback、Sanity 配置或 8s 超时机制。
+
+**Task 1B — `CORRIDOR_CLIP_Z` 常量合并：**
+
+`CORRIDOR_CLIP_Z = -8.0` 在 `SkyChunk.jsx`（已导出）与 `InfiniteSkyManager.jsx`（本地 `MILESTONE_CORRIDOR_CLIP_Z`）中重复定义，值必须保持一致。合并为单一来源：
+
+- `SkyChunk.jsx` 继续作为导出方（`export { CHUNK_LENGTH, CORRIDOR_CLIP_Z, ROOM_Z }`）
+- `InfiniteSkyManager.jsx` 移除本地 `MILESTONE_CORRIDOR_CLIP_Z`，改为从 `SkyChunk` 导入 `CORRIDOR_CLIP_Z`，4 处引用同步替换
+
+值保持 `-8.0`，无视觉行为变化。
+
+**修改文件：**
+
+| 文件 | 变更内容 |
+|------|---------|
+| `src/hooks/useSanityData.js` | `finally` 块重置 `fetchPromise = null` |
+| `src/components/canvas/rooms/About/InfiniteSkyManager.jsx` | 导入 `CORRIDOR_CLIP_Z`，移除本地 `MILESTONE_CORRIDOR_CLIP_Z` |
+| `docs/PROJECT_STATUS.md` | 阶段状态覆盖更新 |
+| `docs/CHANGELOG.md` | 本条目 |
+
+**未修改：** Hero、MENGLAN、Entrance、SignSystem、Journey Modal、Education/Career/Skills/Projects、SOTY/SOTD/SOTM、Gallery/Studio/Contact 内容、SEO、Sanity schema、ITom 数据、图片素材。
+
+**构建：** ✅ 通过（11.87s）
+
+**Commit：** 待提交

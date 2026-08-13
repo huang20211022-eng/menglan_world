@@ -6,9 +6,9 @@
 
 ## 当前开发阶段
 
-**阶段 1：品牌重塑 & Hero V1** — ✅ 完成（第一轮）
+**阶段 2：架构规范化** — 🔄 进行中
 
-→ **About Room / Hero 第一轮品牌迁移已完成。项目移交下一阶段。**
+→ **Phase 2.1 架构稳定化 Task 1 已完成（Sanity 重试修复 + 走廊裁剪常量共享）。**
 
 ## 当前版本
 
@@ -36,6 +36,7 @@
 | V1.1.3 Canvas Crash Fix (Gallery/Studio) | ✅ | 已合并 |
 | V1.1.4 Journey Modal + Entrance Hero Refinement | ✅ | 已合并 |
 | V1.1.5 Entrance MENGLAN Typography Refinement | ✅ | 已合并 |
+| Phase 2.1 Task 1 — Sanity 重试修复 + 走廊裁剪常量共享 | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -95,7 +96,12 @@
 
 ## 当前正在开发
 
-**无** — 阶段 1 第一轮已完成，等待下一阶段任务分配。
+**Phase 2.1 — 架构稳定化**（两个纯技术修复，已完成）
+
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| Task 1A | `useSanityData.js` `fetchPromise` 死锁修复（失败后可重试） | ✅ |
+| Task 1B | `CORRIDOR_CLIP_Z` 合并为共享常量（SkyChunk 导出，InfiniteSkyManager 导入） | ✅ |
 
 ---
 
@@ -103,6 +109,7 @@
 
 | 优先级 | 任务 | 阻塞因素 |
 |--------|------|---------|
+| **🟡 P2** | Phase 2.2 — ITom legacy 清理 | 无 |
 | **🟡 P2** | `contentData.js` — 27 条硬编码 Studio 社交媒体数据替换 | 需要社交内容链接 |
 | **🟡 P2** | `MessagePaper.jsx` — 允许域名更新 | 无 |
 | **🟢 P3** | 代码注释清理（Experience, EntranceDoors 等） | 无 |
@@ -140,4 +147,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-12（阶段 1 第一轮完成，移交下一阶段）
+2026-08-13（Phase 2.1 Task 1 完成）
