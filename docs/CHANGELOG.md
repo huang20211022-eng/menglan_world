@@ -785,4 +785,37 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 
 **构建：** ✅ 通过（8.81s）
 
+**Commit：** `91771cd`
+
+---
+
+## 2026-08-13 — Phase 2.2 Task 2B-1: Contact Room Email & Phone Buoys
+
+**模块：** Contact Room 增强 — Email / Phone 信息浮标
+
+**目标：** 在保留现有 GitHub/LinkedIn/YouTube/Website/Message 功能的基础上，新增 Email 和 Phone 两个浮标，点击后通过 GlobalOverlay 打开信息弹窗，风格与 About Education/Career Modal 一致。
+
+**修改内容：**
+
+**`src/components/canvas/rooms/Contact/ContactRoom.jsx`：**
+- `useScene()` 解构新增 `openOverlay`
+- 新增两个 `SocialBarrel` 浮标：
+  - **EMAIL**（desktop `[-4, 0.7, -9]`，mobile `[-1.8, -0.6, -8.5]`）：点击打开 `layout: 'journey'` 弹窗，显示邮箱 `huang20211022@gmail.com`
+  - **PHONE**（desktop `[4, 0.7, -9]`，mobile `[1.8, -0.6, -8.5]`）：点击打开 `layout: 'journey'` 弹窗，显示「Available on request」（无真实号码可填，遵循「严格禁止伪造内容」约束）
+- 复用 `journey` 布局 = About Education/Career Modal 同一视觉风格（居中手撕纸卡 + SVG 撕边 + Cabin Sketch 字体 + 虚线分隔），`maskStyle` 无聚光灯蒙版（与 journey 一致）
+
+**未修改：**
+- 现有 5 个浮标（LINKEDIN/GITHUB/YOUTUBE/WEBSITE/MESSAGE）功能零改动
+- 其他 Room（Gallery/Studio/About）零改动
+- SocialBarrel、GlobalOverlay、SceneContext 组件零改动（仅复用现有 `openOverlay` + `journey` 布局）
+- MessagePaper、音频、海浪、船、灯塔、码头、传送逻辑零改动
+
+**⚠️ 待用户补充：**
+- PHONE 弹窗当前为「Available on request」占位。用户提供真实手机号后替换 `ContactRoom.jsx` 中 PHONE 浮标的 `items[0].label` 即可。
+
+**涉及文件：**
+- `src/components/canvas/rooms/Contact/ContactRoom.jsx`
+
+**构建：** ✅ 通过（5.88s）
+
 **Commit：** 待提交

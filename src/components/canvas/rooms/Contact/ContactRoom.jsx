@@ -93,7 +93,7 @@ const PHASE = {
 
 const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
     const { camera } = useThree();
-    const { isTeleporting } = useScene();
+    const { isTeleporting, openOverlay } = useScene();
     const { showTutorial, unlockAchievement, hidePopup } = useAchievements();
     const { globalVolume, isMuted } = useAudio();
     const effectiveVolume = isMuted ? 0 : AUDIO_SETTINGS.volume * globalVolume;
@@ -434,6 +434,42 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                 texturePath="/textures/contact/beczka.webp"
                 label="WEBSITE"
                 onClick={() => window.open('https://menglan-world-2r44iucp9-menglan.vercel.app/', '_blank')}
+                paintOnBeforeCompile={onBeforeCompile}
+                paintUniforms={uniformsData}
+            />
+            {/* EMAIL (Opens info modal) */}
+            <SocialBarrel
+                position={isMobile ? [-1.8, -0.6, -8.5] : [-4, 0.7, -9]}
+                rotation={[0, 0.2, 0]}
+                texturePath="/textures/contact/beczka.webp"
+                label="EMAIL"
+                onClick={() => openOverlay({
+                    layout: 'journey',
+                    title: 'EMAIL',
+                    platformConfig: { label: 'CONTACT' },
+                    items: [
+                        { year: 'EMAIL', label: 'huang20211022@gmail.com' },
+                        { year: 'NOTE', label: 'For project inquiries, collaborations, or opportunities.' },
+                    ],
+                })}
+                paintOnBeforeCompile={onBeforeCompile}
+                paintUniforms={uniformsData}
+            />
+            {/* PHONE (Opens info modal) */}
+            <SocialBarrel
+                position={isMobile ? [1.8, -0.6, -8.5] : [4, 0.7, -9]}
+                rotation={[0, -0.2, 0]}
+                texturePath="/textures/contact/beczka.webp"
+                label="PHONE"
+                onClick={() => openOverlay({
+                    layout: 'journey',
+                    title: 'PHONE',
+                    platformConfig: { label: 'CONTACT' },
+                    items: [
+                        { year: 'PHONE', label: 'Available on request' },
+                        { year: 'NOTE', label: 'Reach out via email and I will share my number.' },
+                    ],
+                })}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
