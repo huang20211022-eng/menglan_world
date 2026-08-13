@@ -728,3 +728,61 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 **构建：** ✅ 通过（11.87s）
 
 **Commit：** 待提交
+
+---
+
+## 2026-08-13 — Phase 2.2 Task 2A: ITom Legacy Cleanup (User-Visible Content)
+
+**模块：** 用户可见 ITom 遗留内容清理
+
+**目标：** 访客不再看到属于 ITom/Tomasz/Tomasz Szmajda/Young Multi/Monetune/Orpetron/Awwwards/CSS Winner/Design Nominees/tomkingbio.netlify.app/@itompoland/tomasz.szmajda.58/itomdev.com 的内容。
+
+**修改内容：**
+
+**1. Gallery Room — `GalleryRoom.jsx` `FALLBACK_PROJECTS`**
+- 4 个 Tomasz 项目（MONETUNE/TIMBERKITTY/YOUNG MULTI/BIO）→ 3 个 Menglan 项目：
+  - **Menglan World**（Current，url 指向 Vercel 部署）
+  - **Family Menu AI**（Coming Soon，url: null）
+  - **Desktop AI Companion**（Coming Soon，url: null）
+- 纹理仍为占位符（不改变 3D 结构 / 卡片翻转 / 相机 / 纹理加载 / UI）
+- 新增 `if (project.url)` 守卫：Coming Soon 项目点击 OPEN PROJECT 不再跳转到不存在的 URL（`window.open(null)` → about:blank 问题）
+
+**2. About Room — `InfiniteSkyManager.jsx` `LEGACY_AWARDS_DATA`**
+- 删除 Tomasz Awwwards 遗留数据（61 行，零运行时引用）
+- 修复陈旧的 "Legacy AWARDS_DATA preserved below" 注释
+
+**3. Studio Room — `contentData.js` `RAW_CONTENT_DATA`**
+- 28 条（8 yt + 8 blog + 12 tt）Tomasz 内容 → 4 条真实 Menglan 项目 + 24 条占位符
+- 4 条真实内容：Menglan World（已发布，vercel URL）、AI Development / Automation / AI Developer Journey（In Development，url: null）
+- 24 条占位符：标题在 COMING SOON / AI EXPERIMENT / DEVELOPMENT LOG 间循环，描述统一 "This space is reserved for upcoming work"，url: null
+- 保留平台分布 8/8/12、PLATFORM_CONFIG、纹理轮询、getContentByPlatform/getLatestContent
+- 严格禁止伪造内容：无虚构 YouTube/Blog/TikTok URL、真实项目、客户、奖项、文章
+
+**4. README.md — Acknowledgments**
+- Tomasz 版权声明 → Menglan World 身份（LICENSE 已为 © 2026 Menglan Huang）
+- 保留对原始 ITom 开源项目的诚实致谢
+
+**5. MessagePaper.jsx — `ALLOWED_ORIGINS`**
+- `itomdev.com` / `www.itomdev.com` / `portfolio-itom.pages.dev` → `menglan.world` / `www.menglan.world`
+
+**6. sanity.config.js — Studio 标题**
+- `portfolio-itom` → `Menglan World`
+
+**未修改（按要求冻结）：**
+- TODO.md、3 个 .cjs 脚本、备份图片、原始 ITom 纹理
+- ITOM_ANALYSIS.md、CLAUDE.md、REPLACE_CHECKLIST.md
+- Sanity CMS schema、Gallery/Studio 现有图片、Hero、MENGLAN 排版、About Journey、Projects VIEW、Gallery/Studio 3D 结构
+- AchievementsContext 的 `itom_achievements` localStorage 键（推迟到 Task 2B）
+- seo-plugin.js（已确认无 Tomasz/ITom/Awwwards 字符串）
+
+**涉及文件：**
+- `src/components/canvas/rooms/Gallery/GalleryRoom.jsx`
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx`
+- `src/components/canvas/rooms/Studio/contentData.js`
+- `README.md`
+- `src/components/canvas/rooms/Contact/MessagePaper.jsx`
+- `portfolio-itom/sanity.config.js`
+
+**构建：** ✅ 通过（8.81s）
+
+**Commit：** 待提交

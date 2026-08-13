@@ -411,7 +411,6 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
 // ============================================
 // V1 CONTENT BASELINE: Menglan's Projects
 // Replaces original Tomasz Awwwards awards data.
-// Legacy AWARDS_DATA preserved below for reference.
 // ============================================
 const PROJECTS_DATA = {
     featured: {
@@ -470,68 +469,6 @@ const PROJECTS_DATA = {
             label: 'FUTURE',
             color: '#1a1a1a',
             icon: '✨'
-        }
-    }
-};
-
-// ============================================
-// LEGACY: Original Tomasz awards data
-// Preserved for reference. Not used in current UI.
-// Remove when About Room V2/V3 is established.
-// ============================================
-const LEGACY_AWARDS_DATA = {
-    featured: {
-        id: 'award-featured',
-        layout: 'certificate_grid',
-        title: 'Featured Projects Collection',
-        items: [
-            { label: 'Featured - Awwwards', date: 'May 2025', image: '/textures/about/FEATURED.webp', url: 'https://awwwards.com' },
-            { label: 'Featured - CSS Design Awards', date: 'June 2025', image: '/textures/about/FEATURED.webp', url: 'https://cssdesignawards.com' },
-            { label: 'Featured - The FWA', date: 'July 2025', image: '/textures/about/FEATURED.webp', url: 'https://thefwa.com' },
-            { label: 'Featured - Behance', date: 'August 2025', image: '/textures/about/FEATURED.webp', url: 'https://behance.net' },
-        ],
-        platformConfig: {
-            label: 'HONOR',
-            color: '#1a1a1a',
-            icon: '⭐'
-        }
-    },
-    sotd: {
-        id: 'award-sotd',
-        layout: 'certificate_grid',
-        title: 'Site of the Day Awards',
-        items: [
-            { label: 'SOTD - GSAP', date: 'February 13, 2026', image: '/textures/about/SOTDAYYOUNGMULTIGSAP.webp', url: 'https://www.linkedin.com/posts/greensock_site-of-the-day-young-multi-this-immersive-activity-7427567524940017664-zU2n?utm_source=share&utm_medium=member_desktop&rcm=ACoAAE3TV6UBqXoaJXUN5-1s3ij6SQJwTRAcbCM' },
-            { label: 'SOTD - CSS Winner', date: 'January 24, 2026', image: '/textures/about/SOTDAYYOUNGMULTICSSWINNER.webp', url: 'https://www.csswinner.com/details/young-multi-official-experience/19045' },
-            { label: 'SOTD - Orpetron', date: 'January 29, 2026', image: '/textures/about/SOTDAYYOUNGMULTIORPETRON.webp', url: 'https://orpetron.com/sites/young-multi/' },
-            { label: 'SOTD - Design Nominess', date: 'February 17, 2026', image: '/textures/about/SOTDAYYOUNGMULTIDESIGNNOMINESS.webp', url: 'https://www.designnominees.com/sites/young-multi' }
-        ],
-        platformConfig: {
-            label: 'AWARD',
-            color: '#1a1a1a',
-            icon: '🏆'
-        }
-    },
-    sotm: {
-        id: 'award-sotm',
-        layout: 'certificate_grid',
-        title: 'Site of the Month Awards',
-        items: [],
-        platformConfig: {
-            label: 'AWARD',
-            color: '#1a1a1a',
-            icon: '📅'
-        }
-    },
-    other: {
-        id: 'award-other',
-        layout: 'certificate_grid',
-        title: 'Other Awards',
-        items: [],
-        platformConfig: {
-            label: 'PRESTIGE',
-            color: '#1a1a1a',
-            icon: '👑'
         }
     }
 };

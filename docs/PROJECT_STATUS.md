@@ -8,7 +8,8 @@
 
 **阶段 2：架构规范化** — 🔄 进行中
 
-→ **Phase 2.1 架构稳定化 Task 1 已完成（Sanity 重试修复 + 走廊裁剪常量共享）。**
+→ **Phase 2.1 Task 1 架构稳定化已完成（Sanity 重试修复 + 走廊裁剪常量共享）。**
+→ **Phase 2.2 Task 2A ITom 遗留清理已完成（Gallery/About/Studio 用户可见内容 + README + MessagePaper + sanity.config）。**
 
 ## 当前版本
 
@@ -37,6 +38,7 @@
 | V1.1.4 Journey Modal + Entrance Hero Refinement | ✅ | 已合并 |
 | V1.1.5 Entrance MENGLAN Typography Refinement | ✅ | 已合并 |
 | Phase 2.1 Task 1 — Sanity 重试修复 + 走廊裁剪常量共享 | ✅ | 待提交 |
+| Phase 2.2 Task 2A — ITom 遗留用户可见内容清理 | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -87,7 +89,8 @@
 |--------|------|---------|
 | **MENGLAN 入口标识最终视觉效果** | V1.1.5 逐字母定位 + 不透明遮罩已实现技术方案，但手写字体（RubikScribble）的视觉协调性仍需设计师介入微调 | 视觉优化阶段 |
 | **Projects VIEW 按钮内容** | 仍显示旧 ITom/Sanity 项目内容（SOTY/SOTD/SOTM/Certificates）。卡片标签已更正但内部内容未更新。等待 Menglan 品牌的项目截图和卡片纹理 | V2 图片层 |
-| **contentData.js 27 条硬编码数据** | Studio Room 社交媒体内容仍为旧数据 | P2 品牌收尾 |
+| **contentData.js 硬编码数据** | ✅ 已替换为 Menglan 真实内容 + COMING SOON 占位符（Task 2A） | 已完成 |
+| **MessagePaper.jsx 允许域名** | ✅ 已更新为 menglan.world（Task 2A） | 已完成 |
 | **Gallery Room 项目卡片** | 仍使用旧 ITom 纹理 | V2 图片层 |
 | **Studio Room 显示器内容** | 仍使用旧 ITom 纹理 | V2 图片层 |
 | **Sanity CMS 动态内容** | CMS 数据管线已保留但暂停使用（V1.1.2 解耦） | V3 数据层 |
@@ -96,12 +99,12 @@
 
 ## 当前正在开发
 
-**Phase 2.1 — 架构稳定化**（两个纯技术修复，已完成）
+**Phase 2.2 — ITom 遗留清理**
 
 | 任务 | 内容 | 状态 |
 |------|------|------|
-| Task 1A | `useSanityData.js` `fetchPromise` 死锁修复（失败后可重试） | ✅ |
-| Task 1B | `CORRIDOR_CLIP_Z` 合并为共享常量（SkyChunk 导出，InfiniteSkyManager 导入） | ✅ |
+| Task 2A | 用户可见 ITom 遗留内容清理（Gallery/About/Studio + README + MessagePaper + sanity.config） | ✅ |
+| Task 2B | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ⏳ 待开始 |
 
 ---
 
@@ -109,9 +112,7 @@
 
 | 优先级 | 任务 | 阻塞因素 |
 |--------|------|---------|
-| **🟡 P2** | Phase 2.2 — ITom legacy 清理 | 无 |
-| **🟡 P2** | `contentData.js` — 27 条硬编码 Studio 社交媒体数据替换 | 需要社交内容链接 |
-| **🟡 P2** | `MessagePaper.jsx` — 允许域名更新 | 无 |
+| **🟡 P2** | Phase 2.2 Task 2B — `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | 无 |
 | **🟢 P3** | 代码注释清理（Experience, EntranceDoors 等） | 无 |
 | **🟢 P3** | `AchievementsContext.jsx` — localStorage 键名 `itom_achievements` 迁移 | 无 |
 | **🟢 P3** | `public/og-image.webp` + 品牌 favicon 替换 | 需要 OG 图片和 favicon |
@@ -147,4 +148,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-13（Phase 2.1 Task 1 完成）
+2026-08-13（Phase 2.2 Task 2A 完成）

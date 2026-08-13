@@ -34,42 +34,35 @@ export const GALLERY_INTERACTION_AUDIO_SETTINGS = {
 };
 
 // Define the unique projects and their textures
+// V2.2: Rebranded from Tomasz projects to Menglan's current work.
+// Textures are reused as placeholders until Menglan-branded covers are ready.
 const FALLBACK_PROJECTS = [
     {
-        id: 'monetune',
-        title: 'MONETUNE',
+        id: 'menglan-world',
+        title: 'MENGLAN WORLD',
         front: '/textures/gallery/monetuneprzod.webp',
         painted: '/textures/gallery/monetuneprzod_painted.webp',
-        url: 'https://monetune.pl',
-        description: 'MoneTune is a step-by-step blueprint that teaches beginners how to generate passive income using AI-created music. Without any musical skills, you will learn how to easily produce professional tracks, publish them on platforms like Spotify, and monetize your digital assets.',
-        techStack: ['/textures/gallery/wordpresslogo.webp', '/textures/gallery/elementorlogo.webp', '/textures/gallery/phplogo.webp', '/textures/gallery/csslogo.webp']
+        url: 'https://menglan-world-git-main-menglan.vercel.app/',
+        description: 'An interactive 3D portfolio — navigate a hand-drawn infinite corridor and explore four immersive rooms built with React Three Fiber and custom GLSL shaders.',
+        techStack: ['/textures/gallery/reactlogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/jslogo.webp']
     },
     {
-        id: 'timber',
-        title: 'TIMBERKITTY',
+        id: 'family-menu-ai',
+        title: 'FAMILY MENU AI',
         front: '/textures/gallery/timberkittyprzod.webp',
         painted: '/textures/gallery/timberkittyprzod_painted.webp',
-        url: 'https://timberkitty.netlify.app',
-        description: 'TimberKitty is an addictive, free-to-play browser arcade game built in pure JavaScript. Players control a lumberjack cat to chop wood, save birds, complete daily missions, and compete on global leaderboards.',
-        techStack: ['/textures/gallery/jslogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/firebaselogo.webp']
+        url: null,
+        description: 'Coming soon — an AI-powered family menu assistant, currently in development.',
+        techStack: ['/textures/gallery/reactlogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp']
     },
     {
-        id: 'young',
-        title: 'YOUNG MULTI',
+        id: 'desktop-ai-companion',
+        title: 'DESKTOP AI COMPANION',
         front: '/textures/gallery/youngmultiprzod.webp',
         painted: '/textures/gallery/youngmultiprzod_painted.webp',
-        url: 'https://young-multi-strona.netlify.app',
-        description: 'A sleek, modern concept website dedicated to the Polish rapper and creator Young Multi. It serves as a promotional landing page designed to highlight his personal brand, music, and online presence.',
-        techStack: ['/textures/gallery/reactlogo.webp', '/textures/gallery/tailwindlogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/netlifylogo.webp']
-    },
-    {
-        id: 'bio',
-        title: 'BIO',
-        front: '/textures/gallery/bioprzod.webp',
-        painted: '/textures/gallery/bioprzod_painted.webp',
-        url: 'https://tomkingbio.netlify.app',
-        description: 'A fast, modern personal bio page serving as a central hub for my digital footprint. It showcases my latest coding projects, web development services, YouTube videos, and recommended music artists.',
-        techStack: ['/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/netlifylogo.webp']
+        url: null,
+        description: 'Coming soon — a desktop AI companion for everyday tasks and automation.',
+        techStack: ['/textures/gallery/reactlogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/htmllogo.webp']
     },
 ];
 
@@ -1178,7 +1171,8 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                         onClick={(e) => {
                             if (isSelected && !isTransitioning) {
                                 e.stopPropagation();
-                                window.open(project.url, '_blank');
+                                // Guard: coming-soon projects have no URL — avoid opening a blank tab
+                                if (project.url) window.open(project.url, '_blank');
                             }
                         }}
                         onPointerEnter={(e) => {

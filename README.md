@@ -188,7 +188,7 @@ Contributions improving shader physics, 3D math logic, component memoization, or
 
 ## 🙏 Acknowledgments
 
-This project is built upon the original **ITom Dev — Interactive 3D Developer Portfolio**, designed and developed by **Tomasz "ITom" Szmajda**. The original work represents exceptional craftsmanship in creative web development, pushing the boundaries of what's possible with WebGL, React Three Fiber, and custom shader programming.
+Menglan World is an interactive 3D developer portfolio by **Menglan Huang**. It builds upon the open-source **ITom Dev — Interactive 3D Developer Portfolio** by **Tomasz "ITom" Szmajda**, whose original work demonstrates exceptional craftsmanship in creative web development — pushing the boundaries of what's possible with WebGL, React Three Fiber, and custom shader programming.
 
 - Original Author: [Tomasz Szmajda (ITom Dev)](https://itomdev.com)
 - Original Repository: [ITomPoland/portfolio-itom](https://github.com/ITomPoland/portfolio-itom)
@@ -202,7 +202,7 @@ Menglan World carries forward this vision with gratitude and respect for the ori
 The code in this repository is licensed under the [MIT License](LICENSE).
 
 > [!NOTE]
-> All personal assets, 3D textures, images, and copywriting are copyright of Tomasz Szmajda and may not be reused or reproduced without explicit permission.
+> Menglan World and its rebranded content are © 2026 Menglan Huang. The original ITom Dev project remains the work of Tomasz Szmajda.
 
 ---
 
