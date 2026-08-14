@@ -887,4 +887,29 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 
 **构建：** ✅ 通过（6.66s）
 
+**Commit：** `142d1ab`
+
+---
+
+## 2026-08-14 — Phase 2.2 Task 2B-1.7: Reposition Phone Buoy
+
+**模块：** Contact Room Phone 浮标位置调整
+
+**目标：** 删除 Message 桶后 Phone 被移到木桥附近（底部），视觉不协调。将 Phone 移回原 Message 桶的中央偏下位置。
+
+**修改内容：**
+
+- `ContactRoom.jsx` Phone 浮标 `position` 由底部 `[0, -1.6, -8]`（mobile `[0, -1.5, -8]`）改为原 Message 桶位置 `[0, -0.7, -7]`（mobile `[0, -0.7, -6]`）
+- Phone 现在位于 Contact Room 中央偏下，与 Email（顶部中心）上下呼应，不遮挡其他 5 个浮标
+
+**未修改：**
+- Github / LinkedIn / Email / Youtube / Website 零改动
+- GlobalOverlay、openOverlay、journey layout、MessagePaper、音频、海浪、船、灯塔、码头、传送逻辑零改动
+- Gallery / Studio / About / Sanity 零改动
+
+**涉及文件：**
+- `src/components/canvas/rooms/Contact/ContactRoom.jsx`（仅 Phone buoy `position`）
+
+**构建：** ✅ 通过（6.66s）
+
 **Commit：** 待提交

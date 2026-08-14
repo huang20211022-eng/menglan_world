@@ -456,9 +456,9 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* PHONE (Opens info modal) — bottom area */}
+            {/* PHONE (Opens info modal) — center area */}
             <SocialBarrel
-                position={isMobile ? [0, -1.5, -8] : [0, -1.6, -8]}
+                position={isMobile ? [0, -0.7, -6] : [0, -0.7, -7]}
                 rotation={[0, -0.2, 0]}
                 texturePath="/textures/contact/beczka.webp"
                 label="PHONE"

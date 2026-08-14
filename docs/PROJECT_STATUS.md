@@ -13,6 +13,7 @@
 → **Phase 2.2 Task 2B-1 Contact Room Email/Phone 浮标已完成。**
 → **Phase 2.2 Task 2B-1.5 Contact Room 收尾已完成（坐标遮挡修复 + 真实联系方式 + 邮箱 @ 字体修复）。**
 → **Phase 2.2 Task 2B-1.6 Contact Room MESSAGE 桶移除已完成（6 浮标布局平衡）。**
+→ **Phase 2.2 Task 2B-1.7 Contact Room Phone 浮标归位已完成（回原 Message 桶位置）。**
 
 ## 当前版本
 
@@ -44,7 +45,8 @@
 | Phase 2.2 Task 2A — ITom 遗留用户可见内容清理 | ✅ | `91771cd` |
 | Phase 2.2 Task 2B-1 — Contact Room Email/Phone 浮标 | ✅ | `0b249a4` |
 | Phase 2.2 Task 2B-1.5 — Contact Room 收尾（遮挡修复 + 真实联系 + 字体） | ✅ | `be10fe3` |
-| Phase 2.2 Task 2B-1.6 — Contact Room MESSAGE 桶移除 | ✅ | 待提交 |
+| Phase 2.2 Task 2B-1.6 — Contact Room MESSAGE 桶移除 | ✅ | `142d1ab` |
+| Phase 2.2 Task 2B-1.7 — Contact Room Phone 浮标归位 | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -113,6 +115,7 @@
 | Task 2B-1 | Contact Room Email/Phone 信息浮标（GlobalOverlay journey 布局） | ✅ |
 | Task 2B-1.5 | Contact Room 收尾（坐标遮挡修复 + 真实联系方式 + 邮箱 @ 字体修复） | ✅ |
 | Task 2B-1.6 | Contact Room MESSAGE 桶移除（6 浮标布局平衡） | ✅ |
+| Task 2B-1.7 | Contact Room Phone 浮标归位（回原 Message 桶位置） | ✅ |
 | Task 2B-2 | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ⏳ 待开始 |
 
 ---
@@ -157,4 +160,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-14（Phase 2.2 Task 2B-1.6 完成）
+2026-08-14（Phase 2.2 Task 2B-1.7 完成）
