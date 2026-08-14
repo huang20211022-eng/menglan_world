@@ -860,4 +860,31 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 
 **构建：** ✅ 通过（6.86s）
 
+**Commit：** `be10fe3`
+
+---
+
+## 2026-08-14 — Phase 2.2 Task 2B-1.6: Remove MESSAGE Buoy from Contact Room
+
+**模块：** Contact Room 布局清理
+
+**目标：** 移除无实际功能、与 Email/Phone 重复、造成布局拥挤的 MESSAGE 桶，保留 6 个有效浮标。
+
+**修改内容：**
+
+- 从 `ContactRoom.jsx` 移除 `{/* MAIL (Triggers animation) */}` 的 MESSAGE `SocialBarrel` 配置
+- 移除后剩余 6 个浮标：LINKEDIN / GITHUB（左）、YOUTUBE / WEBSITE（右）、EMAIL（顶部中心）/ PHONE（底部中心），左右对称平衡、无空洞
+- `handleMailSelect` 函数保留：其内部 WRITING/ROLLING/HOLDING/THROWING 消息流仍为注释掉的冻结功能（见 CLAUDE.md「Contact Room 消息表单未完成」），未在本次范围删除
+
+**未修改：**
+- GlobalOverlay、openOverlay 系统、journey layout 零改动
+- MessagePaper 组件、音频、海浪、船、灯塔、码头、传送逻辑零改动
+- 其余 6 个浮标（LINKEDIN/GITHUB/YOUTUBE/WEBSITE/EMAIL/PHONE）零改动
+- Gallery / Studio / About / Sanity 零改动
+
+**涉及文件：**
+- `src/components/canvas/rooms/Contact/ContactRoom.jsx`
+
+**构建：** ✅ 通过（6.66s）
+
 **Commit：** 待提交

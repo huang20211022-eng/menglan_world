@@ -474,18 +474,6 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* MAIL (Triggers animation) */}
-            <SocialBarrel
-                position={isMobile ? [0, -0.7, -6] : [0, -0.7, -7]}
-                rotation={[0, 0, 0]}
-                texturePath="/textures/contact/beczka.webp"
-                label="MESSAGE"
-                onClick={handleMailSelect}
-                paintOnBeforeCompile={onBeforeCompile}
-                paintUniforms={uniformsData}
-            />
-
-
             {/* 🏖️ DOCK / MOLO */}
             <mesh
                 position={[0, 0.05, 1.8]}
