@@ -14,6 +14,7 @@
 → **Phase 2.2 Task 2B-1.5 Contact Room 收尾已完成（坐标遮挡修复 + 真实联系方式 + 邮箱 @ 字体修复）。**
 → **Phase 2.2 Task 2B-1.6 Contact Room MESSAGE 桶移除已完成（6 浮标布局平衡）。**
 → **Phase 2.2 Task 2B-1.7 Contact Room Phone 浮标归位已完成（回原 Message 桶位置）。**
+→ **Phase 2.2 Task 2B-2 ITom 内部遗留清理已完成（成就键重命名 + 走廊/入口注释清理）。**
 
 ## 当前版本
 
@@ -46,7 +47,8 @@
 | Phase 2.2 Task 2B-1 — Contact Room Email/Phone 浮标 | ✅ | `0b249a4` |
 | Phase 2.2 Task 2B-1.5 — Contact Room 收尾（遮挡修复 + 真实联系 + 字体） | ✅ | `be10fe3` |
 | Phase 2.2 Task 2B-1.6 — Contact Room MESSAGE 桶移除 | ✅ | `142d1ab` |
-| Phase 2.2 Task 2B-1.7 — Contact Room Phone 浮标归位 | ✅ | 待提交 |
+| Phase 2.2 Task 2B-1.7 — Contact Room Phone 浮标归位 | ✅ | `9be0014` |
+| Phase 2.2 Task 2B-2 — ITom 内部遗留清理（成就键 + 注释） | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -116,7 +118,7 @@
 | Task 2B-1.5 | Contact Room 收尾（坐标遮挡修复 + 真实联系方式 + 邮箱 @ 字体修复） | ✅ |
 | Task 2B-1.6 | Contact Room MESSAGE 桶移除（6 浮标布局平衡） | ✅ |
 | Task 2B-1.7 | Contact Room Phone 浮标归位（回原 Message 桶位置） | ✅ |
-| Task 2B-2 | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ⏳ 待开始 |
+| Task 2B-2 | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ✅ |
 
 ---
 
@@ -124,9 +126,6 @@
 
 | 优先级 | 任务 | 阻塞因素 |
 |--------|------|---------|
-| **🟡 P2** | Phase 2.2 Task 2B-2 — `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | 无 |
-| **🟢 P3** | 代码注释清理（Experience, EntranceDoors 等） | 无 |
-| **🟢 P3** | `AchievementsContext.jsx` — localStorage 键名 `itom_achievements` 迁移 | 无 |
 | **🟢 P3** | `public/og-image.webp` + 品牌 favicon 替换 | 需要 OG 图片和 favicon |
 | **🟢 P3** | About Room V2 — 替换项目卡片纹理 + 项目截图 | 等待 P3 素材 |
 | **🔵 Future** | About Room V3 — Sanity CMS 动态内容接入 | 依赖 V1+V2 完成 |
@@ -160,4 +159,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-14（Phase 2.2 Task 2B-1.7 完成）
+2026-08-14（Phase 2.2 Task 2B-2 完成）

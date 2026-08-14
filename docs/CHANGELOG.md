@@ -912,4 +912,50 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 
 **构建：** ✅ 通过（6.66s）
 
+**Commit：** `9be0014`
+
+---
+
+## 2026-08-14 — Phase 2.2 Task 2B-2: ITom Internal Legacy Cleanup
+
+**模块：** 代码内部 ITom 遗留引用清理
+
+**目标：** 清理代码内部用户不可见的 ITom 遗留引用，不影响现有功能。
+
+**修改内容：**
+
+**1. localStorage 成就键重命名**
+- `AchievementsContext.jsx`：`itom_achievements` → `menglan_world_achievements`（3 处读写，提取为模块级 `STORAGE_KEY` 常量，避免魔法字符串）
+
+**2. 走廊/入口组件陈旧注释清理（ITOM → MENGLAN / branding）**
+- `Experience.jsx`：`ITOM/Avatar` → `MENGLAN/Avatar`、`corridor with ITOM` → `corridor with MENGLAN`
+- `EmptyCorridor.jsx`：`no ITOM` → `no branding text`
+- `EntranceDoors.jsx`：`avatar/ITOM` → `avatar/branding`
+- `CorridorSegment.jsx`：`ITOM text / ITOM letters` → `MENGLAN text / MENGLAN letters`
+
+**分类处理结果（搜索 ITom / Tomasz / portfolio-itom）：**
+
+| 分类 | 处理 | 位置 |
+|------|------|------|
+| 状态 key | ✅ 替换 | `AchievementsContext.jsx` `itom_achievements` |
+| 陈旧注释 | ✅ 替换 | 走廊/入口 4 个组件 |
+| 保留（版权/开源感谢） | ⏸️ 保留 | README 原仓库 `ITomPoland/portfolio-itom` 链接 |
+| 保留（原素材备份说明） | ⏸️ 保留 | `texturePreloadList.js`「Legacy Tomasz, preserved as backup」 |
+| 保留（reband 历史注释） | ⏸️ 保留 | Gallery / Studio / About 内 rebrand 说明注释（受「不要修改 Gallery/Studio/About」约束） |
+| 保留（受保护脚本） | ⏸️ 保留 | `About/*.cjs`（含 `tomsz` / `portfolio-itom` 路径） |
+| 保留（Sanity Studio） | ⏸️ 保留 | `portfolio-itom/` 目录 + npm 包名 + `globalInfo.js` schema 描述（受「不要修改 Sanity schema」约束） |
+
+**未修改：**
+- Gallery / Studio / About 视觉内容 / Contact / Sanity schema 零改动
+- 功能零改动（仅键名 + 注释）
+
+**涉及文件：**
+- `src/context/AchievementsContext.jsx`
+- `src/components/canvas/Experience.jsx`
+- `src/components/canvas/entrance/EmptyCorridor.jsx`
+- `src/components/canvas/entrance/EntranceDoors.jsx`
+- `src/components/canvas/corridor/CorridorSegment.jsx`
+
+**构建：** ✅ 通过（6.36s）
+
 **Commit：** 待提交
