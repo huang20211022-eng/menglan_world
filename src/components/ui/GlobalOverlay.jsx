@@ -450,7 +450,11 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                                         fontSize: isMobile ? '0.9rem' : '1.05rem',
                                         color: '#444',
                                         lineHeight: 1.5,
-                                        fontFamily: "'Cabin Sketch', cursive"
+                                        // Contact values (emails, phone) use sans-serif: the Cabin Sketch
+                                        // @ and CJK glyphs render poorly. Opt-in via `item.sans`.
+                                        fontFamily: item.sans
+                                            ? "system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+                                            : "'Cabin Sketch', cursive"
                                     }}>
                                         {item.label}
                                     </span>

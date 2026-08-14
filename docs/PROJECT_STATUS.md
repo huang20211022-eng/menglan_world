@@ -11,6 +11,7 @@
 → **Phase 2.1 Task 1 架构稳定化已完成（Sanity 重试修复 + 走廊裁剪常量共享）。**
 → **Phase 2.2 Task 2A ITom 遗留清理已完成（Gallery/About/Studio 用户可见内容 + README + MessagePaper + sanity.config）。**
 → **Phase 2.2 Task 2B-1 Contact Room Email/Phone 浮标已完成。**
+→ **Phase 2.2 Task 2B-1.5 Contact Room 收尾已完成（坐标遮挡修复 + 真实联系方式 + 邮箱 @ 字体修复）。**
 
 ## 当前版本
 
@@ -40,7 +41,8 @@
 | V1.1.5 Entrance MENGLAN Typography Refinement | ✅ | 已合并 |
 | Phase 2.1 Task 1 — Sanity 重试修复 + 走廊裁剪常量共享 | ✅ | `1267a07` |
 | Phase 2.2 Task 2A — ITom 遗留用户可见内容清理 | ✅ | `91771cd` |
-| Phase 2.2 Task 2B-1 — Contact Room Email/Phone 浮标 | ✅ | 待提交 |
+| Phase 2.2 Task 2B-1 — Contact Room Email/Phone 浮标 | ✅ | `0b249a4` |
+| Phase 2.2 Task 2B-1.5 — Contact Room 收尾（遮挡修复 + 真实联系 + 字体） | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -107,6 +109,7 @@
 |------|------|------|
 | Task 2A | 用户可见 ITom 遗留内容清理（Gallery/About/Studio + README + MessagePaper + sanity.config） | ✅ |
 | Task 2B-1 | Contact Room Email/Phone 信息浮标（GlobalOverlay journey 布局） | ✅ |
+| Task 2B-1.5 | Contact Room 收尾（坐标遮挡修复 + 真实联系方式 + 邮箱 @ 字体修复） | ✅ |
 | Task 2B-2 | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ⏳ 待开始 |
 
 ---
@@ -116,7 +119,6 @@
 | 优先级 | 任务 | 阻塞因素 |
 |--------|------|---------|
 | **🟡 P2** | Phase 2.2 Task 2B-2 — `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | 无 |
-| **🟡 P2** | Contact Room PHONE 浮标真实号码（当前「Available on request」占位） | 需用户提供手机号 |
 | **🟢 P3** | 代码注释清理（Experience, EntranceDoors 等） | 无 |
 | **🟢 P3** | `AchievementsContext.jsx` — localStorage 键名 `itom_achievements` 迁移 | 无 |
 | **🟢 P3** | `public/og-image.webp` + 品牌 favicon 替换 | 需要 OG 图片和 favicon |
@@ -152,4 +154,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-13（Phase 2.2 Task 2B-1 完成）
+2026-08-14（Phase 2.2 Task 2B-1.5 完成）

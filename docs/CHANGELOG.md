@@ -818,4 +818,46 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 
 **构建：** ✅ 通过（5.88s）
 
+**Commit：** `0b249a4`
+
+---
+
+## 2026-08-14 — Phase 2.2 Task 2B-1.5: Contact Room Final Polish
+
+**模块：** Contact Room Email / Phone 浮标收尾
+
+**目标：** 修复浮标遮挡、填充真实联系方式、修复邮箱 @ 字体异常。仅改 Contact Room（+ GlobalOverlay journey 布局的可选字体支持），不影响其他 Room。
+
+**修改内容：**
+
+**1. 浮标坐标重排（修复遮挡）**
+- **EMAIL** 移到顶部区域：desktop `[0, 1.4, -9]`，mobile `[0, 1.3, -9]`（原 `[-4, 0.7, -9]` 挡住 LinkedIn）
+- **PHONE** 移到底部区域：desktop `[0, -1.6, -8]`，mobile `[0, -1.5, -8]`（原 `[4, 0.7, -9]` 挡住 YouTube）
+- 现在 Email/Phone 与 LinkedIn/YouTube 的 X 轴距离 ≥3，与 GitHub/Website 距离 ≥3，不再重叠
+
+**2. Phone 内容**
+- `电话: (+86) 18377400771`
+- `备注: Available for professional communication.`
+
+**3. Email 内容**
+- `主要邮箱: huang20211022@gmail.com`
+- `备用邮箱: 1981273089@qq.com`
+- `备注: 用于项目咨询、合作和交流。`
+
+**4. 邮箱 @ 字体修复**
+- `GlobalOverlay.jsx` journey 布局新增可选 `item.sans` 标志
+- `sans: true` 时 label 值使用 `system-ui / sans-serif`，否则保持原 Cabin Sketch（About Education/Career Modal 不受影响）
+- Email 地址、Phone 号码、备注值均标记 `sans: true`（@ 符号 + CJK 字符在 Cabin Sketch 下渲染异常）
+
+**未修改：**
+- 现有 5 个浮标（LINKEDIN/GITHUB/YOUTUBE/WEBSITE/MESSAGE）零改动
+- Gallery / Studio / About / Sanity 零改动
+- About Education/Career Modal 字体零改动（`item.sans` 为可选 opt-in，默认行为不变）
+
+**涉及文件：**
+- `src/components/canvas/rooms/Contact/ContactRoom.jsx`
+- `src/components/ui/GlobalOverlay.jsx`（仅 journey label 字体可选化）
+
+**构建：** ✅ 通过（6.86s）
+
 **Commit：** 待提交

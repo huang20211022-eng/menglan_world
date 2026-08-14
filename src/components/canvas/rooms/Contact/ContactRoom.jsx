@@ -437,9 +437,9 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* EMAIL (Opens info modal) */}
+            {/* EMAIL (Opens info modal) — top area */}
             <SocialBarrel
-                position={isMobile ? [-1.8, -0.6, -8.5] : [-4, 0.7, -9]}
+                position={isMobile ? [0, 1.3, -9] : [0, 1.4, -9]}
                 rotation={[0, 0.2, 0]}
                 texturePath="/textures/contact/beczka.webp"
                 label="EMAIL"
@@ -448,16 +448,17 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                     title: 'EMAIL',
                     platformConfig: { label: 'CONTACT' },
                     items: [
-                        { year: 'EMAIL', label: 'huang20211022@gmail.com' },
-                        { year: 'NOTE', label: 'For project inquiries, collaborations, or opportunities.' },
+                        { year: 'PRIMARY EMAIL', label: 'huang20211022@gmail.com', sans: true },
+                        { year: 'BACKUP EMAIL', label: '1981273089@qq.com', sans: true },
+                        { year: 'NOTE', label: '用于项目咨询、合作和交流。', sans: true },
                     ],
                 })}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* PHONE (Opens info modal) */}
+            {/* PHONE (Opens info modal) — bottom area */}
             <SocialBarrel
-                position={isMobile ? [1.8, -0.6, -8.5] : [4, 0.7, -9]}
+                position={isMobile ? [0, -1.5, -8] : [0, -1.6, -8]}
                 rotation={[0, -0.2, 0]}
                 texturePath="/textures/contact/beczka.webp"
                 label="PHONE"
@@ -466,8 +467,8 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                     title: 'PHONE',
                     platformConfig: { label: 'CONTACT' },
                     items: [
-                        { year: 'PHONE', label: 'Available on request' },
-                        { year: 'NOTE', label: 'Reach out via email and I will share my number.' },
+                        { year: 'PHONE', label: '(+86) 18377400771', sans: true },
+                        { year: 'NOTE', label: 'Available for professional communication.', sans: true },
                     ],
                 })}
                 paintOnBeforeCompile={onBeforeCompile}
