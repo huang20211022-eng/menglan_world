@@ -959,3 +959,53 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 **构建：** ✅ 通过（6.36s）
 
 **Commit：** 待提交
+
+---
+
+## 2026-08-18 — Phase 2.3 Task 2C-1: About Projects & Professional Profile Content
+
+**模块：** About Room Projects / Skills / Credentials / Coming Soon 内容重构
+
+**目标：** 重构 About Room 的 Projects / Skills / Credentials / Coming Soon 数据结构，建立共享素材目录与 Asset Checklist，为 V2 图片层做准备。
+
+**修改内容：**
+
+**1. 新建共享素材目录（6 个，About/Gallery/Studio 共享，`.gitkeep` 占位）**
+- `public/textures/projects/{menglan-world, family-menu-ai, ai-rpa-enterprise}/`
+- `public/textures/certifications/{cet6, rpa, master}/`
+
+**2. Projects 数据结构（3 个当前项目，`PROJECTS` 常量）**
+- Menglan World（3D AI Portfolio，Current，GitHub + Vercel Demo 链接）
+- AI Family Menu Assistant（AI Application，Prototype，无链接）
+- AI & RPA Enterprise Solutions（Enterprise AI Application，Completed，无链接）
+
+**3. Professional Capabilities（6 项，`PROFESSIONAL_CAPABILITIES` 常量，非"官方认证"）**
+- Azure Cloud Support / Artificial Intelligence / Python Programming / Modern Web Development / Workflow Automation / AI Agent & Prompt Engineering
+
+**4. Professional Credentials（4 项真实凭证，`PROFESSIONAL_CREDENTIALS` 常量）**
+- CET-6（2022）/ RPA Advanced Certification（2025）/ Master of Computer Technology（2024）/ Bachelor of Software Engineering（暂无图片）
+
+**5. Coming Soon（3 项，`COMING_SOON` 常量）**
+- AI Agents Platform / AI Mobile Applications / AI + 3D Interactive Experience
+
+**6. 卡片标签与 Skills 更新**
+- `CURRENT` → `PROJECTS`、`CERTIFICATIONS` → `CREDENTIALS`
+- Skills 副标题 `AI • Automation • Cloud • Development` → `Professional Capabilities`
+- `BALLOON_CONFIG` 顶部注释新增 6 项能力归类映射
+
+**未修改：**
+- Gallery / Studio / Contact / Hero / Entrance / Camera / GSAP / Shader / Sanity / GlobalOverlay 基础结构零改动
+- 未删除任何原素材（SOTY/SOTD/SOTM、painted 纹理、ITom 纹理、备份）
+- 未复制已有图片到新目录（目录留空，等新图片提供）
+
+**涉及文件：**
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx`
+- `public/textures/projects/**/.gitkeep`（6 个新目录）
+- `public/textures/certifications/**/.gitkeep`（6 个新目录）
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+- `docs/ABOUT_CONTENT_PLAN.md`
+
+**构建：** ✅ 通过（10.12s）
+
+**Commit：** 待提交

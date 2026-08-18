@@ -639,3 +639,113 @@ InfiniteSkyManager.jsx: AwardButton onClick
 - SOTDAYYOUNGMULTI*.webp × 4 — legacy backup
 - All original balloon textures — legacy backup
 - All original island textures — legacy backup
+
+---
+
+## Phase 2.3 Content Restructure (2026-08-18)
+
+> **Status:** ✅ Completed
+>
+> About Room 的 Projects / Skills / Credentials / Coming Soon 数据结构已重构为 Menglan 真实内容，并建立共享素材目录与 Asset Checklist，为 V2 图片层做准备。
+
+### Confirmed Content Structures
+
+#### Current Projects (3)
+
+| # | 项目 | 类别 | 状态 | 链接 |
+|---|------|------|------|------|
+| 1 | Menglan World | 3D AI Portfolio | Current | GitHub `huang20211022-eng/menglan_world` + Demo（Vercel） |
+| 2 | AI Family Menu Assistant | AI Application | Prototype | 无（未提供） |
+| 3 | AI & RPA Enterprise Solutions | Enterprise AI Application | Completed | 无（未提供） |
+
+> 未伪造截图 / URL / 客户名称。仅 Menglan World 有真实 GitHub + Demo 链接。
+
+#### Professional Capabilities (6，非"官方认证")
+
+1. Azure Cloud Support
+2. Artificial Intelligence
+3. Python Programming
+4. Modern Web Development
+5. Workflow Automation
+6. AI Agent & Prompt Engineering
+
+> 6 项能力是技能分组，**不是**认证。10 个技能气球（Python/AI/Prompt/Claude/Git/RAG/SQL/RPA/Coze/Azure）按此 6 项能力归类（详见 `InfiniteSkyManager.jsx` `BALLOON_CONFIG` 顶部注释）。
+
+#### Professional Credentials (4，真实凭证)
+
+| # | 凭证 | 日期 | 图片 |
+|---|------|------|------|
+| 1 | CET-6 | 2022 | 现有 `CET6.webp` |
+| 2 | RPA Advanced Certification | 2025 | 现有 `RPAcertification.webp` |
+| 3 | Master of Computer Technology | 2024 | 现有 `MSdegree.webp` |
+| 4 | Bachelor of Software Engineering | — | ⬜ 暂无图片（不伪造） |
+
+#### Coming Soon (3)
+
+1. AI Agents Platform
+2. AI Mobile Applications
+3. AI + 3D Interactive Experience
+
+> 全部 `COMING SOON`，无伪造链接 / 状态 / 截图。
+
+### 卡片标签变更
+
+| 原标签 | 新标签 |
+|--------|--------|
+| `CURRENT` | `PROJECTS` |
+| `CERTIFICATIONS` | `CREDENTIALS` |
+| Skills 副标题 `AI • Automation • Cloud • Development` | `Professional Capabilities` |
+
+### 新建共享素材目录（6 个，About/Gallery/Studio 共享）
+
+```
+public/textures/projects/
+  ├── menglan-world/        ← 项目截图（待提供）
+  ├── family-menu-ai/       ← 项目截图（待提供）
+  └── ai-rpa-enterprise/    ← 项目截图（待提供）
+public/textures/certifications/
+  ├── cet6/                 ← CET-6 凭证图片（待提供）
+  ├── rpa/                  ← RPA 凭证图片（待提供）
+  └── master/               ← 硕士凭证图片（待提供）
+```
+
+> 目录已用 `.gitkeep` 占位提交。现有凭证图片仍位于 `/textures/about/ml/`（本次不复制、不迁移，等新图片提供后再替换路径）。
+
+### Phase 2.3 Asset Checklist（V2 图片层所需素材）
+
+#### 项目截图（每个项目 2 张，共 6 张）
+
+| 项目 | 推荐文件 | 推荐尺寸 | 优先级 |
+|------|---------|---------|--------|
+| Menglan World | `projects/menglan-world/hero.webp` | ≥1280×800（16:10，主视觉截图） | P0 |
+| | `projects/menglan-world/gallery.webp` | ≥1280×800（走廊/房间细节） | P1 |
+| AI Family Menu Assistant | `projects/family-menu-ai/home.webp` | ≥1080×1920 或 1280×800（App 首页） | P1 |
+| | `projects/family-menu-ai/menu.webp` | 同上（菜谱/菜单页） | P1 |
+| AI & RPA Enterprise Solutions | `projects/ai-rpa-enterprise/dashboard.webp` | ≥1280×800（看板/后台） | P1 |
+| | `projects/ai-rpa-enterprise/workflow.webp` | 同上（工作流图） | P1 |
+
+#### 凭证图片（4 张，Bachelor 暂无）
+
+| 凭证 | 推荐文件 | 推荐尺寸 | 优先级 |
+|------|---------|---------|--------|
+| CET-6 | `certifications/cet6/cet6.webp` | ≥1200×900（4:3，证书扫描件） | P0 |
+| RPA Advanced Certification | `certifications/rpa/rpa-certification.webp` | ≥1200×900（4:3） | P0 |
+| Master of Computer Technology | `certifications/master/master-degree.webp` | ≥1200×900（4:3） | P0 |
+| Bachelor of Software Engineering | ⬜ 未提供 | — | P2 |
+
+#### 待提供素材汇总（缺失清单）
+
+| 类别 | 缺失数量 | 说明 |
+|------|---------|------|
+| 项目截图 | 6 张 | 全部待提供，当前用 SOTY/SOTD/SOTM 占位 |
+| 凭证图片 | 1 张 | Bachelor（暂无）；另 3 张现用 `/textures/about/ml/` 旧路径，待迁移 |
+
+### 数据流说明
+
+- `InfiniteSkyManager.jsx` 新增 4 个常量：`PROJECTS` / `PROFESSIONAL_CAPABILITIES` / `PROFESSIONAL_CREDENTIALS` / `COMING_SOON`
+- `PROJECTS_DATA`（`featured`/`sotd`/`sotm`/`other`）由上述 4 个常量派生，保持与 `AwardsMilestone` 渲染的兼容性
+- `useSanityData.js` 仍可能覆盖本地 `PROJECTS_DATA`（Sanity 当前已解耦，本地 fallback 生效）
+- 图片缺失项在 GlobalOverlay 中回退为透明占位（`item.image || 'data:image/gif;base64,...'`），不会崩溃
+
+---
+

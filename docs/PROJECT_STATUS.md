@@ -15,6 +15,7 @@
 → **Phase 2.2 Task 2B-1.6 Contact Room MESSAGE 桶移除已完成（6 浮标布局平衡）。**
 → **Phase 2.2 Task 2B-1.7 Contact Room Phone 浮标归位已完成（回原 Message 桶位置）。**
 → **Phase 2.2 Task 2B-2 ITom 内部遗留清理已完成（成就键重命名 + 走廊/入口注释清理）。**
+→ **Phase 2.3 Task 2C-1 About Room Projects/Capabilities/Credentials 内容重构已完成（数据结构 + 共享素材目录 + Asset Checklist）。**
 
 ## 当前版本
 
@@ -49,6 +50,7 @@
 | Phase 2.2 Task 2B-1.6 — Contact Room MESSAGE 桶移除 | ✅ | `142d1ab` |
 | Phase 2.2 Task 2B-1.7 — Contact Room Phone 浮标归位 | ✅ | `9be0014` |
 | Phase 2.2 Task 2B-2 — ITom 内部遗留清理（成就键 + 注释） | ✅ | 待提交 |
+| Phase 2.3 Task 2C-1 — About Projects/Capabilities/Credentials 内容重构 | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -109,7 +111,7 @@
 
 ## 当前正在开发
 
-**Phase 2.2 — ITom 遗留清理**
+**Phase 2.3 — About Room 内容重构**
 
 | 任务 | 内容 | 状态 |
 |------|------|------|
@@ -119,6 +121,7 @@
 | Task 2B-1.6 | Contact Room MESSAGE 桶移除（6 浮标布局平衡） | ✅ |
 | Task 2B-1.7 | Contact Room Phone 浮标归位（回原 Message 桶位置） | ✅ |
 | Task 2B-2 | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ✅ |
+| Task 2C-1 | About Projects / Capabilities / Credentials / Coming Soon 内容重构 + 共享素材目录 + Asset Checklist | ✅ |
 
 ---
 
@@ -159,4 +162,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-14（Phase 2.2 Task 2B-2 完成）
+2026-08-18（Phase 2.3 Task 2C-1 完成）

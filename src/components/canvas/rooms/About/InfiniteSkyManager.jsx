@@ -409,74 +409,135 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
 };
 
 // ============================================
-// V1 CONTENT BASELINE: Menglan's Projects
-// Replaces original Tomasz Awwwards awards data.
+// PHASE 2.3 CONTENT: Menglan's Projects, Capabilities & Credentials
+// Replaces the V1 baseline (original Tomasz Awwwards data) with the confirmed
+// Phase 2.3 content: 3 current projects, 6 professional capabilities,
+// 4 professional credentials, 3 coming-soon items.
+//
+// NOTE ON IMAGES: Project screenshots and credential images live in
+// /textures/projects/* and /textures/certifications/* (see
+// docs/ABOUT_CONTENT_PLAN.md §Asset Checklist). Until those assets are
+// supplied, projects keep the legacy SOTY/SOTD/SOTM placeholder textures and
+// credentials keep the existing /textures/about/ml/* images — no fabricated
+// screenshots or URLs.
 // ============================================
+
+// --- Current Projects (3) ---
+const PROJECTS = [
+    {
+        id: 'menglan-world',
+        name: 'Menglan World',
+        category: '3D AI Portfolio',
+        description: 'An interactive 3D portfolio world combining AI, web technologies, and creative storytelling.',
+        tech: ['React Three Fiber', 'Three.js', 'React', 'AI-assisted Development'],
+        status: 'Current',
+        links: {
+            github: 'https://github.com/huang20211022-eng/menglan_world/',
+            demo: 'https://menglan-world-git-main-menglan.vercel.app/',
+        },
+        assetDir: '/textures/projects/menglan-world/',
+    },
+    {
+        id: 'family-menu-ai',
+        name: 'AI Family Menu Assistant',
+        category: 'AI Application',
+        description: 'An AI-powered meal-planning assistant for family daily cooking.',
+        tech: ['Android', 'Flutter', 'Claude'],
+        status: 'Prototype',
+        links: {},
+        assetDir: '/textures/projects/family-menu-ai/',
+    },
+    {
+        id: 'ai-rpa-enterprise',
+        name: 'AI & RPA Enterprise Solutions',
+        category: 'Enterprise AI Application',
+        description: 'Enterprise AI solutions combining knowledge-base Q&A with RPA automation and business workflow deployment.',
+        tech: ['Python', 'AI', 'RAG', 'RPA'],
+        status: 'Completed',
+        links: {},
+        assetDir: '/textures/projects/ai-rpa-enterprise/',
+    },
+];
+
+// --- Professional Capabilities (6) ---
+// These are skills/capabilities — NOT official certifications.
+const PROFESSIONAL_CAPABILITIES = [
+    { name: 'Azure Cloud Support', description: 'Microsoft Azure cloud support and technical troubleshooting.' },
+    { name: 'Artificial Intelligence', description: 'Large language models, AI application development, and Claude Code.' },
+    { name: 'Python Programming', description: 'Python development, automation scripts, and data processing.' },
+    { name: 'Modern Web Development', description: 'React, Three.js, and interactive web experiences.' },
+    { name: 'Workflow Automation', description: 'RPA, AI agents, and business process automation.' },
+    { name: 'AI Agent & Prompt Engineering', description: 'Prompt engineering and AI agent design.' },
+];
+
+// --- Professional Credentials (4, real only) ---
+// Bachelor has no image yet — rendered without one (no fabricated certificate).
+const PROFESSIONAL_CREDENTIALS = [
+    { name: 'CET-6', date: '2022', image: '/textures/about/ml/CET6.webp', targetDir: '/textures/certifications/cet6/' },
+    { name: 'RPA Advanced Certification', date: '2025', image: '/textures/about/ml/RPAcertification.webp', targetDir: '/textures/certifications/rpa/' },
+    { name: 'Master of Computer Technology', date: '2024', image: '/textures/about/ml/MSdegree.webp', targetDir: '/textures/certifications/master/' },
+    { name: 'Bachelor of Software Engineering', date: '', image: '', targetDir: '' },
+];
+
+// --- Coming Soon (3) ---
+const COMING_SOON = [
+    { name: 'AI Agents Platform', description: 'Intelligent AI agents for productivity and automation.' },
+    { name: 'AI Mobile Applications', description: 'AI-powered mobile applications and personal assistants.' },
+    { name: 'AI + 3D Interactive Experience', description: 'Combining artificial intelligence with immersive 3D web experiences.' },
+];
+
+// Wire the content into the AwardsMilestone overlay structure.
+// Keys (featured/sotd/sotm/other) are kept for rendering compatibility.
 const PROJECTS_DATA = {
     featured: {
         id: 'project-featured',
         layout: 'certificate_grid',
         title: 'Projects & Impact',
-        items: [
-            { label: 'Menglan World', date: '2026', image: '/textures/about/SOTY.webp', url: 'https://menglan.world' },
-            { label: 'Family Menu AI', date: 'Coming Soon', image: '/textures/about/SOTD.webp', url: '' },
-            { label: 'Desktop AI Companion', date: 'Coming Soon', image: '/textures/about/SOTM.webp', url: '' },
-        ],
-        platformConfig: {
-            label: 'PROJECT',
-            color: '#1a1a1a',
-            icon: '🚀'
-        }
+        items: PROJECTS.map((p) => ({
+            label: p.name,
+            date: p.status,
+            image: p.id === 'menglan-world' ? '/textures/about/SOTY.webp'
+                 : p.id === 'family-menu-ai' ? '/textures/about/SOTD.webp'
+                 : '/textures/about/SOTM.webp',
+            url: p.links.demo || p.links.github || '',
+        })),
+        platformConfig: { label: 'PROJECT', color: '#1a1a1a', icon: '🚀' }
     },
     sotd: {
         id: 'project-current',
         layout: 'certificate_grid',
-        title: 'Current Project',
-        items: [
-            { label: 'Menglan World', date: '2026', image: '/textures/about/SOTY.webp', url: 'https://menglan.world' },
-        ],
-        platformConfig: {
-            label: 'CURRENT',
-            color: '#1a1a1a',
-            icon: '💻'
-        }
+        title: 'Current Projects',
+        items: PROJECTS.map((p) => ({
+            label: p.name,
+            date: p.status,
+            image: p.id === 'menglan-world' ? '/textures/about/SOTY.webp'
+                 : p.id === 'family-menu-ai' ? '/textures/about/SOTD.webp'
+                 : '/textures/about/SOTM.webp',
+            url: p.links.demo || p.links.github || '',
+        })),
+        platformConfig: { label: 'PROJECTS', color: '#1a1a1a', icon: '💻' }
     },
     sotm: {
         id: 'project-upcoming',
         layout: 'certificate_grid',
         title: 'Coming Soon',
-        items: [
-            { label: 'Family Menu AI', date: 'Coming Soon', image: '/textures/about/SOTD.webp', url: '' },
-            { label: 'Desktop AI Companion', date: 'Coming Soon', image: '/textures/about/SOTM.webp', url: '' },
-        ],
-        platformConfig: {
-            label: 'SOON',
-            color: '#1a1a1a',
-            icon: '🔮'
-        }
+        items: COMING_SOON.map((c) => ({ label: c.name, date: 'Coming Soon', image: '', url: '' })),
+        platformConfig: { label: 'SOON', color: '#1a1a1a', icon: '🔮' }
     },
     other: {
         id: 'project-more',
         layout: 'certificate_grid',
-        title: 'Certifications & Qualifications',
-        items: [
-            { label: 'Master Degree Certificate', date: '2024', image: '/textures/about/ml/MSdegree.webp', url: '' },
-            { label: 'Master Graduation Certificate', date: '2024', image: '/textures/about/ml/MSdegree_1.webp', url: '' },
-            { label: 'CET-6 Certificate', date: '2022', image: '/textures/about/ml/CET6.webp', url: '' },
-            { label: 'RPA Advanced Certificate', date: '2025', image: '/textures/about/ml/RPAcertification.webp', url: '' },
-        ],
-        platformConfig: {
-            label: 'FUTURE',
-            color: '#1a1a1a',
-            icon: '✨'
-        }
+        title: 'Professional Credentials',
+        items: PROFESSIONAL_CREDENTIALS.map((c) => ({ label: c.name, date: c.date, image: c.image, url: '' })),
+        platformConfig: { label: 'CREDENTIALS', color: '#1a1a1a', icon: '✨' }
     }
 };
 
 /**
  * PROJECTS & IMPACT Milestone - Floating Cards
- * V1: Replaces original Tomasz Awwwards awards with Menglan's projects.
- * Main card (center), Current Project (left), Coming Soon (right).
+ * Phase 2.3: Replaces original Tomasz Awwwards awards with Menglan's content.
+ * Front card (center) = Professional Credentials, behind cards = Current
+ * Projects and Coming Soon.
  */
 const AwardsMilestone = ({ z, scrollProgressRef }) => {
     // Pobieranie danych nagród z Sanity (z fallbackiem)
@@ -677,7 +738,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    CURRENT
+                    PROJECTS
                 </Text>
                 {/* PROJECT COUNT */}
                 <Text
@@ -753,7 +814,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                 </Text>
             </group>
 
-            {/* === CERTIFICATIONS (front, center, rendered LAST = always on top) === */}
+            {/* === CREDENTIALS (front, center, rendered LAST = always on top) === */}
             <group ref={sotyRef} position={[0, 0.5, 0]}>
                 {/* Painted card (behind) - hidden until button hover */}
                 <mesh ref={sotyCardPaintedRef} position={[0, 0, -0.001]} visible={true}>
@@ -798,7 +859,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    CERTIFICATIONS
+                    CREDENTIALS
                 </Text>
                 {/* ITEM COUNT */}
                 <Text
@@ -1048,8 +1109,14 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
  */
 
 // Balloon configuration: size category, texture path, position offset
-// V1: Menglan's 10-skill tech stack with custom skill icon textures.
-// Texture mapping: custom Menglan skill icons replacing original Tomasz balloons.
+// Phase 2.3: Menglan's 10-skill tech stack with custom skill icon textures.
+// These 10 concrete skills roll up into the 6 PROFESSIONAL_CAPABILITIES:
+//   Azure Cloud Support → Azure
+//   Artificial Intelligence → AI, Claude Code, RAG
+//   Python Programming → Python
+//   Modern Web Development → Git
+//   Workflow Automation → RPA, Coze, SQL
+//   AI Agent & Prompt Engineering → Prompt Engineering
 // === EDYTUJ WYSOKOŚĆ TUTAJ (zmień wartość 'y' dla każdego balona) ===
 const BALLOON_CONFIG = [
     // Large balloons (core skills) - front and center
@@ -1487,7 +1554,7 @@ const SkillsMilestone = ({ z, scrollProgressRef }) => {
                 anchorY="middle"
                 font="/fonts/CabinSketch-Regular.ttf"
             >
-                AI • Automation • Cloud • Development
+                Professional Capabilities
             </Text>
 
             {/* === FLOATING BALLOONS === */}
