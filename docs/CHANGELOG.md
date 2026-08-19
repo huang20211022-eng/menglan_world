@@ -1009,3 +1009,48 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 **构建：** ✅ 通过（10.12s）
 
 **Commit：** 待提交
+
+---
+
+## 2026-08-19 — Phase 2.3 Task 2C-2: About Room V2 Image Layer Integration
+
+**模块：** About Room 项目截图 + 凭证图片接入
+
+**目标：** 把 Phase 2.3 Asset Checklist 中「待提供」的项目截图（6 张）与凭证图片（4 张）接入 About Room，凭证图片路径从 `/textures/about/ml/` 迁移到 `/textures/certifications/`。
+
+**修改内容：**
+
+**1. `InfiniteSkyManager.jsx` — 项目截图接线**
+- `PROJECTS` 常量：`assetDir` 字段 → `images` 数组（每项目 2 张真实截图）
+  - Menglan World: `hero.webp` + `gallery.webp`
+  - AI Family Menu Assistant: `home.webp` + `menu.webp`
+  - AI & RPA Enterprise Solutions: `dashboard.webp` + `workflow.webp`
+- `PROJECTS_DATA.featured` / `.sotd`：`PROJECTS.map` → `PROJECTS.flatMap`，3 项 → 6 项（每项目 hero + detail 两张卡片），移除 SOTY/SOTD/SOTM 占位图引用
+
+**2. `InfiniteSkyManager.jsx` — 凭证图片迁移**
+- `PROFESSIONAL_CREDENTIALS`：`image` / `targetDir` 字段 → `images` 数组，路径从 `/textures/about/ml/` 迁移到 `/textures/certifications/`
+  - CET-6 → `certifications/cet6/cet6.webp`
+  - RPA Advanced Certification → `certifications/rpa/rpa-certification.webp`
+  - Master of Computer Technology → `certifications/master/master-degree.webp` + `master-graduation.webp`（2 张）
+  - Bachelor of Software Engineering → 无图片（不伪造，保持占位）
+- `PROJECTS_DATA.other`：`map` → `flatMap`，4 项 → 5 项（Master 展开为 2 张）
+
+**3. `texturePreloadList.js` — 预加载更新**
+- 移除旧的 `/textures/about/ml/{MSdegree, MSdegree_1, CET6, RPAcertification}.webp` 4 条
+- 新增 10 条：6 张项目截图 + 4 张凭证图片（迁移到新路径）
+
+**未修改（按要求冻结）：**
+- 3D 卡片面纹理（SOTY/SOTD/SOTM + `_painted`）零改动——它们仍是 AwardsMilestone 的浮动卡片装饰
+- 3D 结构 / 卡片翻转 / Camera / GSAP / Shader / AwardsMilestone 渲染零改动
+- Gallery / Studio / Contact / Hero / Entrance / Sanity 零改动
+- 原素材文件未删除（`/textures/about/ml/*` 旧凭证图片保留在磁盘，仅从预加载列表移除）
+
+**涉及文件：**
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx`
+- `src/config/texturePreloadList.js`
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+
+**构建：** ✅ 通过（9.21s）
+
+**Commit：** 待提交

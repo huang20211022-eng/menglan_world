@@ -222,11 +222,18 @@ export const ABOUT_TEXTURES = [
     '/textures/about/ml/coze_painted.webp',
     '/textures/about/ml/Azure.webp',
     '/textures/about/ml/Azure_painted.webp',
-    // Certificate images — V1 Menglan
-    '/textures/about/ml/MSdegree.webp',
-    '/textures/about/ml/MSdegree_1.webp',
-    '/textures/about/ml/CET6.webp',
-    '/textures/about/ml/RPAcertification.webp',
+    // Certificate images — V2 Menglan (migrated from /textures/about/ml/)
+    '/textures/certifications/cet6/cet6.webp',
+    '/textures/certifications/rpa/rpa-certification.webp',
+    '/textures/certifications/master/master-degree.webp',
+    '/textures/certifications/master/master-graduation.webp',
+    // Project screenshots (for overlay) — V2 Menglan
+    '/textures/projects/menglan-world/hero.webp',
+    '/textures/projects/menglan-world/gallery.webp',
+    '/textures/projects/family-menu-ai/home.webp',
+    '/textures/projects/family-menu-ai/menu.webp',
+    '/textures/projects/ai-rpa-enterprise/dashboard.webp',
+    '/textures/projects/ai-rpa-enterprise/workflow.webp',
     // Skill balloons — Legacy Tomasz, preserved as backup
     '/textures/about/reactduzybalon.webp',
     '/textures/about/reactduzybalon_painted.webp',

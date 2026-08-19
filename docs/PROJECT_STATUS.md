@@ -16,6 +16,7 @@
 → **Phase 2.2 Task 2B-1.7 Contact Room Phone 浮标归位已完成（回原 Message 桶位置）。**
 → **Phase 2.2 Task 2B-2 ITom 内部遗留清理已完成（成就键重命名 + 走廊/入口注释清理）。**
 → **Phase 2.3 Task 2C-1 About Room Projects/Capabilities/Credentials 内容重构已完成（数据结构 + 共享素材目录 + Asset Checklist）。**
+→ **Phase 2.3 Task 2C-2 About Room V2 图片层集成已完成（项目截图 6 张 + 凭证图片 4 张接入 + 凭证路径迁移）。**
 
 ## 当前版本
 
@@ -51,6 +52,7 @@
 | Phase 2.2 Task 2B-1.7 — Contact Room Phone 浮标归位 | ✅ | `9be0014` |
 | Phase 2.2 Task 2B-2 — ITom 内部遗留清理（成就键 + 注释） | ✅ | 待提交 |
 | Phase 2.3 Task 2C-1 — About Projects/Capabilities/Credentials 内容重构 | ✅ | 待提交 |
+| Phase 2.3 Task 2C-2 — About Room V2 图片层集成（截图 + 凭证） | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -122,6 +124,7 @@
 | Task 2B-1.7 | Contact Room Phone 浮标归位（回原 Message 桶位置） | ✅ |
 | Task 2B-2 | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ✅ |
 | Task 2C-1 | About Projects / Capabilities / Credentials / Coming Soon 内容重构 + 共享素材目录 + Asset Checklist | ✅ |
+| Task 2C-2 | About Room V2 图片层：项目截图 6 张 + 凭证图片 4 张接入（凭证路径迁移到 `/textures/certifications/`） | ✅ |
 
 ---
 
@@ -162,4 +165,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-18（Phase 2.3 Task 2C-1 完成）
+2026-08-19（Phase 2.3 Task 2C-2 完成）

@@ -416,10 +416,9 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
 //
 // NOTE ON IMAGES: Project screenshots and credential images live in
 // /textures/projects/* and /textures/certifications/* (see
-// docs/ABOUT_CONTENT_PLAN.md §Asset Checklist). Until those assets are
-// supplied, projects keep the legacy SOTY/SOTD/SOTM placeholder textures and
-// credentials keep the existing /textures/about/ml/* images — no fabricated
-// screenshots or URLs.
+// docs/ABOUT_CONTENT_PLAN.md §Asset Checklist). These assets are now supplied
+// (Phase 2.3 Task 2C-2) — projects render their real screenshots and
+// credentials render their real certificate images. No fabricated content.
 // ============================================
 
 // --- Current Projects (3) ---
@@ -435,7 +434,10 @@ const PROJECTS = [
             github: 'https://github.com/huang20211022-eng/menglan_world/',
             demo: 'https://menglan-world-git-main-menglan.vercel.app/',
         },
-        assetDir: '/textures/projects/menglan-world/',
+        images: [
+            '/textures/projects/menglan-world/hero.webp',
+            '/textures/projects/menglan-world/gallery.webp',
+        ],
     },
     {
         id: 'family-menu-ai',
@@ -445,7 +447,10 @@ const PROJECTS = [
         tech: ['Android', 'Flutter', 'Claude'],
         status: 'Prototype',
         links: {},
-        assetDir: '/textures/projects/family-menu-ai/',
+        images: [
+            '/textures/projects/family-menu-ai/home.webp',
+            '/textures/projects/family-menu-ai/menu.webp',
+        ],
     },
     {
         id: 'ai-rpa-enterprise',
@@ -455,7 +460,10 @@ const PROJECTS = [
         tech: ['Python', 'AI', 'RAG', 'RPA'],
         status: 'Completed',
         links: {},
-        assetDir: '/textures/projects/ai-rpa-enterprise/',
+        images: [
+            '/textures/projects/ai-rpa-enterprise/dashboard.webp',
+            '/textures/projects/ai-rpa-enterprise/workflow.webp',
+        ],
     },
 ];
 
@@ -473,10 +481,13 @@ const PROFESSIONAL_CAPABILITIES = [
 // --- Professional Credentials (4, real only) ---
 // Bachelor has no image yet — rendered without one (no fabricated certificate).
 const PROFESSIONAL_CREDENTIALS = [
-    { name: 'CET-6', date: '2022', image: '/textures/about/ml/CET6.webp', targetDir: '/textures/certifications/cet6/' },
-    { name: 'RPA Advanced Certification', date: '2025', image: '/textures/about/ml/RPAcertification.webp', targetDir: '/textures/certifications/rpa/' },
-    { name: 'Master of Computer Technology', date: '2024', image: '/textures/about/ml/MSdegree.webp', targetDir: '/textures/certifications/master/' },
-    { name: 'Bachelor of Software Engineering', date: '', image: '', targetDir: '' },
+    { name: 'CET-6', date: '2022', images: ['/textures/certifications/cet6/cet6.webp'] },
+    { name: 'RPA Advanced Certification', date: '2025', images: ['/textures/certifications/rpa/rpa-certification.webp'] },
+    { name: 'Master of Computer Technology', date: '2024', images: [
+        '/textures/certifications/master/master-degree.webp',
+        '/textures/certifications/master/master-graduation.webp',
+    ] },
+    { name: 'Bachelor of Software Engineering', date: '', images: [] },
 ];
 
 // --- Coming Soon (3) ---
@@ -493,28 +504,28 @@ const PROJECTS_DATA = {
         id: 'project-featured',
         layout: 'certificate_grid',
         title: 'Projects & Impact',
-        items: PROJECTS.map((p) => ({
-            label: p.name,
-            date: p.status,
-            image: p.id === 'menglan-world' ? '/textures/about/SOTY.webp'
-                 : p.id === 'family-menu-ai' ? '/textures/about/SOTD.webp'
-                 : '/textures/about/SOTM.webp',
-            url: p.links.demo || p.links.github || '',
-        })),
+        items: PROJECTS.flatMap((p) =>
+            p.images.map((image) => ({
+                label: p.name,
+                date: p.status,
+                image,
+                url: p.links.demo || p.links.github || '',
+            }))
+        ),
         platformConfig: { label: 'PROJECT', color: '#1a1a1a', icon: '🚀' }
     },
     sotd: {
         id: 'project-current',
         layout: 'certificate_grid',
         title: 'Current Projects',
-        items: PROJECTS.map((p) => ({
-            label: p.name,
-            date: p.status,
-            image: p.id === 'menglan-world' ? '/textures/about/SOTY.webp'
-                 : p.id === 'family-menu-ai' ? '/textures/about/SOTD.webp'
-                 : '/textures/about/SOTM.webp',
-            url: p.links.demo || p.links.github || '',
-        })),
+        items: PROJECTS.flatMap((p) =>
+            p.images.map((image) => ({
+                label: p.name,
+                date: p.status,
+                image,
+                url: p.links.demo || p.links.github || '',
+            }))
+        ),
         platformConfig: { label: 'PROJECTS', color: '#1a1a1a', icon: '💻' }
     },
     sotm: {
@@ -528,7 +539,14 @@ const PROJECTS_DATA = {
         id: 'project-more',
         layout: 'certificate_grid',
         title: 'Professional Credentials',
-        items: PROFESSIONAL_CREDENTIALS.map((c) => ({ label: c.name, date: c.date, image: c.image, url: '' })),
+        items: PROFESSIONAL_CREDENTIALS.flatMap((c) =>
+            (c.images.length ? c.images : ['']).map((image) => ({
+                label: c.name,
+                date: c.date,
+                image,
+                url: '',
+            }))
+        ),
         platformConfig: { label: 'CREDENTIALS', color: '#1a1a1a', icon: '✨' }
     }
 };
