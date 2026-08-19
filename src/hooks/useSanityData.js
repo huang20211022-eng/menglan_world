@@ -145,8 +145,14 @@ export function loadSanityData() {
             //     });
             // }
 
-            // Mapowanie nagród do struktury oczekiwanej przez overlay oraz optymalizacja certyfikatów z Sanity
-            if (awardsData && awardsData.length > 0) {
+            // ═══════════════════════════════════════════════════════════════════
+            // Task 2C-3: About VIEW is Local-First. cache.awards is DISABLED — the
+            // Sanity awardCertificate query returns legacy Tomasz data that was
+            // overriding local PROJECTS_DATA / PROFESSIONAL_CREDENTIALS in
+            // InfiniteSkyManager. About now reads local data only. Remove the
+            // `false &&` guard to re-enable when Menglan CMS awards exist (V3).
+            // ═══════════════════════════════════════════════════════════════════
+            if (false && awardsData && awardsData.length > 0) {
                 const mapItems = (items) => items.map(a => {
                     const imageUrl = a.certificateImage ? getProxyUrl(urlFor(a.certificateImage).width(800).quality(80).auto('format')) : null;
                     return {

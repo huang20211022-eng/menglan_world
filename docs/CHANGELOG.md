@@ -1008,7 +1008,7 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 
 **构建：** ✅ 通过（10.12s）
 
-**Commit：** 待提交
+**Commit：** `7786569`
 
 ---
 
@@ -1052,5 +1052,43 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 - `docs/CHANGELOG.md`
 
 **构建：** ✅ 通过（9.21s）
+
+**Commit：** `3b46bbd`
+
+---
+
+## 2026-08-19 — Phase 2.3 Task 2C-3: About VIEW Local-First Fix
+
+**模块：** About Room VIEW 弹窗数据源修复
+
+**问题：** CURRENT PROJECT / CREDENTIALS 的 VIEW 弹窗仍显示旧 Tomasz 项目与证书；卡片计数显示 10/6/0（旧 Sanity awards 数据）。
+
+**根因：** `InfiniteSkyManager.jsx` 的 `awardsData = sanityAwards || PROJECTS_DATA` —— `useAwards()` 返回 `useSanityData.js` 的 `cache.awards`（Sanity `*[_type == "awardCertificate"]` 旧 Tomasz 数据），Sanity 可达时覆盖本地 `PROJECTS_DATA`。
+
+**修改内容：**
+
+**1. `InfiniteSkyManager.jsx` — 强制 Local-First**
+- 移除 `useAwards` import 与 `sanityAwards`，`awardsData = PROJECTS_DATA`（不再被 Sanity 覆盖）
+- `PROFESSIONAL_CREDENTIALS`：`images` 数组 → 单个 `image` 字段；Master 拆分为 `Master Degree` + `Master Graduation`（两张真实凭证）；移除无图的 `Bachelor`
+- `PROJECTS_DATA.other.items`：`flatMap` → `map`（4 项）
+- 卡片计数：`{awardsData.sotd/sotm/other.items.length}` → `{PROJECTS.length}`(3) / `{COMING_SOON.length}`(3) / `{PROFESSIONAL_CREDENTIALS.length}`(4)
+
+**2. `useSanityData.js` — 禁用 cache.awards**
+- `if (awardsData && ...)` → `if (false && awardsData && ...)`：About VIEW 不再读取旧 awards cache，切断 Sanity CDN 图片预加载
+
+**未修改（按要求冻结）：**
+- Gallery / Studio / Contact / Hero / Entrance / Corridor 零改动
+- 未重新启用 Sanity（API fetch 仍保留为 V3 占位）
+- 未删除任何旧图片（`/textures/about/ml/*`、SOTDAYYOUNGMULTI*.webp、ITom 备份全部保留）
+- About 页面视觉结构零改动（仅数据源与计数）
+
+**验证：** `npm run build` ✅（9.69s）+ `npm run dev` ✅（ready in 365ms）
+
+**涉及文件：**
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx`
+- `src/hooks/useSanityData.js`
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+- `docs/ABOUT_CONTENT_PLAN.md`
 
 **Commit：** 待提交

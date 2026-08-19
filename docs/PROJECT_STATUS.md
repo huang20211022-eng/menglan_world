@@ -17,6 +17,7 @@
 → **Phase 2.2 Task 2B-2 ITom 内部遗留清理已完成（成就键重命名 + 走廊/入口注释清理）。**
 → **Phase 2.3 Task 2C-1 About Room Projects/Capabilities/Credentials 内容重构已完成（数据结构 + 共享素材目录 + Asset Checklist）。**
 → **Phase 2.3 Task 2C-2 About Room V2 图片层集成已完成（项目截图 6 张 + 凭证图片 4 张接入 + 凭证路径迁移）。**
+→ **Phase 2.3 Task 2C-3 About Room VIEW 弹窗 Local-First 修复已完成（CURRENT PROJECT / CREDENTIALS / COMING SOON 均读本地数据）。**
 
 ## 当前版本
 
@@ -50,9 +51,10 @@
 | Phase 2.2 Task 2B-1.5 — Contact Room 收尾（遮挡修复 + 真实联系 + 字体） | ✅ | `be10fe3` |
 | Phase 2.2 Task 2B-1.6 — Contact Room MESSAGE 桶移除 | ✅ | `142d1ab` |
 | Phase 2.2 Task 2B-1.7 — Contact Room Phone 浮标归位 | ✅ | `9be0014` |
-| Phase 2.2 Task 2B-2 — ITom 内部遗留清理（成就键 + 注释） | ✅ | 待提交 |
-| Phase 2.3 Task 2C-1 — About Projects/Capabilities/Credentials 内容重构 | ✅ | 待提交 |
-| Phase 2.3 Task 2C-2 — About Room V2 图片层集成（截图 + 凭证） | ✅ | 待提交 |
+| Phase 2.2 Task 2B-2 — ITom 内部遗留清理（成就键 + 注释） | ✅ | `65eaf85` |
+| Phase 2.3 Task 2C-1 — About Projects/Capabilities/Credentials 内容重构 | ✅ | `7786569` |
+| Phase 2.3 Task 2C-2 — About Room V2 图片层集成（截图 + 凭证） | ✅ | `3b46bbd` |
+| Phase 2.3 Task 2C-3 — About VIEW Local-First 修复（本地项目/凭证数据） | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -102,7 +104,7 @@
 | 冻结项 | 原因 | 处理阶段 |
 |--------|------|---------|
 | **MENGLAN 入口标识最终视觉效果** | V1.1.5 逐字母定位 + 不透明遮罩已实现技术方案，但手写字体（RubikScribble）的视觉协调性仍需设计师介入微调 | 视觉优化阶段 |
-| **Projects VIEW 按钮内容** | 仍显示旧 ITom/Sanity 项目内容（SOTY/SOTD/SOTM/Certificates）。卡片标签已更正但内部内容未更新。等待 Menglan 品牌的项目截图和卡片纹理 | V2 图片层 |
+| **Projects VIEW 按钮内容** | ✅ 已修复（Task 2C-3）：VIEW 弹窗读本地 PROJECTS_DATA / PROFESSIONAL_CREDENTIALS。卡片面纹理仍为 SOTY/SOTD/SOTM 占位（视觉装饰，无 Tomasz 内容） | V2 图片层 |
 | **contentData.js 硬编码数据** | ✅ 已替换为 Menglan 真实内容 + COMING SOON 占位符（Task 2A） | 已完成 |
 | **MessagePaper.jsx 允许域名** | ✅ 已更新为 menglan.world（Task 2A） | 已完成 |
 | **Gallery Room 项目卡片** | 仍使用旧 ITom 纹理 | V2 图片层 |
@@ -125,6 +127,7 @@
 | Task 2B-2 | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ✅ |
 | Task 2C-1 | About Projects / Capabilities / Credentials / Coming Soon 内容重构 + 共享素材目录 + Asset Checklist | ✅ |
 | Task 2C-2 | About Room V2 图片层：项目截图 6 张 + 凭证图片 4 张接入（凭证路径迁移到 `/textures/certifications/`） | ✅ |
+| Task 2C-3 | About VIEW 弹窗 Local-First 修复：CURRENT PROJECT / CREDENTIALS / COMING SOON 读本地数据，禁用 Sanity awards cache | ✅ |
 
 ---
 
@@ -165,4 +168,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-19（Phase 2.3 Task 2C-2 完成）
+2026-08-19（Phase 2.3 Task 2C-3 完成）

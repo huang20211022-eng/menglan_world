@@ -7,7 +7,6 @@ import SkyChunk, { CHUNK_LENGTH, ROOM_Z, CORRIDOR_CLIP_Z } from './SkyChunk';
 import { useScene } from '../../../../context/SceneContext';
 import '../../shaders/RevealBasicMaterial'; // Registers brush-stroke reveal for BasicMaterial
 import { isTouchDevice } from '../../../../utils/deviceDetect';
-import { useAwards } from '../../../../hooks/useSanityData';
 
 // Reusable Vector3 to avoid allocations in event handlers
 const _tempVec3 = new THREE.Vector3();
@@ -478,16 +477,13 @@ const PROFESSIONAL_CAPABILITIES = [
     { name: 'AI Agent & Prompt Engineering', description: 'Prompt engineering and AI agent design.' },
 ];
 
-// --- Professional Credentials (4, real only) ---
-// Bachelor has no image yet — rendered without one (no fabricated certificate).
+// --- Professional Credentials (4, real only, one image each) ---
+// Master is split into Degree + Graduation (two distinct real documents).
 const PROFESSIONAL_CREDENTIALS = [
-    { name: 'CET-6', date: '2022', images: ['/textures/certifications/cet6/cet6.webp'] },
-    { name: 'RPA Advanced Certification', date: '2025', images: ['/textures/certifications/rpa/rpa-certification.webp'] },
-    { name: 'Master of Computer Technology', date: '2024', images: [
-        '/textures/certifications/master/master-degree.webp',
-        '/textures/certifications/master/master-graduation.webp',
-    ] },
-    { name: 'Bachelor of Software Engineering', date: '', images: [] },
+    { name: 'CET-6', date: '2022', image: '/textures/certifications/cet6/cet6.webp' },
+    { name: 'RPA Advanced Certification', date: '2025', image: '/textures/certifications/rpa/rpa-certification.webp' },
+    { name: 'Master Degree', date: '2024', image: '/textures/certifications/master/master-degree.webp' },
+    { name: 'Master Graduation', date: '2024', image: '/textures/certifications/master/master-graduation.webp' },
 ];
 
 // --- Coming Soon (3) ---
@@ -539,14 +535,7 @@ const PROJECTS_DATA = {
         id: 'project-more',
         layout: 'certificate_grid',
         title: 'Professional Credentials',
-        items: PROFESSIONAL_CREDENTIALS.flatMap((c) =>
-            (c.images.length ? c.images : ['']).map((image) => ({
-                label: c.name,
-                date: c.date,
-                image,
-                url: '',
-            }))
-        ),
+        items: PROFESSIONAL_CREDENTIALS.map((c) => ({ label: c.name, date: c.date, image: c.image, url: '' })),
         platformConfig: { label: 'CREDENTIALS', color: '#1a1a1a', icon: '✨' }
     }
 };
@@ -558,9 +547,10 @@ const PROJECTS_DATA = {
  * Projects and Coming Soon.
  */
 const AwardsMilestone = ({ z, scrollProgressRef }) => {
-    // Pobieranie danych nagród z Sanity (z fallbackiem)
-    const sanityAwards = useAwards();
-    const awardsData = sanityAwards || PROJECTS_DATA;
+    // Local-First (Phase 2.3 Task 2C-3): About VIEW must read ONLY local PROJECTS_DATA.
+    // useAwards() previously returned legacy Tomasz awardCertificate data from Sanity,
+    // overriding this local content whenever the CMS was reachable.
+    const awardsData = PROJECTS_DATA;
 
     const { camera, viewport } = useThree();
     const isTouch = isTouchDevice();
@@ -767,7 +757,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    {awardsData.sotd.items.length}
+                    {PROJECTS.length}
                 </Text>
             </group>
 
@@ -828,7 +818,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    {awardsData.sotm.items.length}
+                    {COMING_SOON.length}
                 </Text>
             </group>
 
@@ -888,7 +878,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     anchorY="middle"
                     font="/fonts/CabinSketch-Bold.ttf"
                 >
-                    {awardsData.other.items.length}
+                    {PROFESSIONAL_CREDENTIALS.length}
                 </Text>
             </group>
         </group>

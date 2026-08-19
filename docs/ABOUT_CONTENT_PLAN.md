@@ -675,10 +675,12 @@ InfiniteSkyManager.jsx: AwardButton onClick
 
 | # | 凭证 | 日期 | 图片 |
 |---|------|------|------|
-| 1 | CET-6 | 2022 | 现有 `CET6.webp` |
-| 2 | RPA Advanced Certification | 2025 | 现有 `RPAcertification.webp` |
-| 3 | Master of Computer Technology | 2024 | 现有 `MSdegree.webp` |
-| 4 | Bachelor of Software Engineering | — | ⬜ 暂无图片（不伪造） |
+| 1 | CET-6 | 2022 | `certifications/cet6/cet6.webp` |
+| 2 | RPA Advanced Certification | 2025 | `certifications/rpa/rpa-certification.webp` |
+| 3 | Master Degree | 2024 | `certifications/master/master-degree.webp` |
+| 4 | Master Graduation | 2024 | `certifications/master/master-graduation.webp` |
+
+> 硕士拆分为 Degree（学位证）+ Graduation（毕业证）两张真实凭证。Bachelor 无图片，已从列表移除（不伪造）。
 
 #### Coming Soon (3)
 
@@ -744,7 +746,7 @@ public/textures/certifications/
 
 - `InfiniteSkyManager.jsx` 新增 4 个常量：`PROJECTS` / `PROFESSIONAL_CAPABILITIES` / `PROFESSIONAL_CREDENTIALS` / `COMING_SOON`
 - `PROJECTS_DATA`（`featured`/`sotd`/`sotm`/`other`）由上述 4 个常量派生，保持与 `AwardsMilestone` 渲染的兼容性
-- `useSanityData.js` 仍可能覆盖本地 `PROJECTS_DATA`（Sanity 当前已解耦，本地 fallback 生效）
+- **Task 2C-3：** `useSanityData.js` 的 `cache.awards` 已禁用（`false &&` guard）——About VIEW 只读本地 `PROJECTS_DATA`，不再被 Sanity legacy Tomasz awards 覆盖
 - 图片缺失项在 GlobalOverlay 中回退为透明占位（`item.image || 'data:image/gif;base64,...'`），不会崩溃
 
 ---
