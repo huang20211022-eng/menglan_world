@@ -7,6 +7,7 @@ import SkyChunk, { CHUNK_LENGTH, ROOM_Z, CORRIDOR_CLIP_Z } from './SkyChunk';
 import { useScene } from '../../../../context/SceneContext';
 import '../../shaders/RevealBasicMaterial'; // Registers brush-stroke reveal for BasicMaterial
 import { isTouchDevice } from '../../../../utils/deviceDetect';
+import { PROJECTS } from '../../../../data/projects';
 
 // Reusable Vector3 to avoid allocations in event handlers
 const _tempVec3 = new THREE.Vector3();
@@ -421,50 +422,8 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
 // ============================================
 
 // --- Current Projects (3) ---
-const PROJECTS = [
-    {
-        id: 'menglan-world',
-        name: 'Menglan World',
-        category: '3D AI Portfolio',
-        description: 'An interactive 3D portfolio world combining AI, web technologies, and creative storytelling.',
-        tech: ['React Three Fiber', 'Three.js', 'React', 'AI-assisted Development'],
-        status: 'Current',
-        links: {
-            github: 'https://github.com/huang20211022-eng/menglan_world/',
-            demo: 'https://menglan-world-git-main-menglan.vercel.app/',
-        },
-        images: [
-            '/textures/projects/menglan-world/hero.webp',
-            '/textures/projects/menglan-world/gallery.webp',
-        ],
-    },
-    {
-        id: 'family-menu-ai',
-        name: 'AI Family Menu Assistant',
-        category: 'AI Application',
-        description: 'An AI-powered meal-planning assistant for family daily cooking.',
-        tech: ['Android', 'Flutter', 'Claude'],
-        status: 'Prototype',
-        links: {},
-        images: [
-            '/textures/projects/family-menu-ai/home.webp',
-            '/textures/projects/family-menu-ai/menu.webp',
-        ],
-    },
-    {
-        id: 'ai-rpa-enterprise',
-        name: 'AI & RPA Enterprise Solutions',
-        category: 'Enterprise AI Application',
-        description: 'Enterprise AI solutions combining knowledge-base Q&A with RPA automation and business workflow deployment.',
-        tech: ['Python', 'AI', 'RAG', 'RPA'],
-        status: 'Completed',
-        links: {},
-        images: [
-            '/textures/projects/ai-rpa-enterprise/dashboard.webp',
-            '/textures/projects/ai-rpa-enterprise/workflow.webp',
-        ],
-    },
-];
+// Imported from src/data/projects.js (Phase 2.4 Task 2D-1) — single source of
+// truth shared with the Gallery Room. No local project-content copy is kept here.
 
 // --- Professional Capabilities (6) ---
 // These are skills/capabilities — NOT official certifications.
@@ -503,9 +462,9 @@ const PROJECTS_DATA = {
         items: PROJECTS.flatMap((p) =>
             p.images.map((image) => ({
                 label: p.name,
-                date: p.status,
+                date: p.status.charAt(0).toUpperCase() + p.status.slice(1),
                 image,
-                url: p.links.demo || p.links.github || '',
+                url: p.url || p.github || '',
             }))
         ),
         platformConfig: { label: 'PROJECT', color: '#1a1a1a', icon: '🚀' }
@@ -517,9 +476,9 @@ const PROJECTS_DATA = {
         items: PROJECTS.flatMap((p) =>
             p.images.map((image) => ({
                 label: p.name,
-                date: p.status,
+                date: p.status.charAt(0).toUpperCase() + p.status.slice(1),
                 image,
-                url: p.links.demo || p.links.github || '',
+                url: p.url || p.github || '',
             }))
         ),
         platformConfig: { label: 'PROJECTS', color: '#1a1a1a', icon: '💻' }

@@ -18,6 +18,7 @@
 → **Phase 2.3 Task 2C-1 About Room Projects/Capabilities/Credentials 内容重构已完成（数据结构 + 共享素材目录 + Asset Checklist）。**
 → **Phase 2.3 Task 2C-2 About Room V2 图片层集成已完成（项目截图 6 张 + 凭证图片 4 张接入 + 凭证路径迁移）。**
 → **Phase 2.3 Task 2C-3 About Room VIEW 弹窗 Local-First 修复已完成（CURRENT PROJECT / CREDENTIALS / COMING SOON 均读本地数据）。**
+→ **Phase 2.4 Task 2D-1 项目数据统一已完成（About/Gallery 共享 `src/data/projects.js` 单一数据源）。**
 
 ## 当前版本
 
@@ -54,7 +55,8 @@
 | Phase 2.2 Task 2B-2 — ITom 内部遗留清理（成就键 + 注释） | ✅ | `65eaf85` |
 | Phase 2.3 Task 2C-1 — About Projects/Capabilities/Credentials 内容重构 | ✅ | `7786569` |
 | Phase 2.3 Task 2C-2 — About Room V2 图片层集成（截图 + 凭证） | ✅ | `3b46bbd` |
-| Phase 2.3 Task 2C-3 — About VIEW Local-First 修复（本地项目/凭证数据） | ✅ | 待提交 |
+| Phase 2.3 Task 2C-3 — About VIEW Local-First 修复（本地项目/凭证数据） | ✅ | `98824b8` |
+| Phase 2.4 Task 2D-1 — About/Gallery 项目数据统一（src/data/projects.js） | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -115,19 +117,14 @@
 
 ## 当前正在开发
 
-**Phase 2.3 — About Room 内容重构**
+**Phase 2.4 — Gallery/About 项目数据统一**
 
 | 任务 | 内容 | 状态 |
 |------|------|------|
-| Task 2A | 用户可见 ITom 遗留内容清理（Gallery/About/Studio + README + MessagePaper + sanity.config） | ✅ |
-| Task 2B-1 | Contact Room Email/Phone 信息浮标（GlobalOverlay journey 布局） | ✅ |
-| Task 2B-1.5 | Contact Room 收尾（坐标遮挡修复 + 真实联系方式 + 邮箱 @ 字体修复） | ✅ |
-| Task 2B-1.6 | Contact Room MESSAGE 桶移除（6 浮标布局平衡） | ✅ |
-| Task 2B-1.7 | Contact Room Phone 浮标归位（回原 Message 桶位置） | ✅ |
-| Task 2B-2 | `itom_achievements` localStorage 键迁移 + 内部遗留引用清理 | ✅ |
-| Task 2C-1 | About Projects / Capabilities / Credentials / Coming Soon 内容重构 + 共享素材目录 + Asset Checklist | ✅ |
-| Task 2C-2 | About Room V2 图片层：项目截图 6 张 + 凭证图片 4 张接入（凭证路径迁移到 `/textures/certifications/`） | ✅ |
-| Task 2C-3 | About VIEW 弹窗 Local-First 修复：CURRENT PROJECT / CREDENTIALS / COMING SOON 读本地数据，禁用 Sanity awards cache | ✅ |
+| Task 2D-0 | Gallery Room 完整数据流审查（只读，A-J 分析） | ✅ |
+| Task 2D-1 | About/Gallery 项目数据统一到 `src/data/projects.js`（单一数据源） | ✅ |
+| Task 2D-2 | Gallery 项目封面替换（Menglan 品牌封面） | ⏳ 待开始 |
+| Task 2D-4 | Gallery 遗留图片 / tech logo 清理 | ⏳ 待开始 |
 
 ---
 
@@ -168,4 +165,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-19（Phase 2.3 Task 2C-3 完成）
+2026-08-19（Phase 2.4 Task 2D-1 完成）

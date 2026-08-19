@@ -12,7 +12,7 @@ import PaperMaterial from './PaperMaterial';
 import GalleryClouds from './GalleryClouds';
 import { useAudio } from '../../../../context/AudioManager';
 import { usePaintMaterial } from './usePaintMaterial';
-import { useGalleryProjects } from '../../../../hooks/useSanityData';
+import { PROJECTS } from '../../../../data/projects';
 
 // Reusable Vector3 to avoid allocations in useFrame
 const _tempScale = new THREE.Vector3();
@@ -33,38 +33,36 @@ export const GALLERY_INTERACTION_AUDIO_SETTINGS = {
     rolloff: 2        // How fast the sound fades away (exponential)
 };
 
-// Define the unique projects and their textures
-// V2.2: Rebranded from Tomasz projects to Menglan's current work.
-// Textures are reused as placeholders until Menglan-branded covers are ready.
-const FALLBACK_PROJECTS = [
-    {
-        id: 'menglan-world',
-        title: 'MENGLAN WORLD',
-        front: '/textures/gallery/monetuneprzod.webp',
-        painted: '/textures/gallery/monetuneprzod_painted.webp',
-        url: 'https://menglan-world-git-main-menglan.vercel.app/',
-        description: 'An interactive 3D portfolio — navigate a hand-drawn infinite corridor and explore four immersive rooms built with React Three Fiber and custom GLSL shaders.',
-        techStack: ['/textures/gallery/reactlogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/jslogo.webp']
-    },
-    {
-        id: 'family-menu-ai',
-        title: 'FAMILY MENU AI',
-        front: '/textures/gallery/timberkittyprzod.webp',
-        painted: '/textures/gallery/timberkittyprzod_painted.webp',
-        url: null,
-        description: 'Coming soon — an AI-powered family menu assistant, currently in development.',
-        techStack: ['/textures/gallery/reactlogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp']
-    },
-    {
-        id: 'desktop-ai-companion',
-        title: 'DESKTOP AI COMPANION',
-        front: '/textures/gallery/youngmultiprzod.webp',
-        painted: '/textures/gallery/youngmultiprzod_painted.webp',
-        url: null,
-        description: 'Coming soon — a desktop AI companion for everyday tasks and automation.',
-        techStack: ['/textures/gallery/reactlogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/htmllogo.webp']
-    },
-];
+// ═══════════════════════════════════════════════════════════════════
+// Phase 2.4 Task 2D-1: Project content now lives in src/data/projects.js
+// (single source of truth shared with the About Room). Only the Gallery-
+// specific presentation assets — legacy card cover textures and tech-stack
+// logos — remain mapped here. These are replaced by Menglan-branded covers
+// in Task 2D-2 and cleaned up in Task 2D-4.
+// ═══════════════════════════════════════════════════════════════════
+
+// Legacy Tomasz card covers reused as placeholders until Menglan covers exist.
+const GALLERY_COVER_FALLBACK = {
+    'menglan-world': { front: '/textures/gallery/monetuneprzod.webp', painted: '/textures/gallery/monetuneprzod_painted.webp' },
+    'family-menu-ai': { front: '/textures/gallery/timberkittyprzod.webp', painted: '/textures/gallery/timberkittyprzod_painted.webp' },
+    'ai-rpa-enterprise': { front: '/textures/gallery/youngmultiprzod.webp', painted: '/textures/gallery/youngmultiprzod_painted.webp' },
+};
+
+// Legacy tech-stack logo paths per project (Gallery back-of-card rendering).
+const GALLERY_TECH_STACK = {
+    'menglan-world': ['/textures/gallery/reactlogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/jslogo.webp'],
+    'family-menu-ai': ['/textures/gallery/reactlogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp'],
+    'ai-rpa-enterprise': ['/textures/gallery/reactlogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/htmllogo.webp'],
+};
+
+// Gallery's view of the shared projects: shared content + Gallery presentation.
+const activeProjects = PROJECTS.map((p) => ({
+    ...p,
+    title: p.name,
+    front: p.galleryCover || GALLERY_COVER_FALLBACK[p.id]?.front,
+    painted: GALLERY_COVER_FALLBACK[p.id]?.painted,
+    techStack: GALLERY_TECH_STACK[p.id] || [],
+}));
 
 const PROJECT_COUNT = 10; // Keep the count for the infinite scroll feel
 const GAP = 2.5;
@@ -201,9 +199,8 @@ const GalleryRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
     // We use matchMedia('(hover: hover)') to detect devices with a cursor/hover capability
     const [canHover, setCanHover] = useState(() => typeof window !== 'undefined' ? window.matchMedia('(hover: hover)').matches : true);
 
-    // Pobieranie danych z Sanity.io (fallback do starych danych)
-    const sanityProjects = useGalleryProjects();
-    const activeProjects = sanityProjects || FALLBACK_PROJECTS;
+    // Project content comes from the shared src/data/projects.js (module-level
+    // `activeProjects` above). Sanity gallery data has been disabled since V1.1.3.
 
     useEffect(() => {
         const mq = window.matchMedia('(hover: hover)');

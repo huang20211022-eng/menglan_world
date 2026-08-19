@@ -1091,4 +1091,44 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 - `docs/CHANGELOG.md`
 - `docs/ABOUT_CONTENT_PLAN.md`
 
+**Commit：** `98824b8`
+
+---
+
+## 2026-08-19 — Phase 2.4 Task 2D-1: Unify About/Gallery Project Data
+
+**模块：** 项目数据源统一（About Room + Gallery Room）
+
+**背景：** About Room 与 Gallery Room 各自维护独立项目数据副本。About 用 `PROJECTS`（name/status/links/tech），Gallery 用 `FALLBACK_PROJECTS`（title/front/painted/techStack），第 3 个项目内容不一致（About="AI & RPA Enterprise Solutions" vs Gallery="Desktop AI Companion"）。
+
+**修改内容：**
+
+**1. 新建 `src/data/projects.js` — 单一数据源**
+- 3 个正式项目：Menglan World / AI Family Menu Assistant / AI & RPA Enterprise Solutions
+- 统一字段：`id, name, category, description, tech(数组), status(current/prototype/completed), url, github, images, galleryCover(暂空), featured, comingSoon`
+
+**2. `InfiniteSkyManager.jsx`（About）— 移除本地 PROJECTS 副本**
+- 删除本地 `const PROJECTS = [...]`，改为 `import { PROJECTS } from '../../../../data/projects'`
+- `PROJECTS_DATA` 派生适配：`p.links.demo || p.links.github` → `p.url || p.github`；`status` 小写 → 首字母大写显示（`p.status.charAt(0).toUpperCase() + p.status.slice(1)`）
+- 卡片计数 `{PROJECTS.length}`（3）保持不变
+
+**3. `GalleryRoom.jsx`（Gallery）— 移除本地 FALLBACK_PROJECTS 副本**
+- 删除 `FALLBACK_PROJECTS` 与 `useGalleryProjects()`，改为从共享 `PROJECTS` 派生 `activeProjects`
+- 新增本地 `GALLERY_COVER_FALLBACK`（遗留封面：menglan-world→monetuneprzod / family-menu-ai→timberkittyprzod / ai-rpa-enterprise→youngmultiprzod）+ `GALLERY_TECH_STACK`（遗留 tech logo 路径）——仅保留 Gallery 专属展示资产
+- `PROJECT_COUNT = 10`、3D 晾衣绳结构、卡片翻转详情交互保持不变
+
+**未修改（按要求冻结）：**
+- 图片零改动（monetuneprzod / timberkittyprzod / youngmultiprzod 未替换；bioprzod、遗留 tech logo、原始 Tomasz 图片全部保留给 2D-2 / 2D-4）
+- Credentials / Journey / Skills / Coming Soon / About UI / GlobalOverlay / Sanity 零改动
+- 未开始 2D-2 / Gallery 图片替换 / Studio
+
+**验证：** `npm run build` ✅（8.21s）
+
+**涉及文件：**
+- `src/data/projects.js`（新建）
+- `src/components/canvas/rooms/About/InfiniteSkyManager.jsx`
+- `src/components/canvas/rooms/Gallery/GalleryRoom.jsx`
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+
 **Commit：** 待提交
