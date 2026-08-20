@@ -34,35 +34,95 @@ export const GALLERY_INTERACTION_AUDIO_SETTINGS = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// Phase 2.4 Task 2D-1: Project content now lives in src/data/projects.js
-// (single source of truth shared with the About Room). Only the Gallery-
-// specific presentation assets — legacy card cover textures and tech-stack
-// logos — remain mapped here. These are replaced by Menglan-branded covers
-// in Task 2D-2 and cleaned up in Task 2D-4.
+// Phase 2.4 Task 2D-2: Gallery V2 — Menglan-branded project assets.
+// Project identity still comes from src/data/projects.js (shared with the
+// About Room), but Gallery-specific presentation — card covers, tech-stack
+// logos, and card-back detail copy — lives here so the About Room is never
+// modified by Gallery work.
 // ═══════════════════════════════════════════════════════════════════
 
-// Legacy Tomasz card covers reused as placeholders until Menglan covers exist.
-const GALLERY_COVER_FALLBACK = {
-    'menglan-world': { front: '/textures/gallery/monetuneprzod.webp', painted: '/textures/gallery/monetuneprzod_painted.webp' },
-    'family-menu-ai': { front: '/textures/gallery/timberkittyprzod.webp', painted: '/textures/gallery/timberkittyprzod_painted.webp' },
-    'ai-rpa-enterprise': { front: '/textures/gallery/youngmultiprzod.webp', painted: '/textures/gallery/youngmultiprzod_painted.webp' },
+// Menglan-branded card covers (front sketch / painted hover-reveal).
+const GALLERY_COVERS = {
+    'menglan-world': {
+        front: '/textures/projects/menglan-world/cover.webp',
+        painted: '/textures/projects/menglan-world/cover_painted.webp',
+    },
+    'family-menu-ai': {
+        front: '/textures/projects/family-menu-ai/cover.webp',
+        painted: '/textures/projects/family-menu-ai/cover_painted.webp',
+    },
+    'ai-rpa-enterprise': {
+        // On disk this project's cover is PNG (front) + WebP (painted) — used as-is.
+        front: '/textures/projects/ai-rpa-enterprise/cover.png',
+        painted: '/textures/projects/ai-rpa-enterprise/cover_painted.webp',
+    },
 };
 
-// Legacy tech-stack logo paths per project (Gallery back-of-card rendering).
+// Menglan-branded tech-stack logos (sketch paths; painted variants derived below).
 const GALLERY_TECH_STACK = {
-    'menglan-world': ['/textures/gallery/reactlogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/jslogo.webp'],
-    'family-menu-ai': ['/textures/gallery/reactlogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp'],
-    'ai-rpa-enterprise': ['/textures/gallery/reactlogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/htmllogo.webp'],
+    'menglan-world': [
+        '/textures/gallery/ml/reactlogo.webp',   // React
+        '/textures/gallery/ml/threejs.webp',     // Three.js
+        '/textures/gallery/ml/gsap.webp',        // GSAP
+        '/textures/gallery/ml/claude.webp',      // Claude Code
+    ],
+    'family-menu-ai': [
+        '/textures/gallery/ml/flutter.webp',     // Flutter
+        '/textures/gallery/ml/android.webp',     // Android
+        '/textures/gallery/ml/claude.webp',      // Claude Code
+        // NOTE: "Dart" logo is absent from /textures/gallery/ml/ — omitted until
+        // a dart icon is provided (max 4 icons; currently renders 3).
+    ],
+    'ai-rpa-enterprise': [
+        '/textures/gallery/ml/python.webp',      // Python
+        '/textures/gallery/ml/rag.webp',         // RAG
+        '/textures/gallery/ml/rpa.webp',         // RPA
+        '/textures/gallery/ml/coze.webp',        // Coze
+    ],
 };
 
-// Gallery's view of the shared projects: shared content + Gallery presentation.
-const activeProjects = PROJECTS.map((p) => ({
-    ...p,
-    title: p.name,
-    front: p.galleryCover || GALLERY_COVER_FALLBACK[p.id]?.front,
-    painted: GALLERY_COVER_FALLBACK[p.id]?.painted,
-    techStack: GALLERY_TECH_STACK[p.id] || [],
-}));
+// Gallery card-back detail copy (description / links / button label).
+// Status is not rendered on the current card layout (kept unchanged):
+//   menglan-world     → Current Project
+//   family-menu-ai    → Prototype
+//   ai-rpa-enterprise → Completed / Private Project
+const GALLERY_DETAILS = {
+    'menglan-world': {
+        description: 'An interactive 3D portfolio world combining AI, web technologies, and creative storytelling.',
+        github: 'https://github.com/huang20211022-eng/menglan_world/',
+        demo: 'https://menglan-world-git-main-menglan.vercel.app/',
+        buttonLabel: 'OPEN PROJECT',
+    },
+    'family-menu-ai': {
+        description: 'An AI-powered meal planning assistant designed to simplify family daily cooking and meal planning.',
+        github: 'https://github.com/huang20211022-eng/family_menu',
+        demo: null,
+        buttonLabel: 'OPEN PROJECT',
+    },
+    'ai-rpa-enterprise': {
+        description: 'Enterprise AI solutions combining knowledge-base Q&A, RAG systems, and RPA workflow automation for practical business applications.',
+        github: null,
+        demo: null,
+        buttonLabel: 'PRIVATE PROJECT',
+    },
+};
+
+// Gallery's view of the shared projects: shared identity + Gallery presentation.
+const activeProjects = PROJECTS.map((p) => {
+    const cover = GALLERY_COVERS[p.id] || {};
+    const detail = GALLERY_DETAILS[p.id] || {};
+    return {
+        ...p,
+        title: p.name,
+        description: detail.description || p.description,
+        front: p.galleryCover || cover.front,
+        painted: cover.painted,
+        techStack: GALLERY_TECH_STACK[p.id] || [],
+        buttonLabel: detail.buttonLabel || 'OPEN PROJECT',
+        // OPEN PROJECT prioritises GitHub (single-URL button), falls back to demo.
+        openUrl: detail.github || detail.demo || null,
+    };
+});
 
 const PROJECT_COUNT = 10; // Keep the count for the infinite scroll feel
 const GAP = 2.5;
@@ -221,21 +281,16 @@ const GalleryRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
     const backTextureRaw = useTexture(canHover ? '/textures/gallery/tylkartki_painted.webp' : '/textures/gallery/tylkartki.webp');
     const overlayTextureRaw = useTexture(canHover ? '/textures/gallery/przyciskdotylukartki_painted.webp' : '/textures/gallery/przyciskdotylukartki.webp');
 
-    // Preload tech stack logos to prevent stuttering on first flip
-    // We use the same conditional logic: painted on desktop, regular on touch
+    // Preload tech stack logos to prevent stuttering on first flip (Menglan set).
+    // Both sketch and painted variants are preloaded; TechStackLogo picks by hover.
     const allLogos = useMemo(() => {
-        const names = [
-            'csslogo', 'elementorlogo', 'firebaselogo', 'htmllogo',
-            'jslogo', 'netlifylogo', 'phplogo', 'reactlogo',
-            'tailwindlogo', 'wordpresslogo'
-        ];
-        return names.map(name => {
-            if (!canHover) return `/textures/gallery/${name}.webp`;
-            if (name === 'csslogo') return `/textures/gallery/css3logo_painted.webp`;
-            return `/textures/gallery/${name}_painted.webp`;
-        });
-    }, [canHover]);
-    
+        const names = ['reactlogo', 'threejs', 'gsap', 'claude', 'flutter', 'android', 'python', 'rag', 'rpa', 'coze'];
+        return names.flatMap(name => [
+            `/textures/gallery/ml/${name}.webp`,
+            `/textures/gallery/ml/${name}_painted.webp`,
+        ]);
+    }, []);
+
     useTexture(allLogos);
 
     // Construct the full list of projects (repeated) with textures attached
@@ -266,9 +321,7 @@ const GalleryRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
             // Map tech stack logos to the correct version (painted or regular)
             const techStack = projectData.techStack.map(path => {
                 if (!canHover) return path; // Keep regular
-                const name = path.split('/').pop().replace('.webp', '');
-                if (name === 'csslogo') return '/textures/gallery/css3logo_painted.webp';
-                return `/textures/gallery/${name}_painted.webp`;
+                return path.replace('.webp', '_painted.webp');
             });
 
             return {
@@ -1159,7 +1212,7 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                         anchorY="middle"
                         fillOpacity={0} // Start hidden
                     >
-                        OPEN PROJECT
+                        {project.buttonLabel || 'OPEN PROJECT'}
                     </Text>
 
                     {/* Warstwa 3: Niewidoczny hit-area pokrywający cały przycisk - łapie WSZYSTKIE eventy */}
@@ -1168,8 +1221,8 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                         onClick={(e) => {
                             if (isSelected && !isTransitioning) {
                                 e.stopPropagation();
-                                // Guard: coming-soon projects have no URL — avoid opening a blank tab
-                                if (project.url) window.open(project.url, '_blank');
+                                // Guard: private projects have no URL — avoid opening a blank tab
+                                if (project.openUrl) window.open(project.openUrl, '_blank');
                             }
                         }}
                         onPointerEnter={(e) => {

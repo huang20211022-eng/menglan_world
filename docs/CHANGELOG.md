@@ -1131,4 +1131,52 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 - `docs/PROJECT_STATUS.md`
 - `docs/CHANGELOG.md`
 
+**Commit：** `957a412`
+
+---
+
+## 2026-08-20 — Phase 2.4 Task 2D-2: Gallery V2 — Menglan Project Assets
+
+**模块：** Gallery Room 素材接入与项目详情重构
+
+**修改内容：**
+
+**1. 项目封面接入（新素材）**
+- `GALLERY_COVER_FALLBACK` → `GALLERY_COVERS`，指向新 Menglan 封面：
+  - Menglan World → `cover.webp` / `cover_painted.webp`
+  - AI Family Menu Assistant → `cover.webp` / `cover_painted.webp`
+  - AI & RPA Enterprise Solutions → `cover.png`（PNG，按磁盘实际）/ `cover_painted.webp`
+
+**2. Tech Stack 图标接入（`/textures/gallery/ml/`）**
+- Menglan World：React / Three.js / GSAP / Claude Code
+- AI Family Menu Assistant：Flutter / Android / Claude Code（**Dart 图标缺失**，暂显示 3 个）
+- AI & RPA Enterprise Solutions：Python / RAG / RPA / Coze
+- 移除旧 ITom tech logo（csslogo/htmllogo/jslogo/elementorlogo/firebaselogo/wordpresslogo/phplogo/netlifylogo/tailwindlogo）
+- 修复 painted 派生逻辑：`path.replace('.webp', '_painted.webp')` 保留 `ml/` 子目录
+
+**3. 项目详情文案（卡片背面）**
+- 3 个项目 description 更新为正式文案（本地 `GALLERY_DETAILS`，不动共享 `src/data/projects.js`，避免影响 About）
+- OPEN PROJECT 按钮改为动态标签 + `openUrl`（GitHub 优先，demo 兜底）
+- AI & RPA：`buttonLabel: 'PRIVATE PROJECT'`，`openUrl: null`（点击不跳转，无虚假链接）
+
+**4. 旧 ITom 运行时引用清除**
+- `monetuneprzod` / `timberkittyprzod` / `youngmultiprzod` / `bioprzod` 从 GalleryRoom 运行时移除
+- 旧 tech logo 从 GalleryRoom 运行时移除
+- 图片文件本体未删除（保留备份）
+
+**未修改（按要求冻结）：**
+- About / Studio / Contact / Hero / EntranceDoors / SignSystem / useInfiniteCamera / GSAP / Shader / Sanity / SceneContext / GlobalOverlay 零改动
+- `src/data/projects.js` 零改动（About 数据源不动）
+- `texturePreloadList.js` 零改动（预加载清单，避免影响其他模块）
+- 3D 晾衣绳 / 卡片翻转 / 相机 / 移动窗口结构零改动
+
+**验证：** `npm run build` ✅（7.83s）+ `npm run dev` ✅（ready 422ms，`/` 与 `/gallery` 均 200）
+
+**涉及文件：**
+- `src/components/canvas/rooms/Gallery/GalleryRoom.jsx`
+- `public/textures/projects/*/cover*`（新素材，用户已准备）
+- `public/textures/gallery/ml/*`（新 tech 图标，用户已准备）
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+
 **Commit：** 待提交

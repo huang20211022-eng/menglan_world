@@ -19,6 +19,7 @@
 → **Phase 2.3 Task 2C-2 About Room V2 图片层集成已完成（项目截图 6 张 + 凭证图片 4 张接入 + 凭证路径迁移）。**
 → **Phase 2.3 Task 2C-3 About Room VIEW 弹窗 Local-First 修复已完成（CURRENT PROJECT / CREDENTIALS / COMING SOON 均读本地数据）。**
 → **Phase 2.4 Task 2D-1 项目数据统一已完成（About/Gallery 共享 `src/data/projects.js` 单一数据源）。**
+→ **Phase 2.4 Task 2D-2 Gallery V2 已完成（新封面 + 新 Tech Stack 图标 + 项目详情文案 + 旧 ITom 运行时清除）。**
 
 ## 当前版本
 
@@ -56,7 +57,8 @@
 | Phase 2.3 Task 2C-1 — About Projects/Capabilities/Credentials 内容重构 | ✅ | `7786569` |
 | Phase 2.3 Task 2C-2 — About Room V2 图片层集成（截图 + 凭证） | ✅ | `3b46bbd` |
 | Phase 2.3 Task 2C-3 — About VIEW Local-First 修复（本地项目/凭证数据） | ✅ | `98824b8` |
-| Phase 2.4 Task 2D-1 — About/Gallery 项目数据统一（src/data/projects.js） | ✅ | 待提交 |
+| Phase 2.4 Task 2D-1 — About/Gallery 项目数据统一（src/data/projects.js） | ✅ | `957a412` |
+| Phase 2.4 Task 2D-2 — Gallery V2 素材接入与项目详情重构 | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -109,7 +111,7 @@
 | **Projects VIEW 按钮内容** | ✅ 已修复（Task 2C-3）：VIEW 弹窗读本地 PROJECTS_DATA / PROFESSIONAL_CREDENTIALS。卡片面纹理仍为 SOTY/SOTD/SOTM 占位（视觉装饰，无 Tomasz 内容） | V2 图片层 |
 | **contentData.js 硬编码数据** | ✅ 已替换为 Menglan 真实内容 + COMING SOON 占位符（Task 2A） | 已完成 |
 | **MessagePaper.jsx 允许域名** | ✅ 已更新为 menglan.world（Task 2A） | 已完成 |
-| **Gallery Room 项目卡片** | 仍使用旧 ITom 纹理 | V2 图片层 |
+| **Gallery Room 项目卡片** | ✅ 已替换为 Menglan 封面 + Tech Stack 图标（Task 2D-2）；遗留 bioprzod/旧 logo 文件保留待 2D-4 清理 | 已完成 |
 | **Studio Room 显示器内容** | 仍使用旧 ITom 纹理 | V2 图片层 |
 | **Sanity CMS 动态内容** | CMS 数据管线已保留但暂停使用（V1.1.2 解耦） | V3 数据层 |
 
@@ -123,7 +125,7 @@
 |------|------|------|
 | Task 2D-0 | Gallery Room 完整数据流审查（只读，A-J 分析） | ✅ |
 | Task 2D-1 | About/Gallery 项目数据统一到 `src/data/projects.js`（单一数据源） | ✅ |
-| Task 2D-2 | Gallery 项目封面替换（Menglan 品牌封面） | ⏳ 待开始 |
+| Task 2D-2 | Gallery V2 素材接入（新封面 + 新 Tech Stack 图标 + 详情文案 + 旧 ITom 清除） | ✅ |
 | Task 2D-4 | Gallery 遗留图片 / tech logo 清理 | ⏳ 待开始 |
 
 ---
@@ -165,4 +167,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-19（Phase 2.4 Task 2D-1 完成）
+2026-08-20（Phase 2.4 Task 2D-2 完成）
