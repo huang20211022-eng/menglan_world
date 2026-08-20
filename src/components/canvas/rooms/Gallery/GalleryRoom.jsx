@@ -70,6 +70,7 @@ const GALLERY_TECH_STACK = {
         '/textures/gallery/ml/flutter.webp',     // Flutter
         '/textures/gallery/ml/gradle.webp',      // Gradle
         '/textures/gallery/ml/android.webp',     // Android
+        '/textures/gallery/ml/claude.webp',      // Claude Code
     ],
     'ai-rpa-enterprise': [
         '/textures/gallery/ml/python.webp',      // Python
