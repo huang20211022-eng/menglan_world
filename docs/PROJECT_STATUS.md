@@ -62,7 +62,7 @@
 | Phase 2.3 Task 2C-3 — About VIEW Local-First 修复（本地项目/凭证数据） | ✅ | `98824b8` |
 | Phase 2.4 Task 2D-1 — About/Gallery 项目数据统一（src/data/projects.js） | ✅ | `957a412` |
 | Phase 2.4 Task 2D-2 — Gallery V2 素材接入与项目详情重构 | ✅ | `b99b9d7` |
-| Phase 2.5 Studio V2 — Studio 内容接入（4 项本地内容 + Coming Soon 按钮） | ✅ | 待提交 |
+| Phase 2.5 Studio V2 — Studio 内容接入（4 项本地内容 + Coming Soon 按钮） | ✅ | `fd71de4` |
 
 ### About Room V1.1 — 完成清单
 
