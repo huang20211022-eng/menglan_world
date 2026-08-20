@@ -1180,3 +1180,27 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 - `docs/CHANGELOG.md`
 
 **Commit：** b99b9d7
+
+---
+
+## 2026-08-20 — Gallery V2 补丁：Family Menu Tech Stack 修正
+
+**模块：** Gallery Room Tech Stack
+
+**修改内容：**
+- `GALLERY_TECH_STACK['family-menu-ai']`：Flutter / Android / Claude Code → **Flutter / Gradle / Android**
+- 移除 Claude Code 图标；新增 `gradle.webp` / `gradle_painted.webp`（用户已补充到 `/textures/gallery/ml/`）
+- 预加载清单 `allLogos` 增加 `gradle`（sketch + painted）
+- 保留 sketch → painted hover 效果与布局不变（tech stack 渲染按 `length` 动态居中，3 个图标）
+
+**未修改：** Menglan World / AI & RPA 的 tech stack；其他房间零改动。
+
+**验证：** `npm run build` ✅
+
+**涉及文件：**
+- `src/components/canvas/rooms/Gallery/GalleryRoom.jsx`
+- `public/textures/gallery/ml/gradle.webp` + `gradle_painted.webp`（新素材）
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+
+**Commit：** 待提交

@@ -20,6 +20,7 @@
 → **Phase 2.3 Task 2C-3 About Room VIEW 弹窗 Local-First 修复已完成（CURRENT PROJECT / CREDENTIALS / COMING SOON 均读本地数据）。**
 → **Phase 2.4 Task 2D-1 项目数据统一已完成（About/Gallery 共享 `src/data/projects.js` 单一数据源）。**
 → **Phase 2.4 Task 2D-2 Gallery V2 已完成（新封面 + 新 Tech Stack 图标 + 项目详情文案 + 旧 ITom 运行时清除）。**
+→ **Phase 2.4 Task 2D-2 补丁：Family Menu Tech Stack 修正已完成（Flutter / Gradle / Android，移除 Claude Code）。**
 
 ## 当前版本
 
@@ -167,4 +168,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-20（Phase 2.4 Task 2D-2 完成）
+2026-08-20（Phase 2.4 Task 2D-2 补丁：Family Menu Tech Stack 修正完成）

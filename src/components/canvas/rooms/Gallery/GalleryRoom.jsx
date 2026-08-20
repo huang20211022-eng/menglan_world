@@ -68,10 +68,8 @@ const GALLERY_TECH_STACK = {
     ],
     'family-menu-ai': [
         '/textures/gallery/ml/flutter.webp',     // Flutter
+        '/textures/gallery/ml/gradle.webp',      // Gradle
         '/textures/gallery/ml/android.webp',     // Android
-        '/textures/gallery/ml/claude.webp',      // Claude Code
-        // NOTE: "Dart" logo is absent from /textures/gallery/ml/ — omitted until
-        // a dart icon is provided (max 4 icons; currently renders 3).
     ],
     'ai-rpa-enterprise': [
         '/textures/gallery/ml/python.webp',      // Python
@@ -284,7 +282,7 @@ const GalleryRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
     // Preload tech stack logos to prevent stuttering on first flip (Menglan set).
     // Both sketch and painted variants are preloaded; TechStackLogo picks by hover.
     const allLogos = useMemo(() => {
-        const names = ['reactlogo', 'threejs', 'gsap', 'claude', 'flutter', 'android', 'python', 'rag', 'rpa', 'coze'];
+        const names = ['reactlogo', 'threejs', 'gsap', 'claude', 'flutter', 'gradle', 'android', 'python', 'rag', 'rpa', 'coze'];
         return names.flatMap(name => [
             `/textures/gallery/ml/${name}.webp`,
             `/textures/gallery/ml/${name}_painted.webp`,
