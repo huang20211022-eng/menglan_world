@@ -22,6 +22,7 @@
 → **Phase 2.4 Task 2D-2 Gallery V2 已完成（新封面 + 新 Tech Stack 图标 + 项目详情文案 + 旧 ITom 运行时清除）。**
 → **Phase 2.4 Task 2D-2 补丁：Family Menu Tech Stack 修正已完成（Flutter / Gradle / Android，移除 Claude Code）。**
 → **Phase 2.4 Task 2D-2 补丁：Family Menu Tech Stack 补全为 4 格已完成（Flutter / Gradle / Android / Claude Code）。**
+→ **Phase 2.5 Studio V2 内容接入已完成（4 项本地内容 + TikTok 新图 + Coming Soon 按钮）。**
 
 ## 当前版本
 
@@ -61,6 +62,7 @@
 | Phase 2.3 Task 2C-3 — About VIEW Local-First 修复（本地项目/凭证数据） | ✅ | `98824b8` |
 | Phase 2.4 Task 2D-1 — About/Gallery 项目数据统一（src/data/projects.js） | ✅ | `957a412` |
 | Phase 2.4 Task 2D-2 — Gallery V2 素材接入与项目详情重构 | ✅ | `b99b9d7` |
+| Phase 2.5 Studio V2 — Studio 内容接入（4 项本地内容 + Coming Soon 按钮） | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -114,7 +116,7 @@
 | **contentData.js 硬编码数据** | ✅ 已替换为 Menglan 真实内容 + COMING SOON 占位符（Task 2A） | 已完成 |
 | **MessagePaper.jsx 允许域名** | ✅ 已更新为 menglan.world（Task 2A） | 已完成 |
 | **Gallery Room 项目卡片** | ✅ 已替换为 Menglan 封面 + Tech Stack 图标（Task 2D-2）；遗留 bioprzod/旧 logo 文件保留待 2D-4 清理 | 已完成 |
-| **Studio Room 显示器内容** | 仍使用旧 ITom 纹理 | V2 图片层 |
+| **Studio Room 显示器内容** | ✅ 已替换为 Menglan 内容（Task Studio V2，4 项）；旧 ITom 纹理保留为备份 | 已完成 |
 | **Sanity CMS 动态内容** | CMS 数据管线已保留但暂停使用（V1.1.2 解耦） | V3 数据层 |
 
 ---
@@ -169,4 +171,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-20（Phase 2.4 Task 2D-2 补丁：Family Menu Tech Stack 补全为 4 格完成）
+2026-08-20（Phase 2.5 Studio V2 内容接入完成）

@@ -175,6 +175,22 @@
     }
 }
 
+// Non-clickable "Coming Soon" state (no URL — Studio V2)
+.studio-action-button--disabled {
+    cursor: default;
+    opacity: 0.55;
+    color: #888;
+    border-color: #aaa;
+    pointer-events: none;
+
+    &:hover {
+        background: transparent;
+        color: #888;
+        transform: none;
+        box-shadow: none;
+    }
+}
+
 // Hide native scrollbar — custom torn-paper scrollbar replaces it
 .awards-scroll-container {
     scrollbar-width: none; // Firefox

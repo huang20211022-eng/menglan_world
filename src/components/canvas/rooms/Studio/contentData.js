@@ -6,10 +6,12 @@
  *
  * Platforms: 'youtube', 'blog', 'tiktok'
  *
- * V2.2: Rebranded from ITom/Tomasz content to Menglan's identity.
- * Only "Menglan World" is a published project. The remaining items are
- * placeholders clearly marked COMING SOON / AI EXPERIMENT / DEVELOPMENT LOG.
- * No fabricated external URLs, articles, videos, or projects.
+ * V2.5: Studio content finalized — 4 Menglan items (TikTok / Blog / YouTube ×2),
+ * all local, all URLs null (no fabricated links). Textures map by platform:
+ *   tiktok  → phonefront_followmeontiktok (newly replaced)
+ *   blog    → monitorfront_postnafbdoublewinner (already replaced)
+ *   youtube → tvfront_filmikprojektdlamultiego / tvfront_filmikedytowaniezdjec
+ * Original ITom images are kept as backups only (not referenced at runtime).
  */
 
 export const PLATFORM_CONFIG = {
@@ -65,66 +67,41 @@ export const PLATFORM_CONFIG = {
 };
 
 const RAW_CONTENT_DATA = [
-    // ============ Published Work (Menglan) ============
+    // ============ Studio V2 — Menglan Content (all local, URLs null) ============
+    // 4 items repeated by StudioRoom to fill the 48-monitor tower.
+    // Texture mapping is automatic by platform (see texture arrays below).
     {
-        id: 'blog-001',
-        platform: 'blog',
-        title: 'Menglan World',
-        description: 'Interactive 3D portfolio — navigate a hand-drawn infinite corridor and explore four immersive rooms built with React Three Fiber and custom GLSL shaders.',
-        url: 'https://menglan-world-git-main-menglan.vercel.app/',
-        date: '2026',
-    },
-    {
-        id: 'blog-002',
-        platform: 'blog',
-        title: 'AI Development',
-        description: 'Building AI-powered tools — from prompt engineering and RAG pipelines to desktop AI companions.',
+        id: 'tt-001',
+        platform: 'tiktok',
+        title: 'AI EXPERIMENTS',
+        description: 'Short experiments, AI tools, automation ideas, and behind-the-scenes development.',
         url: null,
         date: 'In Development',
     },
     {
-        id: 'blog-003',
+        id: 'blog-001',
         platform: 'blog',
-        title: 'Automation',
-        description: 'RPA and workflow automation — turning repetitive tasks into reliable, hands-off processes.',
+        title: 'AI DEVELOPMENT LOG',
+        description: 'A collection of my experiments, development notes, and lessons learned while building AI-powered applications and automation tools.',
         url: null,
         date: 'In Development',
     },
     {
         id: 'yt-001',
         platform: 'youtube',
-        title: 'AI Developer Journey',
-        description: 'My path from software engineering to AI development — experiments, lessons, and building in public.',
+        title: 'AI PROJECT SHOWCASE',
+        description: 'Project demos and walkthroughs of AI applications, automation tools, and creative web experiments.',
         url: null,
         date: 'In Development',
     },
-
-    // ============ Coming Soon / AI Experiment / Development Log ============
-    // Placeholders: no fabricated URLs, articles, videos, or projects.
-    { id: 'yt-002', platform: 'youtube', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-001', platform: 'tiktok', title: 'AI EXPERIMENT', description: 'An AI experiment is in progress. Details will be shared here soon.', url: null, date: 'Coming Soon' },
-    { id: 'blog-004', platform: 'blog', title: 'DEVELOPMENT LOG', description: 'A development log entry is in progress. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-002', platform: 'tiktok', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'yt-003', platform: 'youtube', title: 'DEVELOPMENT LOG', description: 'A development log entry is in progress. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-003', platform: 'tiktok', title: 'AI EXPERIMENT', description: 'An AI experiment is in progress. Details will be shared here soon.', url: null, date: 'Coming Soon' },
-    { id: 'yt-004', platform: 'youtube', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-004', platform: 'tiktok', title: 'DEVELOPMENT LOG', description: 'A development log entry is in progress. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'blog-005', platform: 'blog', title: 'AI EXPERIMENT', description: 'An AI experiment is in progress. Details will be shared here soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-005', platform: 'tiktok', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'yt-005', platform: 'youtube', title: 'AI EXPERIMENT', description: 'An AI experiment is in progress. Details will be shared here soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-006', platform: 'tiktok', title: 'DEVELOPMENT LOG', description: 'A development log entry is in progress. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'yt-006', platform: 'youtube', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-007', platform: 'tiktok', title: 'AI EXPERIMENT', description: 'An AI experiment is in progress. Details will be shared here soon.', url: null, date: 'Coming Soon' },
-    { id: 'blog-006', platform: 'blog', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-008', platform: 'tiktok', title: 'DEVELOPMENT LOG', description: 'A development log entry is in progress. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'yt-007', platform: 'youtube', title: 'DEVELOPMENT LOG', description: 'A development log entry is in progress. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-009', platform: 'tiktok', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'blog-007', platform: 'blog', title: 'AI EXPERIMENT', description: 'An AI experiment is in progress. Details will be shared here soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-010', platform: 'tiktok', title: 'DEVELOPMENT LOG', description: 'A development log entry is in progress. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'yt-008', platform: 'youtube', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-011', platform: 'tiktok', title: 'AI EXPERIMENT', description: 'An AI experiment is in progress. Details will be shared here soon.', url: null, date: 'Coming Soon' },
-    { id: 'blog-008', platform: 'blog', title: 'COMING SOON', description: 'This space is reserved for upcoming work. Check back soon.', url: null, date: 'Coming Soon' },
-    { id: 'tt-012', platform: 'tiktok', title: 'DEVELOPMENT LOG', description: 'A development log entry is in progress. Check back soon.', url: null, date: 'Coming Soon' },
+    {
+        id: 'yt-002',
+        platform: 'youtube',
+        title: 'BUILDING WITH CLAUDE CODE',
+        description: 'Development experiments using Claude Code, Python, AI workflows, and modern web technologies.',
+        url: null,
+        date: 'In Development',
+    },
 ];
 
 const ytTextures = ['/textures/studio/tvfront_filmikprojektdlamultiego.webp', '/textures/studio/tvfront_filmikedytowaniezdjec.webp'];

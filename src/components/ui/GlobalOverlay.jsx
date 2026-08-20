@@ -586,14 +586,23 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                                 paddingTop: '1rem',
                                 ...getStaggerStyle(400)
                             }}>
-                                <a
-                                    href={content.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="studio-action-button"
-                                >
-                                    Open Link ↗
-                                </a>
+                                {content.url ? (
+                                    <a
+                                        href={content.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="studio-action-button"
+                                    >
+                                        Open Link ↗
+                                    </a>
+                                ) : (
+                                    <span
+                                        className="studio-action-button studio-action-button--disabled"
+                                        aria-disabled="true"
+                                    >
+                                        Coming Soon
+                                    </span>
+                                )}
                             </div>
                         </>
                     )}

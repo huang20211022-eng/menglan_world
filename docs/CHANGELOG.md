@@ -1226,3 +1226,32 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 - `docs/CHANGELOG.md`
 
 **Commit：** f22c24f
+
+---
+
+## 2026-08-20 — Phase 2.5: Studio V2 — Menglan Content
+
+**模块：** Studio Room 内容接入
+
+**修改内容：**
+- `contentData.js`：`RAW_CONTENT_DATA` 从 27 条占位 → 4 条正式本地内容，全部 `url: null`
+  - AI EXPERIMENTS（tiktok）
+  - AI DEVELOPMENT LOG（blog）
+  - AI PROJECT SHOWCASE（youtube）
+  - BUILDING WITH CLAUDE CODE（youtube）
+- 纹理映射保持平台自动映射：tiktok→`phonefront_followmeontiktok`（用户新换）、blog→`monitorfront_postnafbdoublewinner`、youtube→`tvfront_filmikprojektdlamultiego`/`tvfront_filmikedytowaniezdjec`
+- `GlobalOverlay.jsx` + `GlobalOverlay.scss`：URL 为空时「Open Link ↗」→ 不可点击的「Coming Soon」（无空链接跳转）
+- 设备外壳纹理 / 3D 结构 / 动画 / 交互零改动；旧 ITom 图片仅保留为备份，未删除
+
+**未修改：** 之前已替换的 3 张 Studio 图片保持不动；其他房间零改动。
+
+**验证：** `npm run build` ✅
+
+**涉及文件：**
+- `src/components/canvas/rooms/Studio/contentData.js`
+- `src/components/ui/GlobalOverlay.jsx`
+- `src/styles/GlobalOverlay.scss`
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+
+**Commit：** 待提交
