@@ -24,6 +24,7 @@
 → **Phase 2.4 Task 2D-2 补丁：Family Menu Tech Stack 补全为 4 格已完成（Flutter / Gradle / Android / Claude Code）。**
 → **Phase 2.5 Studio V2 内容接入已完成（4 项本地内容 + TikTok 新图 + Coming Soon 按钮）。**
 → **Phase 2 最终视觉修复已完成（走廊 Hero MENGLAN 舒展 + 入口 Sign MENGLAN 收窄）。**
+→ **Final Visual Assets Archive 已完成（12 个当前使用的最终 Menglan 素材入库；`*_itom`/backup/Gallery legacy/WIP 按备份·WIP 规则保留未提交、不删除）。**
 
 ## 当前版本
 
@@ -65,6 +66,7 @@
 | Phase 2.4 Task 2D-2 — Gallery V2 素材接入与项目详情重构 | ✅ | `b99b9d7` |
 | Phase 2.5 Studio V2 — Studio 内容接入（4 项本地内容 + Coming Soon 按钮） | ✅ | `fd71de4` |
 | Phase 2 最终视觉修复 — 走廊 Hero + 入口 Sign 两处 MENGLAN 排版 | ✅ | `1a8431e` |
+| Final Visual Assets Archive — 12 个最终 Menglan 素材入库 | ✅ | `f6d3ab9` |
 
 ### About Room V1.1 — 完成清单
 
@@ -172,4 +174,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-21（Phase 2 最终视觉修复完成）
+2026-08-21（Final Visual Assets Archive 完成）

@@ -1283,3 +1283,30 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 - `docs/CHANGELOG.md`
 
 **Commit：** 1a8431e
+
+---
+
+## 2026-08-21 — Final Visual Assets Archive（素材归档）
+
+**模块：** 最终视觉素材归档
+
+**修改内容：**
+- 提交 12 个当前实际使用的 Menglan 最终视觉素材：
+  - corridor `rysuneknaobraz1.webp`
+  - doors `door_left/right_painted/sketch.webp` ×4
+  - entrance `avatar_window.webp`
+  - studio `monitorfront_postnafbdoublewinner` / `tvfront_filmikedytowaniezdjec` / `tvfront_filmikprojektdlamultiego`（front+painted ×6）
+- 未提交文件按备份/WIP 规则保留（不删除）：
+  - `*_itom.webp`、`favico_itom.png`、`og-image_itom.webp`
+  - `about/backups/awatarnachmurce_ml.webp`
+  - Gallery legacy（bioprzod / monetuneprzod / youngmultiprzod ×6，待 2D-4 清理）
+  - WIP（`projects/ai-rpa-enterprise/rpa.webp`、`projects/family-menu-ai/familymenu.webp` + `_painted`、`certifications/rpa/rpa-certification_black.webp`）
+
+**验证：** `npm run build` ✅
+
+**涉及文件：**
+- `public/textures/`（12 个最终素材）
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+
+**Commit：** f6d3ab9
