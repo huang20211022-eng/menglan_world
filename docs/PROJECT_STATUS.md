@@ -23,6 +23,7 @@
 → **Phase 2.4 Task 2D-2 补丁：Family Menu Tech Stack 修正已完成（Flutter / Gradle / Android，移除 Claude Code）。**
 → **Phase 2.4 Task 2D-2 补丁：Family Menu Tech Stack 补全为 4 格已完成（Flutter / Gradle / Android / Claude Code）。**
 → **Phase 2.5 Studio V2 内容接入已完成（4 项本地内容 + TikTok 新图 + Coming Soon 按钮）。**
+→ **Phase 2 最终视觉修复已完成（走廊 Hero MENGLAN 舒展 + 入口 Sign MENGLAN 收窄）。**
 
 ## 当前版本
 
@@ -63,6 +64,7 @@
 | Phase 2.4 Task 2D-1 — About/Gallery 项目数据统一（src/data/projects.js） | ✅ | `957a412` |
 | Phase 2.4 Task 2D-2 — Gallery V2 素材接入与项目详情重构 | ✅ | `b99b9d7` |
 | Phase 2.5 Studio V2 — Studio 内容接入（4 项本地内容 + Coming Soon 按钮） | ✅ | `fd71de4` |
+| Phase 2 最终视觉修复 — 走廊 Hero + 入口 Sign 两处 MENGLAN 排版 | ✅ | 待提交 |
 
 ### About Room V1.1 — 完成清单
 
@@ -111,7 +113,7 @@
 
 | 冻结项 | 原因 | 处理阶段 |
 |--------|------|---------|
-| **MENGLAN 入口标识最终视觉效果** | V1.1.5 逐字母定位 + 不透明遮罩已实现技术方案，但手写字体（RubikScribble）的视觉协调性仍需设计师介入微调 | 视觉优化阶段 |
+| **MENGLAN 入口标识最终视觉效果** | ✅ 已修复（Phase 2 最终视觉修复）：走廊 Hero 字间距 0.35→0.6 舒展、入口 Sign 字号/间距收窄至木牌内；如需进一步手写字体设计师级微调可后续再议 | 已完成 |
 | **Projects VIEW 按钮内容** | ✅ 已修复（Task 2C-3）：VIEW 弹窗读本地 PROJECTS_DATA / PROFESSIONAL_CREDENTIALS。卡片面纹理仍为 SOTY/SOTD/SOTM 占位（视觉装饰，无 Tomasz 内容） | V2 图片层 |
 | **contentData.js 硬编码数据** | ✅ 已替换为 Menglan 真实内容 + COMING SOON 占位符（Task 2A） | 已完成 |
 | **MessagePaper.jsx 允许域名** | ✅ 已更新为 menglan.world（Task 2A） | 已完成 |
@@ -123,13 +125,12 @@
 
 ## 当前正在开发
 
-**Phase 2.4 — Gallery/About 项目数据统一**
+**Phase 2 — 最终视觉修复（MENGLAN 排版）**
 
 | 任务 | 内容 | 状态 |
 |------|------|------|
-| Task 2D-0 | Gallery Room 完整数据流审查（只读，A-J 分析） | ✅ |
-| Task 2D-1 | About/Gallery 项目数据统一到 `src/data/projects.js`（单一数据源） | ✅ |
-| Task 2D-2 | Gallery V2 素材接入（新封面 + 新 Tech Stack 图标 + 详情文案 + 旧 ITom 清除） | ✅ |
+| 走廊 Hero MENGLAN | HeroText.jsx 字间距 0.35→0.6 舒展（splitDir 比例 2.0→1.0 保证分裂动画不越墙） | ✅ |
+| 入口 Sign MENGLAN | SignSystem.jsx 字号 0.28→0.24、步距 0.26→0.20、遮罩 1.9→1.5（收窄进木牌） | ✅ |
 | Task 2D-4 | Gallery 遗留图片 / tech logo 清理 | ⏳ 待开始 |
 
 ---
@@ -171,4 +172,4 @@ V1 ✅ (文字/数据/素材层) → V2 (图片层) → V3 (数据层)
 
 ## 最近更新时间
 
-2026-08-20（Phase 2.5 Studio V2 内容接入完成）
+2026-08-21（Phase 2 最终视觉修复完成）

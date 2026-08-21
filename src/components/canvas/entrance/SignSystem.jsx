@@ -54,24 +54,24 @@ const SignSystem = (props) => {
                 </mesh>
 
                 {/* === MENGLAN Dynamic Text Overlay === */}
-                {/* Opaque background strip — fully covers the cramped raster MENGLAN baked into sign.webp */}
+                {/* Opaque background strip — covers the raster MENGLAN baked into sign.webp (spans ~1.44 units) */}
                 <mesh position={[0, -0.12, 0.02]}>
-                    <planeGeometry args={[1.9, 0.34]} />
+                    <planeGeometry args={[1.5, 0.30]} />
                     <meshBasicMaterial color="#e0e0e0"
                         transparent={false}
                         side={THREE.DoubleSide}
                         depthWrite={false}
                     />
                 </mesh>
-                {/* Per-letter MENGLAN — each letter individually positioned for even, generous spacing */}
-                {/* 7 letters spread across 1.56 units (step 0.26), centered on the 2-unit-wide sign */}
-                <Text position={[-0.78, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">M</Text>
-                <Text position={[-0.52, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">E</Text>
-                <Text position={[-0.26, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">N</Text>
-                <Text position={[ 0.00, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">G</Text>
-                <Text position={[ 0.26, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">L</Text>
-                <Text position={[ 0.52, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">A</Text>
-                <Text position={[ 0.78, -0.12, 0.04]} fontSize={0.28} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">N</Text>
+                {/* Per-letter MENGLAN — narrowed to sit within the sign (was too wide at step 0.26 / fontSize 0.28) */}
+                {/* 7 letters spread across 1.20 units (step 0.20), centered on the 2-unit-wide sign */}
+                <Text position={[-0.60, -0.12, 0.04]} fontSize={0.24} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">M</Text>
+                <Text position={[-0.40, -0.12, 0.04]} fontSize={0.24} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">E</Text>
+                <Text position={[-0.20, -0.12, 0.04]} fontSize={0.24} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">N</Text>
+                <Text position={[ 0.00, -0.12, 0.04]} fontSize={0.24} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">G</Text>
+                <Text position={[ 0.20, -0.12, 0.04]} fontSize={0.24} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">L</Text>
+                <Text position={[ 0.40, -0.12, 0.04]} fontSize={0.24} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">A</Text>
+                <Text position={[ 0.60, -0.12, 0.04]} fontSize={0.24} color="#1a1a1a" anchorX="center" anchorY="middle" font="/fonts/RubikScribble-Regular.ttf">N</Text>
             </group>
         </group>
     );

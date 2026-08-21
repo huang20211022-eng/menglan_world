@@ -55,15 +55,19 @@ const HeroText = ({ position = [0, 0.3, 0] }) => {
     const worldPosVec = useRef(new THREE.Vector3());
 
     // Letter positions for MENGLAN split effect
-    // Spacing increased from 0.27 to 0.35 for visible breathing room between letters
+    // RubikScribble glyphs are ~0.6–0.86em wide, so at fontSize 0.9 the letters need
+    // ~0.6-unit centers to spread naturally without overlapping. baseX step widened
+    // from 0.35 → 0.6 (was cramped). splitDir is set == baseX (ratio 1.0 instead of
+    // the old 2.0) so the split reveal stays bounded inside the 7-unit corridor
+    // (full split peaks at ~3.4 vs walls at ±3.5) even with the wider base spread.
     const letters = useMemo(() => [
-        { char: 'M', baseX: -1.05, splitDir: -2.1, delay: 0 },
-        { char: 'E', baseX: -0.70, splitDir: -1.4, delay: 0 },
-        { char: 'N', baseX: -0.35, splitDir: -0.7, delay: 0 },
+        { char: 'M', baseX: -1.8, splitDir: -1.8, delay: 0 },
+        { char: 'E', baseX: -1.2, splitDir: -1.2, delay: 0 },
+        { char: 'N', baseX: -0.6, splitDir: -0.6, delay: 0 },
         { char: 'G', baseX: 0, splitDir: 0, delay: 0 },
-        { char: 'L', baseX: 0.35, splitDir: 0.7, delay: 0 },
-        { char: 'A', baseX: 0.70, splitDir: 1.4, delay: 0 },
-        { char: 'N', baseX: 1.05, splitDir: 2.1, delay: 0 },
+        { char: 'L', baseX: 0.6, splitDir: 0.6, delay: 0 },
+        { char: 'A', baseX: 1.2, splitDir: 1.2, delay: 0 },
+        { char: 'N', baseX: 1.8, splitDir: 1.8, delay: 0 },
     ], []);
 
     // Tagline words for split effect

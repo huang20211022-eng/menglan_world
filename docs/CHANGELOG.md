@@ -1255,3 +1255,31 @@ V1.1.4 在 SignSystem 中添加了动态 `<Text>` 覆盖层，但存在两个问
 - `docs/CHANGELOG.md`
 
 **Commit：** fd71de4
+
+---
+
+## 2026-08-21 — Phase 2 最终视觉修复（两处 MENGLAN 排版）
+
+**模块：** 走廊 Hero + 入口 Sign 的 MENGLAN 排版
+
+**背景：** 用 fontTools 实测 `RubikScribble-Regular.ttf` 字形宽度（M=0.856em、E=0.667em、N=0.740em、G=0.753em、L=0.626em、A=0.755em），定位两处排版问题：走廊 Hero 的字间距 0.35 远小于字母自然字宽（0.6–0.86em），导致字母重度重叠（过挤）；入口 Sign 的字间距 0.26 + 字号 0.28 使覆盖层宽达 1.84 单位，超出木牌烘焙文本（实测 1.436 单位），显得过宽。
+
+**修改内容：**
+- `HeroText.jsx`（走廊 MENGLAN）：
+  - `baseX` 步距 `0.35 → 0.6`（`±1.05 → ±1.8`），字母自然舒展、基本不再重叠
+  - `splitDir` 由 `baseX × 2` 改为 `baseX × 1`——否则加宽后分裂动画会把字母推到走廊墙外（7 单位走廊，墙在 ±3.5）；1.0 比例下满分裂峰值约 ±3.4，仍在墙内
+- `SignSystem.jsx`（入口 MENGLAN）：
+  - 遮罩条 `[1.9, 0.34] → [1.5, 0.30]`（仍完整覆盖烘焙文本 1.436）
+  - 字号 `0.28 → 0.24`，字母步距 `0.26 → 0.20`（`±0.78 → ±0.60`），整体宽度从 ~1.84 收窄到 ~1.34–1.40，居中落在 2 单位木牌内
+
+**未修改：** About / Gallery / Studio / Contact / Sanity / Shader / Camera 及其他 GSAP 逻辑零改动；Hero 的 tagline、slogan、装饰星，Sign 的 `sign.webp` / `belka.webp` 等门面素材均保持原样。
+
+**验证：** `npm run build` ✅（946 modules）；`npm run dev` ✅（HTTP 200，端口 5175）。
+
+**涉及文件：**
+- `src/components/canvas/corridor/HeroText.jsx`
+- `src/components/canvas/entrance/SignSystem.jsx`
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+
+**Commit：** 待提交
